@@ -1,0 +1,3113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Slate — Tráfico Comms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        base:'#141517', panel:'#1B1D21', panel2:'#232629', line:'#2E3238',
+        ink:'#E9EAEE', mute:'#8E939E', dim:'#5F646D',
+        bar:{ blue:'#5B7FC7', yellow:'#D6BE5C', magenta:'#B063A2',
+              green:'#5EA86C', red:'#C85A50', cyan:'#4FC2C0' }
+      },
+      fontFamily: {
+        display:['Archivo','system-ui','sans-serif'],
+        body:['"Inter Tight"','system-ui','sans-serif'],
+        mono:['"JetBrains Mono"','ui-monospace','monospace']
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root{
+    --blue:#5B7FC7; --yellow:#D6BE5C; --magenta:#B063A2; --green:#5EA86C;
+    --red:#C85A50; --cyan:#4FC2C0;
+    color-scheme:dark;
+  }
+  html{ -webkit-text-size-adjust:100%; }
+  body{ background:#141517; color:#E9EAEE; font-family:'Inter Tight',system-ui,sans-serif; }
+
+  .stencil{ font-family:'Archivo',system-ui,sans-serif; font-variation-settings:'wdth' 118,'wght' 800;
+            text-transform:uppercase; letter-spacing:.02em; }
+  .stencil-thin{ font-family:'Archivo',system-ui,sans-serif; font-variation-settings:'wdth' 118,'wght' 600;
+            text-transform:uppercase; letter-spacing:.06em; }
+  .tape{ font-family:'JetBrains Mono',ui-monospace,monospace; text-transform:uppercase;
+         letter-spacing:.12em; font-size:10px; }
+
+  .slate-seg{ transition:width .55s cubic-bezier(.4,0,.2,1), filter .2s ease; min-width:26px; }
+  .slate-seg:hover{ filter:brightness(1.18); }
+
+  .sprocket{ width:7px; height:11px; border-radius:1.5px; background:#33373E; transition:background .25s ease; }
+  .sprocket.on{ background:currentColor; }
+
+  .card{ transition:transform .18s ease, border-color .18s ease, background .18s ease; }
+  .card:hover{ transform:translateY(-2px); border-color:#3D424A; }
+  .card.dragging{ opacity:.35; transform:rotate(-1.2deg) scale(.98); }
+  .card.selected{ background:#25282D; border-color:#4B515A; }
+  .card.flash{ animation:flash .6s ease; }
+  @keyframes flash{ 0%{ box-shadow:0 0 0 0 rgba(255,255,255,.28);} 100%{ box-shadow:0 0 0 14px rgba(255,255,255,0);} }
+
+  .col-drop.over{ background:#202329; outline:1px dashed #4B515A; outline-offset:-4px; }
+
+  .rise{ animation:rise .5s cubic-bezier(.2,.7,.3,1) backwards; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
+
+  /* ── Gantt ── */
+  .g-wrap{ display:grid; grid-template-columns:236px minmax(0,1fr); }
+  @media (max-width:640px){ .g-wrap{ grid-template-columns:150px minmax(0,1fr); } }
+  .g-labels{ border-right:1px solid #2E3238; background:#1B1D21; }
+  .g-scroll{ overflow-x:auto; overflow-y:hidden; }
+  .g-row{ height:30px; display:flex; align-items:center; border-bottom:1px solid #232629; }
+  .g-row.g-group{ height:36px; background:#1E2126; }
+  .g-row:hover{ background:#212429; }
+  .g-row.sel{ background:#272A30; }
+  .g-bar{ position:absolute; height:13px; border-radius:3px; top:50%; transform:translateY(-50%);
+          cursor:pointer; transition:filter .15s ease, box-shadow .15s ease; }
+  .g-bar:hover{ filter:brightness(1.22); box-shadow:0 0 0 1px rgba(255,255,255,.25); }
+  .g-bar.grp{ height:17px; border-radius:3px; }
+  .g-fill{ position:absolute; inset:0; border-radius:3px; background:rgba(20,21,23,.42); }
+  .g-fill span{ display:block; height:100%; border-radius:3px 0 0 3px; background:transparent; }
+  .g-today{ position:absolute; top:0; bottom:0; width:1px; background:var(--cyan); opacity:.55; }
+  .g-hito{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed rgba(79,194,192,.4); }
+  .g-weekend{ position:absolute; top:0; bottom:0; background:rgba(255,255,255,.022); }
+  .g-monthline{ position:absolute; top:0; bottom:0; width:1px; background:#2E3238; }
+
+  select.tapeselect{ -webkit-appearance:none; appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'><path d='M0 0h8L4 5z' fill='%238E939E'/></svg>");
+    background-repeat:no-repeat; background-position:right 6px center; padding-right:18px; }
+  select.tapeselect option{ background:#1B1D21; color:#E9EAEE; }
+
+  input[type="text"]::placeholder, textarea::placeholder{ color:#5F646D; }
+  input[type="date"]{ font-family:'JetBrains Mono',ui-monospace,monospace; }
+  input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(.55); cursor:pointer; }
+
+  .cal-cell{ transition:background .18s ease; }
+  .cal-cell:hover{ background:#1E2126; }
+  .cal-cell:hover .cal-add{ opacity:1; }
+  .cal-add{ opacity:0; transition:opacity .18s ease; }
+  .cal-out{ background:#161719; }
+  .cal-chip{ transition:transform .15s ease, filter .15s ease; }
+  .cal-chip:hover{ transform:translateX(2px); filter:brightness(1.2); }
+  .cal-today-ring{ box-shadow:inset 0 0 0 1px var(--cyan); }
+
+  .modal-in{ animation:modalIn .22s cubic-bezier(.2,.7,.3,1); }
+  @keyframes modalIn{ from{ opacity:0; transform:translateY(-8px) scale(.985);} to{ opacity:1; transform:none;} }
+
+  :focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; border-radius:2px; }
+
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-track{ background:#141517; }
+  ::-webkit-scrollbar-thumb{ background:#2E3238; border-radius:99px; }
+  ::-webkit-scrollbar-thumb:hover{ background:#3D424A; }
+  .scroll-x{ scrollbar-width:thin; }
+
+  @media (prefers-reduced-motion:reduce){ *,*::before,*::after{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<div class="flex min-h-screen">
+
+  <div id="scrim" class="fixed inset-0 z-40 bg-black/60 hidden lg:hidden"></div>
+  <aside id="sidebar"
+    class="fixed lg:sticky top-0 z-50 h-screen w-[240px] shrink-0 bg-panel border-r border-line
+           flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300">
+
+    <div class="px-5 h-[62px] flex items-center gap-3 border-b border-line">
+      <div class="flex h-7 w-7 overflow-hidden rounded-[3px]">
+        <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
+        <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
+      </div>
+      <div class="leading-none">
+        <div class="stencil text-[15px]">Slate</div>
+        <div class="tape text-dim mt-[3px]">Tráfico Comms</div>
+      </div>
+      <button id="closeNav" class="ml-auto lg:hidden text-mute hover:text-ink text-xl leading-none">&times;</button>
+    </div>
+
+    <nav class="p-3 space-y-1 overflow-y-auto" id="nav"></nav>
+
+    <div class="mx-5 my-2 border-t border-line"></div>
+
+    <div class="px-5 pb-3 overflow-y-auto">
+      <div class="tape text-dim mb-3">Carga del equipo</div>
+      <div id="navLoad" class="space-y-[10px]"></div>
+    </div>
+
+    <div class="mt-auto p-3 border-t border-line">
+      <div class="flex items-center gap-3 rounded-md px-2 py-2 hover:bg-panel2 transition">
+        <span class="grid h-8 w-8 place-items-center rounded-full text-[11px] font-semibold"
+              style="background:rgba(79,194,192,.16);color:var(--cyan)">A</span>
+        <div class="min-w-0">
+          <div class="text-[13px] font-medium truncate">Andrés</div>
+          <div class="tape text-dim">Dirección creativa</div>
+        </div>
+      </div>
+      <button id="resetBoard"
+        class="tape mt-1 w-full rounded-md px-2 py-2 text-left text-dim hover:text-bar-red transition">
+        Restaurar datos del Excel</button>
+    </div>
+  </aside>
+
+  <div class="flex-1 min-w-0 flex flex-col">
+
+    <header class="sticky top-0 z-30 h-[62px] px-4 sm:px-6 flex items-center gap-4
+                   bg-base/90 backdrop-blur border-b border-line">
+      <button id="openNav" class="lg:hidden text-mute hover:text-ink" aria-label="Abrir menú">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M3 6h14M3 10h14M3 14h14"/></svg>
+      </button>
+
+      <div class="min-w-0">
+        <h1 class="stencil text-[17px] leading-none truncate">Tráfico Comms</h1>
+        <p class="tape text-dim mt-[5px] truncate">Gantt equipo · Engagement 26 oct – 13 nov</p>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <div class="relative hidden sm:block">
+          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-dim" width="14" height="14" viewBox="0 0 16 16"
+               fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input id="search" type="text" placeholder="Buscar tarea"
+            class="w-[180px] bg-panel border border-line rounded-md pl-8 pr-3 py-[7px] text-[13px]
+                   placeholder:text-dim focus:border-bar-cyan focus:outline-none transition" />
+        </div>
+        <button id="syncPill" title="Guardar ahora"
+          class="tape flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-[8px] text-mute hover:text-ink hover:border-dim transition">
+          <span id="syncDot" class="h-[6px] w-[6px] rounded-full" style="background:#D6BE5C"></span>
+          <span id="syncText">Cargando</span>
+        </button>
+      </div>
+    </header>
+
+    <div id="filterBar" class="hidden flex-wrap items-center gap-2 px-4 sm:px-6 py-2.5 border-b border-line bg-panel/40"></div>
+
+    <div class="flex-1 xl:grid xl:grid-cols-[minmax(0,1fr)_336px]">
+      <section class="min-w-0 border-b xl:border-b-0 xl:border-r border-line">
+        <div class="px-4 sm:px-6 pt-6 pb-5 border-b border-line">
+          <div class="flex items-end justify-between mb-3">
+            <div class="tape text-dim">Estado del tráfico · en vivo</div>
+            <div class="tape text-dim"><span id="taskTotal">0</span> tareas</div>
+          </div>
+          <div id="slate" class="flex h-[46px] w-full gap-[3px] overflow-hidden rounded-[4px]"></div>
+          <div id="slateKey" class="mt-3 flex flex-wrap gap-x-5 gap-y-2"></div>
+          <div id="readouts" class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-px bg-line rounded-[4px] overflow-hidden"></div>
+        </div>
+        <div id="viewBody" class="p-4 sm:p-6"></div>
+      </section>
+
+      <aside class="min-w-0">
+        <div id="railWorkload" class="p-5 border-b border-line"></div>
+        <div id="railDetail" class="p-5"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div id="eventModal" class="fixed inset-0 z-[70] hidden">
+  <div class="absolute inset-0 bg-black/70" data-close></div>
+  <div class="modal-in relative mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[6px] border border-line bg-panel shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+      <div class="flex h-[18px] w-[18px] overflow-hidden rounded-[2px]">
+        <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
+        <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
+      </div>
+      <h3 class="stencil text-[13px]">Agregar al cronograma</h3>
+      <button data-close class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="space-y-4 px-5 py-5 max-h-[62vh] overflow-y-auto">
+      <div>
+        <label class="tape mb-2 block text-dim">Tipo</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button data-kind="hito"  class="tape rounded-[4px] border py-[9px] transition">Hito</button>
+          <button data-kind="tarea" class="tape rounded-[4px] border py-[9px] transition">Tarea</button>
+        </div>
+      </div>
+
+      <div>
+        <label for="evTitle" class="tape mb-2 block text-dim">Nombre</label>
+        <input id="evTitle" type="text" placeholder="Entrega mezcla final"
+          class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="evDate" class="tape mb-2 block text-dim">Inicio</label>
+          <input id="evDate" type="date"
+            class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-[13px] outline-none focus:border-bar-cyan transition" />
+        </div>
+        <div id="fieldEnd">
+          <label for="evEnd" class="tape mb-2 block text-dim">Fin</label>
+          <input id="evEnd" type="date"
+            class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-[13px] outline-none focus:border-bar-cyan transition" />
+        </div>
+      </div>
+
+      <div id="taskFields" class="hidden space-y-4">
+        <div>
+          <label for="evProyecto" class="tape mb-2 block text-dim">Proyecto</label>
+          <select id="evProyecto" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="evOwner" class="tape mb-2 block text-dim">Responsable</label>
+            <select id="evOwner" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition"></select>
+          </div>
+          <div>
+            <label for="evStatus" class="tape mb-2 block text-dim">Estado</label>
+            <select id="evStatus" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition"></select>
+          </div>
+        </div>
+      </div>
+
+      <p id="evError" class="tape" style="color:#C85A50"></p>
+    </div>
+
+    <div class="flex items-center gap-2 border-t border-line px-5 py-4">
+      <span class="tape text-dim">Esc para cerrar</span>
+      <button data-close class="tape ml-auto rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-mute hover:text-ink transition">Cancelar</button>
+      <button id="evSubmit" class="tape rounded-[4px] border px-3 py-[8px] transition"
+        style="border-color:rgba(79,194,192,.45);background:rgba(79,194,192,.14);color:var(--cyan)">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] hidden">
+  <div class="tape flex items-center gap-2 rounded-[3px] bg-panel2 border border-line px-3 py-2 shadow-xl">
+    <span id="toastDot" class="h-2 w-2 rounded-full bg-bar-green"></span>
+    <span id="toastText" class="text-ink"></span>
+  </div>
+</div>
+
+<script>
+/* ═══ DATOS — generados desde GANTT_COMMS.xlsx ═══ */
+
+const AREAS = ["BIENESTAR", "CDI", "CORPO", "LEGAL", "MKT", "TALENT", "TECH"];
+
+const PERSONAS = [
+ {
+  "id": "u-andres",
+  "nombre": "Andrés",
+  "clave": "ANDRÉS",
+  "iniciales": "A",
+  "rol": "Dirección creativa",
+  "color": "#4FC2C0",
+  "capacidad": 8
+ },
+ {
+  "id": "u-juli",
+  "nombre": "Juli",
+  "clave": "JULI",
+  "iniciales": "J",
+  "rol": "Diseño gráfico",
+  "color": "#D6BE5C",
+  "capacidad": 8
+ },
+ {
+  "id": "u-isa",
+  "nombre": "Isa",
+  "clave": "ISA",
+  "iniciales": "I",
+  "rol": "Contenido y redes",
+  "color": "#B063A2",
+  "capacidad": 8
+ },
+ {
+  "id": "u-vale-he",
+  "nombre": "Vale H.",
+  "clave": "VALE HE",
+  "iniciales": "VH",
+  "rol": "Motion y animación",
+  "color": "#5B7FC7",
+  "capacidad": 8
+ },
+ {
+  "id": "u-nico",
+  "nombre": "Nico",
+  "clave": "NICO",
+  "iniciales": "N",
+  "rol": "Diseño y presentaciones",
+  "color": "#5EA86C",
+  "capacidad": 8
+ },
+ {
+  "id": "u-clau",
+  "nombre": "Clau",
+  "clave": "CLAU",
+  "iniciales": "C",
+  "rol": "Comunicación interna",
+  "color": "#C85A50",
+  "capacidad": 8
+ },
+ {
+  "id": "u-vale-hu",
+  "nombre": "Vale Hu.",
+  "clave": "VALE HU",
+  "iniciales": "VH",
+  "rol": "Coordinación",
+  "color": "#C9853F",
+  "capacidad": 8
+ },
+ {
+  "id": "u-sin",
+  "nombre": "Sin asignar",
+  "clave": null,
+  "iniciales": "—",
+  "rol": "Pendiente de asignación",
+  "color": "#6B7079",
+  "capacidad": 8
+ }
+];
+
+let PROYECTOS = [
+ {
+  "id": "p-newsletter",
+  "nombre": "NEWSLETTER",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-smartdriking",
+  "nombre": "SMARTDRIKING",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-codigo-16-9",
+  "nombre": "CÓDIGO #16-9",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 6
+ },
+ {
+  "id": "p-malto-y-malta",
+  "nombre": "MALTO Y MALTA",
+  "seccion": "ALWAYS ON",
+  "area": "CDI",
+  "estado": "revision",
+  "entrega": "2026-08-20",
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-duenos-duenas",
+  "nombre": "DUEÑOS & DUEÑAS",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 19
+ },
+ {
+  "id": "p-tech-fest",
+  "nombre": "TECH FEST",
+  "seccion": "PROYECTOS",
+  "area": "TECH",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 10
+ },
+ {
+  "id": "p-charla-con-el-mancom",
+  "nombre": "CHARLA CON EL MANCOM",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-practicantes",
+  "nombre": "PRACTICANTES",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "revision",
+  "entrega": "2026-08-20",
+  "nota": null,
+  "nTareas": 19
+ },
+ {
+  "id": "p-cuadros",
+  "nombre": "CUADROS",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-cheers-to-bars",
+  "nombre": "CHEERS TO BARS",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-ppt-talent",
+  "nombre": "PPT TALENT",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-legal",
+  "nombre": "LEGAL",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "revision",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-change-management",
+  "nombre": "CHANGE MANAGEMENT",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 7
+ },
+ {
+  "id": "p-fairplay",
+  "nombre": "FAIRPLAY",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-leyendas",
+  "nombre": "LEYENDAS",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": "2026-10-15",
+  "nota": null,
+  "nTareas": 9
+ },
+ {
+  "id": "p-album",
+  "nombre": "ÁLBUM",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-declaracion-de-renta",
+  "nombre": "DECLARACIÓN DE RENTA",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-plataforma-regalos",
+  "nombre": "PLATAFORMA REGALOS",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "BIENESTAR",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 3
+ },
+ {
+  "id": "p-esonova",
+  "nombre": "ESONOVÁ",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-capsulas-cerveceras",
+  "nombre": "CÁPSULAS CERVECERAS",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "MKT",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 6
+ },
+ {
+  "id": "p-subele-el-volumen",
+  "nombre": "SÚBELE EL VOLUMEN",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "SIN ÁREA",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 0
+ }
+];
+
+let TAREAS = [
+ {
+  "id": "t1",
+  "codigo": "T-001",
+  "titulo": "ESTRATEGIA",
+  "proyecto": "p-newsletter",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-03",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t2",
+  "codigo": "T-002",
+  "titulo": "GLOBAR BEER RESPONSIBLE DAY",
+  "proyecto": "p-smartdriking",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t3",
+  "codigo": "T-003",
+  "titulo": "CAP 3",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.8,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-05",
+  "comentarios": []
+ },
+ {
+  "id": "t4",
+  "codigo": "T-004",
+  "titulo": "CAP 4",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-19",
+  "fin": "2026-08-19",
+  "comentarios": []
+ },
+ {
+  "id": "t5",
+  "codigo": "T-005",
+  "titulo": "CAP 5",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-09-01",
+  "fin": "2026-09-01",
+  "comentarios": []
+ },
+ {
+  "id": "t6",
+  "codigo": "T-006",
+  "titulo": "ACTIVACIÓN 127",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t7",
+  "codigo": "T-007",
+  "titulo": "ACTIVACIÓN TOCANCIPÁ",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t8",
+  "codigo": "T-008",
+  "titulo": "ACTIVACIÓN BOYACÁ",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t9",
+  "codigo": "T-009",
+  "titulo": "CAP 7",
+  "proyecto": "p-malto-y-malta",
+  "area": "CDI",
+  "responsable": "u-vale-he",
+  "progreso": 0.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": "2026-08-04",
+  "fin": "2026-08-04",
+  "comentarios": []
+ },
+ {
+  "id": "t10",
+  "codigo": "T-010",
+  "titulo": "INVITACIÓN SAVE THE DATE",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t11",
+  "codigo": "T-011",
+  "titulo": "LÁMINAS ANDRE Y SERGIO",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t12",
+  "codigo": "T-012",
+  "titulo": "LOOP PANTALLAS FRASES",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-vale-he",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t13",
+  "codigo": "T-013",
+  "titulo": "BACKING NOMBRES",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t14",
+  "codigo": "T-014",
+  "titulo": "AVISO NOMINADOS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-21",
+  "comentarios": []
+ },
+ {
+  "id": "t15",
+  "codigo": "T-015",
+  "titulo": "VIDEO APERTURA",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-22",
+  "comentarios": []
+ },
+ {
+  "id": "t16",
+  "codigo": "T-016",
+  "titulo": "FONDO HOST",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-vale-he",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-17",
+  "comentarios": []
+ },
+ {
+  "id": "t17",
+  "codigo": "T-017",
+  "titulo": "VIDEO EX DUEÑOS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-22",
+  "comentarios": []
+ },
+ {
+  "id": "t18",
+  "codigo": "T-018",
+  "titulo": "PALABRAS SERGIO",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-clau",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-24",
+  "comentarios": []
+ },
+ {
+  "id": "t19",
+  "codigo": "T-019",
+  "titulo": "CORTINILLAS CATEGORÍAS Y NOMBRES",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-vale-he",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-23",
+  "comentarios": []
+ },
+ {
+  "id": "t20",
+  "codigo": "T-020",
+  "titulo": "ANIMACIÓN PERSONAS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-24",
+  "comentarios": []
+ },
+ {
+  "id": "t21",
+  "codigo": "T-021",
+  "titulo": "VIDEO CIERRE",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-24",
+  "comentarios": []
+ },
+ {
+  "id": "t22",
+  "codigo": "T-022",
+  "titulo": "CUBRIMIENTO 30 DE JULIO",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-07-30",
+  "comentarios": []
+ },
+ {
+  "id": "t23",
+  "codigo": "T-023",
+  "titulo": "CAJAS DE LUZ",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-23",
+  "comentarios": []
+ },
+ {
+  "id": "t24",
+  "codigo": "T-024",
+  "titulo": "POST LK VP",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-clau",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-07-30",
+  "comentarios": []
+ },
+ {
+  "id": "t25",
+  "codigo": "T-025",
+  "titulo": "TIKTOK RECAP",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t26",
+  "codigo": "T-026",
+  "titulo": "TIKTOK QUÉ ES D&D",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t27",
+  "codigo": "T-027",
+  "titulo": "RECAP IG D&D",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t28",
+  "codigo": "T-028",
+  "titulo": "CARRUSEL DUEÑOS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t29",
+  "codigo": "T-029",
+  "titulo": "PIEZA EXPECTATIVA PANTALLAS",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t30",
+  "codigo": "T-030",
+  "titulo": "PIEZA EXPECTATIVA ASCENSORES",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t31",
+  "codigo": "T-031",
+  "titulo": "VIDEO AI",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t32",
+  "codigo": "T-032",
+  "titulo": "CITACIÓN TOCANCIPÁ",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t33",
+  "codigo": "T-033",
+  "titulo": "CITACIÓN VALLE",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t34",
+  "codigo": "T-034",
+  "titulo": "VIDEO ESCAPE ROOM",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-28",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t35",
+  "codigo": "T-035",
+  "titulo": "NEWSLETTER TECH FEST",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t36",
+  "codigo": "T-036",
+  "titulo": "CUBRIMIENTO",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t37",
+  "codigo": "T-037",
+  "titulo": "POST FOTOS LK",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t38",
+  "codigo": "T-038",
+  "titulo": "RECAP TECHFEST",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-10",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t39",
+  "codigo": "T-039",
+  "titulo": "PPT CHARLA CON EL MANCOM",
+  "proyecto": "p-charla-con-el-mancom",
+  "area": "CORPO",
+  "responsable": "u-nico",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-05",
+  "comentarios": []
+ },
+ {
+  "id": "t40",
+  "codigo": "T-040",
+  "titulo": "AJUSTES HERO + KV",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t41",
+  "codigo": "T-041",
+  "titulo": "PROPUESTA DIGITAL",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t42",
+  "codigo": "T-042",
+  "titulo": "1:1 CONVOCATORIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t43",
+  "codigo": "T-043",
+  "titulo": "CARRUSEL REQUISITOS",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t44",
+  "codigo": "T-044",
+  "titulo": "CARRUSEL ÁREAS",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t45",
+  "codigo": "T-045",
+  "titulo": "1:1 CIUDADES",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t46",
+  "codigo": "T-046",
+  "titulo": "REEL CONVOCATORIA MANUELA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t47",
+  "codigo": "T-047",
+  "titulo": "CARRESUEL TESTIMONIOS",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t48",
+  "codigo": "T-048",
+  "titulo": "1:1 CONVOCATORIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t49",
+  "codigo": "T-049",
+  "titulo": "REEL TENDENCIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t50",
+  "codigo": "T-050",
+  "titulo": "CUENTA REGRESIVA 1",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t51",
+  "codigo": "T-051",
+  "titulo": "REEL TENDENCIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t52",
+  "codigo": "T-052",
+  "titulo": "CUENTA REGRESIVA 2",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t53",
+  "codigo": "T-053",
+  "titulo": "ÚLTIMO AVISO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t54",
+  "codigo": "T-054",
+  "titulo": "REEL TENDENCIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t55",
+  "codigo": "T-055",
+  "titulo": "PRODUCCIÓN HERO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t56",
+  "codigo": "T-056",
+  "titulo": "EDICIÓN HERO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t57",
+  "codigo": "T-057",
+  "titulo": "ENTREGA HERO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t58",
+  "codigo": "T-058",
+  "titulo": "COMUNICADO OFICIAL",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t59",
+  "codigo": "T-059",
+  "titulo": "CUADROS SAMIRA",
+  "proyecto": "p-cuadros",
+  "area": "CORPO",
+  "responsable": "u-sin",
+  "progreso": 0.9,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": "2026-07-01",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t60",
+  "codigo": "T-060",
+  "titulo": "CUADROS SEGURIDAD",
+  "proyecto": "p-cuadros",
+  "area": "CORPO",
+  "responsable": "u-sin",
+  "progreso": 0.9,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": "2026-07-01",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t61",
+  "codigo": "T-061",
+  "titulo": "CHEERS TO BARS",
+  "proyecto": "p-cheers-to-bars",
+  "area": "CORPO",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t62",
+  "codigo": "T-062",
+  "titulo": "VIDEO TECH",
+  "proyecto": "p-ppt-talent",
+  "area": "TALENT",
+  "responsable": "u-nico",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t63",
+  "codigo": "T-063",
+  "titulo": "CALENDARIO VACANTES",
+  "proyecto": "p-ppt-talent",
+  "area": "TALENT",
+  "responsable": "u-nico",
+  "progreso": 0.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t64",
+  "codigo": "T-064",
+  "titulo": "ANIMACIÓN LEGAL BEES",
+  "proyecto": "p-legal",
+  "area": "LEGAL",
+  "responsable": "u-vale-he",
+  "progreso": 0.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t65",
+  "codigo": "T-065",
+  "titulo": "INVITACIÓN FOCUS GROUP",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-27",
+  "fin": "2026-07-27",
+  "comentarios": []
+ },
+ {
+  "id": "t66",
+  "codigo": "T-066",
+  "titulo": "CS- PIEZA EXPECTATIVA",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-28",
+  "fin": "2026-07-28",
+  "comentarios": []
+ },
+ {
+  "id": "t67",
+  "codigo": "T-067",
+  "titulo": "CS- FORMATO TO GO",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t68",
+  "codigo": "T-068",
+  "titulo": "CS- LANZAMIENTO",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t69",
+  "codigo": "T-069",
+  "titulo": "CF- EXPECTATIVA",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-04",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t70",
+  "codigo": "T-070",
+  "titulo": "CF- BENEFICIOS",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-31",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t71",
+  "codigo": "T-071",
+  "titulo": "CF- LANZAMIENTO",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t72",
+  "codigo": "T-072",
+  "titulo": "PIEZA PANTALLAS",
+  "proyecto": "p-fairplay",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-03",
+  "fin": "2026-08-05",
+  "comentarios": []
+ },
+ {
+  "id": "t73",
+  "codigo": "T-073",
+  "titulo": "TOOLKIT EVENTO",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t74",
+  "codigo": "T-074",
+  "titulo": "VIDEO MANIFIESTO",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t75",
+  "codigo": "T-075",
+  "titulo": "SAVE THE DATE",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t76",
+  "codigo": "T-076",
+  "titulo": "FECHAS DE PLANTAS",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-vale-hu",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t77",
+  "codigo": "T-077",
+  "titulo": "PARRILLA REDES",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "revision",
+  "notas": "Cápsulas/pantallas",
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t78",
+  "codigo": "T-078",
+  "titulo": "REVISAR ARCHIVOS LEYENDAS",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t79",
+  "codigo": "T-079",
+  "titulo": "FOTOS LEYENDAS",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t80",
+  "codigo": "T-080",
+  "titulo": "VIDEOS FAMILIARES",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-10-08",
+  "fin": "2026-10-08",
+  "comentarios": []
+ },
+ {
+  "id": "t81",
+  "codigo": "T-081",
+  "titulo": "CUBRIMIENTO",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-10-15",
+  "fin": "2026-10-15",
+  "comentarios": []
+ },
+ {
+  "id": "t82",
+  "codigo": "T-082",
+  "titulo": "DISEÑO ÁLBUM",
+  "proyecto": "p-album",
+  "area": "CORPO",
+  "responsable": "u-nico",
+  "progreso": 0.2,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": "2026-07-01",
+  "fin": "2026-08-01",
+  "comentarios": []
+ },
+ {
+  "id": "t83",
+  "codigo": "T-083",
+  "titulo": "ACTIVIDADES MONAS",
+  "proyecto": "p-album",
+  "area": "CORPO",
+  "responsable": "u-nico",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-15",
+  "fin": "2026-08-30",
+  "comentarios": []
+ },
+ {
+  "id": "t84",
+  "codigo": "T-084",
+  "titulo": "DECLARACIÓN DE RENTA",
+  "proyecto": "p-declaracion-de-renta",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-10",
+  "fin": "2026-08-11",
+  "comentarios": []
+ },
+ {
+  "id": "t85",
+  "codigo": "T-085",
+  "titulo": "IMAGEN NAVIDAD PORTADA 1",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": []
+ },
+ {
+  "id": "t86",
+  "codigo": "T-086",
+  "titulo": "IMAGEN NAVIDAD PORTADA 2",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": []
+ },
+ {
+  "id": "t87",
+  "codigo": "T-087",
+  "titulo": "IMAGEN DONACIÓN",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": []
+ },
+ {
+  "id": "t88",
+  "codigo": "T-088",
+  "titulo": "CÁPSULAS PANTALLAS",
+  "proyecto": "p-esonova",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t89",
+  "codigo": "T-089",
+  "titulo": "HACKEO DE ESPACIOS",
+  "proyecto": "p-esonova",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t90",
+  "codigo": "T-090",
+  "titulo": "GRABACIÓN CONTENIDO",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t91",
+  "codigo": "T-091",
+  "titulo": "SISTEMA DE DISPENSADO",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t92",
+  "codigo": "T-092",
+  "titulo": "ESTILOS DE CERVEZA",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t93",
+  "codigo": "T-093",
+  "titulo": "CRISTALERÍA",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t94",
+  "codigo": "T-094",
+  "titulo": "Conservación y servicio de la cerveza",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t95",
+  "codigo": "T-095",
+  "titulo": "MARIDAJE",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ }
+];
+
+let HITOS = [
+ {
+  "id": "h1",
+  "titulo": "Entrega Malto y Malta",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h2",
+  "titulo": "Entrega Practicantes 2027",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h3",
+  "titulo": "Entrega Misión Cultura 2.0",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h4",
+  "titulo": "Entrega Un Paso Adelante",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h5",
+  "titulo": "Entrega Video Sala UB",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h6",
+  "titulo": "Newsletter Finanzas",
+  "fecha": "2026-08-21",
+  "fijo": true
+ },
+ {
+  "id": "h7",
+  "titulo": "Evento Leyendas",
+  "fecha": "2026-10-15",
+  "fijo": true
+ },
+ {
+  "id": "h8",
+  "titulo": "Inicio ventana Engagement",
+  "fecha": "2026-10-26",
+  "fijo": true
+ },
+ {
+  "id": "h9",
+  "titulo": "Cierre ventana Engagement",
+  "fecha": "2026-11-13",
+  "fijo": true
+ }
+];
+
+/* ═══════════════════════════════════════════════════
+   ESTADOS
+   ───────────────────────────────────────────────────
+   Mapeo desde el Excel:
+     NO EMPEZADO → Pendiente
+     EN PROCESO  → En proceso
+     ENTREGADO   → En revisión   (entregado, esperando visto bueno)
+     APROBADO    → Completado
+   Cambia los nombres aquí y se propagan a toda la app.
+   ═══════════════════════════════════════════════════ */
+
+const ESTADOS = [
+  { id:'pendiente',  nombre:'Pendiente',   color:'#5B7FC7', nota:'Briefeado, sin arrancar', origen:'NO EMPEZADO' },
+  { id:'proceso',    nombre:'En proceso',  color:'#D6BE5C', nota:'En producción ahora',     origen:'EN PROCESO' },
+  { id:'revision',   nombre:'En revisión', color:'#B063A2', nota:'Entregado, esperando VoBo', origen:'ENTREGADO' },
+  { id:'completado', nombre:'Completado',  color:'#5EA86C', nota:'Aprobado y cerrado',       origen:'APROBADO' }
+];
+const E  = id => ESTADOS.find(e => e.id === id) || ESTADOS[0];
+const P  = id => PERSONAS.find(p => p.id === id) || PERSONAS[PERSONAS.length - 1];
+const PR = id => PROYECTOS.find(p => p.id === id);
+const T  = id => TAREAS.find(t => t.id === id);
+
+const HOY = '2026-08-23';
+let uid = 1000;
+
+const VISTAS = [
+  { id:'gantt',      label:'Cronograma', icon:'M3 5h9M3 10h13M3 15h6' },
+  { id:'tablero',    label:'Tablero',    icon:'M3 3h5v14H3zM10 3h5v9h-5z' },
+  { id:'calendario', label:'Calendario', icon:'M3.5 5h13v11.5h-13zM3.5 8.6h13M7 3.2v3.2M13 3.2v3.2' },
+  { id:'mias',       label:'Mis tareas', icon:'M10 10a3.2 3.2 0 100-6.4A3.2 3.2 0 0010 10zM3.5 17c.6-3 3.2-4.6 6.5-4.6s5.9 1.6 6.5 4.6' },
+  { id:'proyectos',  label:'Proyectos',  icon:'M4 3h8l4 4v10H4zM12 3v4h4M6.5 11h7M6.5 14h4' },
+  { id:'equipo',     label:'Equipo',     icon:'M7 9.5a2.6 2.6 0 100-5.2 2.6 2.6 0 000 5.2zM14 9.5a2.2 2.2 0 100-4.4 2.2 2.2 0 000 4.4zM2 16c.5-2.6 2.6-4 5-4s4.5 1.4 5 4M13 12.2c2 .3 3.4 1.6 3.8 3.8' }
+];
+
+const state = {
+  vista:'gantt', persona:null, area:null, proyecto:null, query:'',
+  seleccion:null, mes:new Date(2026, 7, 1),
+  agrupar:'proyecto', zoom:9, abiertos:new Set(), tipoEvento:'hito'
+};
+
+/* ═══ Utilidades ═══ */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MESES_L = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+const dt = iso => new Date(iso + 'T00:00:00');
+const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const fecha = iso => iso ? `${String(dt(iso).getDate()).padStart(2,'0')} ${MESES[dt(iso).getMonth()]}` : '—';
+const diasRestantes = iso => Math.round((dt(iso) - dt(HOY)) / 864e5);
+const vencida = t => t.estado !== 'completado' && t.fin && diasRestantes(t.fin) < 0;
+const pct = n => Math.round((n || 0) * 100);
+
+function tareasDe(id, campo){ return TAREAS.filter(t => t[campo] === id); }
+function rango(ts){
+  const f = ts.flatMap(t => [t.inicio, t.fin]).filter(Boolean).sort();
+  return f.length ? { inicio:f[0], fin:f[f.length-1] } : null;
+}
+function avance(ts){
+  if (!ts.length) return 0;
+  return ts.reduce((s,t) => s + (t.progreso || 0), 0) / ts.length;
+}
+function estadoGrupo(ts){
+  if (!ts.length) return 'pendiente';
+  if (ts.every(t => t.estado === 'completado')) return 'completado';
+  if (ts.some(t => t.estado === 'proceso')) return 'proceso';
+  if (ts.some(t => t.estado === 'revision')) return 'revision';
+  return 'pendiente';
+}
+
+function avatar(pid, size = 26){
+  const p = P(pid);
+  return `<span class="grid shrink-0 place-items-center rounded-full font-semibold"
+    style="width:${size}px;height:${size}px;font-size:${Math.round(size*.4)}px;background:${p.color}22;color:${p.color}"
+    title="${esc(p.nombre)} · ${esc(p.rol)}">${esc(p.iniciales)}</span>`;
+}
+
+function sprockets(t){
+  const c = E(t.estado).color;
+  const llenos = Math.round((t.progreso || 0) * 5);
+  return `<span class="flex gap-[3px]" style="color:${c}" title="Avance ${pct(t.progreso)}%">` +
+    [0,1,2,3,4].map(i => `<i class="sprocket ${i < llenos ? 'on' : ''}"></i>`).join('') + `</span>`;
+}
+
+let toastTimer;
+function toast(texto, color = '#5EA86C'){
+  $('#toastText').textContent = texto;
+  $('#toastDot').style.background = color;
+  $('#toast').classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('#toast').classList.add('hidden'), 2600);
+}
+
+function visibles(){
+  return TAREAS.filter(t => {
+    if (state.vista === 'mias' && t.responsable !== 'u-andres') return false;
+    if (state.persona  && t.responsable !== state.persona) return false;
+    if (state.area     && t.area !== state.area) return false;
+    if (state.proyecto && t.proyecto !== state.proyecto) return false;
+    if (state.query){
+      const p = PR(t.proyecto);
+      const hay = [t.titulo, t.codigo, t.area, p && p.nombre, P(t.responsable).nombre].join(' ').toLowerCase();
+      if (!hay.includes(state.query)) return false;
+    }
+    return true;
+  });
+}
+
+/* ═══ Barra lateral ═══ */
+
+function renderNav(){
+  $('#nav').innerHTML = VISTAS.map(v => {
+    const on = state.vista === v.id;
+    return `<button data-vista="${v.id}"
+      class="w-full flex items-center gap-3 rounded-md px-3 py-2 text-[13px] transition
+             ${on ? 'bg-panel2 text-ink' : 'text-mute hover:text-ink hover:bg-panel2/60'}">
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" class="${on ? 'text-bar-cyan' : 'text-dim'}"><path d="${v.icon}"/></svg>
+      <span class="${on ? 'font-medium' : ''}">${v.label}</span>
+      ${v.id === 'mias' ? `<span class="tape ml-auto text-dim">${TAREAS.filter(t => t.responsable === 'u-andres' && t.estado !== 'completado').length}</span>` : ''}
+    </button>`;
+  }).join('');
+  $('#nav').querySelectorAll('button').forEach(b =>
+    b.onclick = () => { state.vista = b.dataset.vista; cerrarNav(); renderAll(); });
+}
+
+function filaCarga(p, grande = false){
+  const mias   = tareasDe(p.id, 'responsable');
+  const activa = mias.filter(t => t.estado !== 'completado').length;
+  const ancho  = Math.min(100, Math.round(activa / p.capacidad * 100));
+  const excede = activa > p.capacidad;
+  const sel    = state.persona === p.id;
+  return `<button data-persona="${p.id}" class="group block w-full text-left ${sel ? '' : 'opacity-90 hover:opacity-100'} transition">
+    <div class="flex items-center gap-2 mb-[6px]">
+      ${grande ? avatar(p.id, 22) : ''}
+      <span class="text-[12px] ${sel ? 'text-ink font-medium' : 'text-mute group-hover:text-ink'} transition">${esc(p.nombre)}</span>
+      <span class="tape ml-auto ${excede ? 'text-bar-red' : 'text-dim'}">${activa}/${p.capacidad}</span>
+    </div>
+    <div class="h-[5px] w-full rounded-full bg-panel2 overflow-hidden">
+      <div class="h-full rounded-full transition-[width] duration-500"
+           style="width:${ancho}%;background:${excede ? '#C85A50' : p.color}"></div>
+    </div></button>`;
+}
+
+function renderNavLoad(){
+  $('#navLoad').innerHTML = PERSONAS.map(p => filaCarga(p)).join('');
+  bindPersonas('#navLoad');
+}
+function bindPersonas(scope){
+  document.querySelectorAll(scope + ' [data-persona]').forEach(b =>
+    b.onclick = () => { state.persona = state.persona === b.dataset.persona ? null : b.dataset.persona; renderAll(); });
+}
+
+/* ═══ Barra de estado + indicadores ═══ */
+
+function renderSlate(){
+  const total = TAREAS.length || 1;
+  $('#taskTotal').textContent = TAREAS.length;
+  $('#slate').innerHTML = ESTADOS.map(e => {
+    const n = TAREAS.filter(t => t.estado === e.id).length;
+    return `<div class="slate-seg relative grid place-items-center rounded-[2px]"
+      style="width:${n/total*100}%;background:${e.color}" title="${e.nombre}: ${n} tareas">
+      <span class="tape font-bold" style="color:rgba(20,21,23,.72)">${n || ''}</span></div>`;
+  }).join('');
+  $('#slateKey').innerHTML = ESTADOS.map(e => {
+    const n = TAREAS.filter(t => t.estado === e.id).length;
+    return `<div class="flex items-baseline gap-2">
+      <span class="h-2 w-2 rounded-[1px] translate-y-[-1px]" style="background:${e.color}"></span>
+      <span class="text-[12px] text-ink">${e.nombre}</span>
+      <span class="tape text-dim">${Math.round(n/total*100)}%</span></div>`;
+  }).join('');
+}
+
+function renderReadouts(){
+  const activas    = TAREAS.filter(t => t.estado !== 'completado');
+  const sinAsignar = activas.filter(t => t.responsable === 'u-sin').length;
+  const sinFecha   = activas.filter(t => !t.inicio && !t.fin).length;
+  const av         = pct(avance(TAREAS));
+  const prox       = HITOS.filter(h => diasRestantes(h.fecha) >= 0).sort((a,b) => a.fecha < b.fecha ? -1 : 1)[0];
+
+  const celda = (label, valor, sub, color) => `
+    <div class="bg-panel px-4 py-4">
+      <div class="tape text-dim">${label}</div>
+      <div class="stencil mt-2 text-[30px] leading-none" style="color:${color}">${valor}</div>
+      <div class="text-[11.5px] text-mute mt-[7px]">${sub}</div>
+    </div>`;
+
+  $('#readouts').innerHTML =
+    celda('Avance general', av + '%', `${TAREAS.length - activas.length} de ${TAREAS.length} tareas cerradas`, '#E9EAEE') +
+    celda('Tareas activas', String(activas.length).padStart(2,'0'), `en ${new Set(activas.map(t => t.proyecto)).size} proyectos`, '#D6BE5C') +
+    celda('Sin responsable', String(sinAsignar).padStart(2,'0'), sinAsignar ? 'Falta asignar dueño' : 'Todo asignado', sinAsignar ? '#C85A50' : '#5EA86C') +
+    celda('Próximo hito', prox ? diasRestantes(prox.fecha) + 'd' : '—', prox ? esc(prox.titulo) : 'Sin hitos próximos', '#4FC2C0') ;
+
+  window.__sinFecha = sinFecha;
+}
+
+/* ═══════════════════════════════════════════════════
+   VISTA PRINCIPAL — DIAGRAMA DE GANTT
+   ═══════════════════════════════════════════════════ */
+
+function ejeGantt(){
+  const fechas = [...TAREAS.flatMap(t => [t.inicio, t.fin]), ...HITOS.map(h => h.fecha)].filter(Boolean).sort();
+  const min = dt(fechas[0] || HOY), max = dt(fechas[fechas.length-1] || HOY);
+  const inicio = new Date(min.getFullYear(), min.getMonth(), 1);
+  const fin    = new Date(max.getFullYear(), max.getMonth() + 1, 0);
+  const dias   = Math.round((fin - inicio) / 864e5) + 1;
+  return { inicio, fin, dias, ancho: dias * state.zoom };
+}
+const offsetDias = (eje, iso) => Math.round((dt(iso) - eje.inicio) / 864e5);
+
+function grupos(){
+  const ts = visibles();
+  if (state.agrupar === 'persona'){
+    return PERSONAS.map(p => ({
+      id:p.id, nombre:p.nombre, meta:p.rol, color:p.color,
+      tareas: ts.filter(t => t.responsable === p.id)
+    })).filter(g => g.tareas.length);
+  }
+  if (state.agrupar === 'area'){
+    return AREAS.map(a => ({
+      id:'a-' + a, nombre:a, meta:'Área', color:'#8E939E',
+      tareas: ts.filter(t => t.area === a)
+    })).filter(g => g.tareas.length);
+  }
+  return PROYECTOS.map(p => ({
+    id:p.id, nombre:p.nombre, meta:`${p.seccion} · ${p.area}`, color:E(p.estado).color,
+    tareas: ts.filter(t => t.proyecto === p.id)
+  })).filter(g => g.tareas.length);
+}
+
+function barra(t, eje){
+  if (!t.inicio && !t.fin) return `<span class="tape absolute left-2 top-1/2 -translate-y-1/2 text-dim">sin fechas</span>`;
+  const ini = t.inicio || t.fin, fin = t.fin || t.inicio;
+  const x = offsetDias(eje, ini) * state.zoom;
+  const w = Math.max(state.zoom, (offsetDias(eje, fin) - offsetDias(eje, ini) + 1) * state.zoom);
+  const e = E(t.estado);
+  const rojo = vencida(t);
+  return `<div class="g-bar" data-tarea="${t.id}" style="left:${x}px;width:${w}px;background:${e.color}${rojo ? ';box-shadow:0 0 0 1px #C85A50' : ''}"
+      title="${esc(t.titulo)} · ${fecha(ini)} – ${fecha(fin)} · ${e.nombre} · ${pct(t.progreso)}%">
+      <div class="g-fill"><span style="width:${pct(t.progreso)}%;background:${e.color}"></span></div>
+    </div>`;
+}
+
+function barraGrupo(g, eje){
+  const r = rango(g.tareas);
+  if (!r) return `<span class="tape absolute left-2 top-1/2 -translate-y-1/2 text-dim">sin fechas</span>`;
+  const x = offsetDias(eje, r.inicio) * state.zoom;
+  const w = Math.max(state.zoom, (offsetDias(eje, r.fin) - offsetDias(eje, r.inicio) + 1) * state.zoom);
+  const est = state.agrupar === 'proyecto' && PR(g.id) ? PR(g.id).estado : estadoGrupo(g.tareas);
+  const c = state.agrupar === 'persona' ? g.color : E(est).color;
+  const av = pct(avance(g.tareas));
+  return `<div class="g-bar grp" style="left:${x}px;width:${w}px;background:${c}66;border:1px solid ${c}"
+      title="${esc(g.nombre)} · ${fecha(r.inicio)} – ${fecha(r.fin)} · ${av}%">
+      <div class="g-fill" style="background:transparent"><span style="width:${av}%;background:${c}"></span></div>
+    </div>`;
+}
+
+function renderGantt(){
+  const eje = ejeGantt();
+  const gs = grupos();
+  if (!gs.length) return vacio('Ningún proyecto coincide con el filtro.');
+
+  /* ── Encabezado del eje ── */
+  let meses = '', dias = '', fondo = '';
+  let cur = new Date(eje.inicio);
+  while (cur <= eje.fin){
+    const ultimo = new Date(cur.getFullYear(), cur.getMonth() + 1, 0);
+    const desde = Math.max(0, offsetDias(eje, toISO(cur)));
+    const hasta = Math.min(eje.dias - 1, offsetDias(eje, toISO(ultimo)));
+    const w = (hasta - desde + 1) * state.zoom;
+    meses += `<div class="stencil-thin absolute text-[10px] text-mute border-l border-line pl-2 h-full flex items-center"
+      style="left:${desde*state.zoom}px;width:${w}px">${MESES_L[cur.getMonth()]} ${String(cur.getFullYear()).slice(2)}</div>`;
+    fondo += `<div class="g-monthline" style="left:${desde*state.zoom}px"></div>`;
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+  for (let i = 0; i < eje.dias; i++){
+    const d = new Date(eje.inicio.getFullYear(), eje.inicio.getMonth(), eje.inicio.getDate() + i);
+    const finde = d.getDay() === 0 || d.getDay() === 6;
+    if (finde) fondo += `<div class="g-weekend" style="left:${i*state.zoom}px;width:${state.zoom}px"></div>`;
+    if (state.zoom >= 9 && d.getDay() === 1)
+      dias += `<div class="tape absolute text-dim" style="left:${i*state.zoom+2}px;top:4px">${String(d.getDate()).padStart(2,'0')}</div>`;
+  }
+  const hoyX = offsetDias(eje, HOY) * state.zoom;
+  fondo += `<div class="g-today" style="left:${hoyX}px"></div>`;
+  let marcas = '';
+  HITOS.forEach(h => {
+    const x = offsetDias(eje, h.fecha) * state.zoom;
+    if (x < 0 || x > eje.ancho) return;
+    fondo += `<div class="g-hito" style="left:${x}px"></div>`;
+    marcas += `<div class="absolute" style="left:${x-4}px;bottom:5px" title="${esc(h.titulo)} · ${fecha(h.fecha)}">
+      <span class="block h-[7px] w-[7px] rotate-45" style="background:var(--cyan)"></span></div>`;
+  });
+
+  /* ── Filas ── */
+  let etiquetas = '', pistas = '';
+  gs.forEach(g => {
+    const abierto = state.abiertos.has(g.id);
+    const est = state.agrupar === 'proyecto' && PR(g.id) ? PR(g.id).estado : estadoGrupo(g.tareas);
+    const c = state.agrupar === 'persona' ? g.color : E(est).color;
+
+    etiquetas += `<div class="g-row g-group cursor-pointer px-3" data-grupo="${g.id}">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"
+           class="shrink-0 text-dim transition-transform ${abierto ? 'rotate-90' : ''}"><path d="M3 1.5 6.5 5 3 8.5"/></svg>
+      <span class="ml-2 h-[7px] w-[7px] shrink-0 rounded-[1px]" style="background:${c}"></span>
+      <span class="ml-2 truncate text-[12px] font-medium">${esc(g.nombre)}</span>
+      <span class="tape ml-auto shrink-0 text-dim">${g.tareas.length}</span>
+    </div>`;
+    pistas += `<div class="g-row g-group relative" data-grupo="${g.id}">${barraGrupo(g, eje)}</div>`;
+
+    if (abierto) g.tareas.forEach(t => {
+      const sel = state.seleccion === t.id;
+      etiquetas += `<div class="g-row ${sel ? 'sel' : ''} cursor-pointer pl-8 pr-3" data-abrir="${t.id}">
+        <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${E(t.estado).color}"></span>
+        <span class="ml-2 truncate text-[11.5px] ${t.estado === 'completado' ? 'text-dim' : 'text-mute'}">${esc(t.titulo)}</span>
+      </div>`;
+      pistas += `<div class="g-row ${sel ? 'sel' : ''} relative" data-abrir="${t.id}">${barra(t, eje)}</div>`;
+    });
+  });
+
+  const sinFecha = window.__sinFecha || 0;
+
+  return `
+  <div class="mb-4 flex flex-wrap items-center gap-2">
+    <div class="flex rounded-[4px] border border-line overflow-hidden">
+      ${[['proyecto','Proyecto'],['persona','Persona'],['area','Área']].map(([k,l]) => `
+        <button data-agrupar="${k}" class="tape px-3 py-[8px] transition"
+          style="${state.agrupar===k ? 'background:rgba(79,194,192,.12);color:var(--cyan)' : 'color:#8E939E'}">${l}</button>`).join('')}
+    </div>
+    <div class="flex rounded-[4px] border border-line overflow-hidden">
+      ${[[5,'Mes'],[9,'Semana'],[16,'Día']].map(([z,l]) => `
+        <button data-zoom="${z}" class="tape px-3 py-[8px] transition"
+          style="${state.zoom===z ? 'background:rgba(79,194,192,.12);color:var(--cyan)' : 'color:#8E939E'}">${l}</button>`).join('')}
+    </div>
+    <button data-todos="1" class="tape rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">
+      ${state.abiertos.size ? 'Contraer todo' : 'Expandir todo'}</button>
+    <button data-irhoy="1" class="tape rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">Ir a hoy</button>
+    <button id="addEvent" class="tape ml-auto flex items-center gap-1.5 rounded-[4px] border px-3 py-[8px] transition"
+      style="border-color:rgba(79,194,192,.45);background:rgba(79,194,192,.12);color:var(--cyan)">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+      Agregar</button>
+  </div>
+
+  <div class="overflow-hidden rounded-[5px] border border-line">
+    <div class="g-wrap">
+      <div class="g-labels">
+        <div class="h-[44px] border-b border-line flex items-end px-3 pb-2">
+          <span class="tape text-dim">${state.agrupar === 'persona' ? 'Persona' : state.agrupar === 'area' ? 'Área' : 'Proyecto'}</span>
+        </div>
+        ${etiquetas}
+      </div>
+      <div class="g-scroll" id="gScroll">
+        <div style="width:${eje.ancho}px" class="relative">
+          <div class="h-[44px] border-b border-line relative">${meses}${dias}${marcas}</div>
+          <div class="relative">
+            <div class="absolute inset-0 pointer-events-none">${fondo}</div>
+            ${pistas}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+    ${ESTADOS.map(e => `<div class="flex items-center gap-2">
+      <span class="h-[7px] w-[7px] rounded-[1px]" style="background:${e.color}"></span>
+      <span class="text-[11.5px] text-mute">${e.nombre}</span></div>`).join('')}
+    <div class="flex items-center gap-2">
+      <span class="h-[7px] w-[7px] rotate-45" style="background:var(--cyan)"></span>
+      <span class="text-[11.5px] text-mute">Hito</span></div>
+    <span class="tape ml-auto ${sinFecha ? 'text-bar-yellow' : 'text-dim'}">${sinFecha} tareas activas sin fecha</span>
+  </div>`;
+}
+
+function wireGantt(){
+  document.querySelectorAll('[data-agrupar]').forEach(b => b.onclick = () => {
+    state.agrupar = b.dataset.agrupar; state.abiertos.clear(); renderViewBody();
+  });
+  document.querySelectorAll('[data-zoom]').forEach(b => b.onclick = () => {
+    state.zoom = +b.dataset.zoom; renderViewBody();
+  });
+  document.querySelectorAll('[data-grupo]').forEach(el => el.onclick = () => {
+    const id = el.dataset.grupo;
+    state.abiertos.has(id) ? state.abiertos.delete(id) : state.abiertos.add(id);
+    renderViewBody();
+  });
+  const todos = document.querySelector('[data-todos]');
+  if (todos) todos.onclick = () => {
+    if (state.abiertos.size) state.abiertos.clear();
+    else grupos().forEach(g => state.abiertos.add(g.id));
+    renderViewBody();
+  };
+  const irHoy = document.querySelector('[data-irhoy]');
+  if (irHoy) irHoy.onclick = () => scrollAHoy(true);
+  document.querySelectorAll('[data-tarea]').forEach(b => b.onclick = e => {
+    e.stopPropagation(); state.seleccion = b.dataset.tarea; renderAll();
+  });
+  const add = document.getElementById('addEvent');
+  if (add) add.onclick = () => abrirModal(HOY);
+  scrollAHoy(false);
+}
+
+function scrollAHoy(suave){
+  const sc = document.getElementById('gScroll');
+  if (!sc) return;
+  const eje = ejeGantt();
+  const x = Math.max(0, offsetDias(eje, HOY) * state.zoom - sc.clientWidth * 0.35);
+  sc.scrollTo({ left:x, behavior: suave ? 'smooth' : 'auto' });
+}
+
+/* ═══════════════════════════════════════════════════
+   TABLERO
+   ═══════════════════════════════════════════════════ */
+
+function tarjeta(t){
+  const e = E(t.estado), p = P(t.responsable), proy = PR(t.proyecto);
+  const vd = vencida(t);
+  return `<article draggable="true" data-id="${t.id}" tabindex="0"
+    class="card group relative cursor-grab active:cursor-grabbing rounded-[5px] border border-line bg-panel
+           pl-4 pr-3 py-3 ${state.seleccion === t.id ? 'selected' : ''}">
+    <span class="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[5px]" style="background:${e.color}"></span>
+
+    <div class="flex items-center gap-2 mb-2">
+      <span class="tape text-dim">${t.codigo}</span>
+      ${vd ? `<span class="tape px-1.5 py-[2px] rounded-[2px]" style="background:rgba(200,90,80,.14);color:#C85A50">Vencida</span>` : ''}
+      <span class="tape ml-auto ${vd ? 'text-bar-red' : 'text-dim'}">${t.fin ? fecha(t.fin) : 'sin fecha'}</span>
+    </div>
+
+    <h4 class="text-[13.5px] leading-snug text-ink mb-1">${esc(t.titulo)}</h4>
+    <div class="tape text-dim mb-3 truncate">${esc(proy ? proy.nombre : '—')} · ${esc(t.area)}</div>
+
+    <div class="flex items-center gap-2 mb-3">
+      ${sprockets(t)}
+      <span class="tape text-dim">${pct(t.progreso)}%</span>
+      ${t.comentarios.length ? `<span class="tape ml-auto text-dim">${t.comentarios.length} ✎</span>` : ''}
+    </div>
+
+    <div class="flex items-center gap-2 pt-2.5 border-t border-line">
+      ${avatar(t.responsable, 24)}
+      <span class="text-[11.5px] text-mute truncate">${esc(p.nombre)}</span>
+      <select data-estado="${t.id}" aria-label="Estado de ${esc(t.codigo)}"
+        class="tapeselect tape ml-auto shrink-0 rounded-[3px] border bg-transparent px-1.5 py-[3px] cursor-pointer"
+        style="border-color:${e.color}55;color:${e.color}">
+        ${ESTADOS.map(o => `<option value="${o.id}" ${o.id === t.estado ? 'selected' : ''}>${o.nombre}</option>`).join('')}
+      </select>
+    </div>
+  </article>`;
+}
+
+function renderTablero(){
+  const lista = visibles();
+  const cols = ESTADOS.map((e, i) => {
+    const items = lista.filter(t => t.estado === e.id);
+    return `<div class="flex min-w-[268px] flex-1 flex-col rise" style="animation-delay:${i*60}ms">
+      <div class="mb-3 flex items-center gap-2 border-t-2 pt-2.5" style="border-color:${e.color}">
+        <span class="stencil-thin text-[11px]" style="color:${e.color}">${e.nombre}</span>
+        <span class="tape text-dim">${String(items.length).padStart(2,'0')}</span>
+        <span class="tape ml-auto text-dim hidden sm:inline">${e.nota}</span>
+      </div>
+      <div class="col-drop flex-1 space-y-2.5 rounded-[5px] p-1 min-h-[120px] max-h-[70vh] overflow-y-auto" data-col="${e.id}">
+        ${items.map(tarjeta).join('') || `<div class="grid h-[110px] place-items-center rounded-[5px] border border-dashed border-line">
+          <span class="tape text-dim">Suelta una tarjeta aquí</span></div>`}
+      </div></div>`;
+  }).join('');
+  return `<div class="scroll-x flex gap-4 overflow-x-auto pb-2">${cols}</div>`;
+}
+
+let arrastrando = null;
+function wireTablero(){
+  document.querySelectorAll('[data-id]').forEach(card => {
+    card.addEventListener('dragstart', ev => {
+      arrastrando = card.dataset.id; card.classList.add('dragging');
+      ev.dataTransfer.effectAllowed = 'move';
+      ev.dataTransfer.setData('text/plain', arrastrando);
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    card.addEventListener('click', ev => {
+      if (ev.target.closest('select')) return;
+      state.seleccion = card.dataset.id; renderAll();
+    });
+    card.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); state.seleccion = card.dataset.id; renderAll(); }
+    });
+  });
+  document.querySelectorAll('[data-estado]').forEach(sel => {
+    sel.onchange = ev => moverTarea(sel.dataset.estado, ev.target.value);
+    sel.onclick = ev => ev.stopPropagation();
+  });
+  document.querySelectorAll('[data-col]').forEach(col => {
+    col.addEventListener('dragover', ev => { ev.preventDefault(); col.classList.add('over'); });
+    col.addEventListener('dragleave', () => col.classList.remove('over'));
+    col.addEventListener('drop', ev => {
+      ev.preventDefault(); col.classList.remove('over');
+      if (arrastrando) moverTarea(arrastrando, col.dataset.col);
+      arrastrando = null;
+    });
+  });
+}
+
+function moverTarea(id, estado){
+  const t = T(id);
+  if (!t || t.estado === estado) return;
+  t.estado = estado;
+  if (estado === 'completado') t.progreso = 1;
+  if (estado === 'pendiente')  t.progreso = 0;
+  state.seleccion = id;
+  toast(t.codigo + ' → ' + E(estado).nombre, E(estado).color);
+  renderAll();
+  const c = document.querySelector(`[data-id="${id}"]`);
+  if (c) c.classList.add('flash');
+}
+
+/* ═══════════════════════════════════════════════════
+   CALENDARIO
+   ═══════════════════════════════════════════════════ */
+
+function renderCalendario(){
+  const primero = new Date(state.mes.getFullYear(), state.mes.getMonth(), 1);
+  const ultimo  = new Date(state.mes.getFullYear(), state.mes.getMonth() + 1, 0);
+  const offset  = (primero.getDay() + 6) % 7;
+  const celdas  = Math.ceil((offset + ultimo.getDate()) / 7) * 7;
+  const clave   = toISO(primero).slice(0, 7);
+  const ts = visibles();
+  const nMes = ts.filter(t => t.fin && t.fin.startsWith(clave)).length;
+  const nHi  = HITOS.filter(h => h.fecha.startsWith(clave)).length;
+
+  const barra = `
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-1">
+        <button data-cal="prev" aria-label="Mes anterior" class="grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+        <button data-cal="next" aria-label="Mes siguiente" class="grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+      </div>
+      <div class="min-w-0">
+        <div class="stencil text-[15px] leading-none">${MESES_L[primero.getMonth()]} ${primero.getFullYear()}</div>
+        <div class="tape text-dim mt-[6px]">${nMes} entregas · ${nHi} hitos</div>
+      </div>
+      <button data-cal="hoy" class="tape rounded-[4px] border border-line bg-panel px-2.5 py-[8px] text-mute hover:text-ink hover:border-dim transition">Hoy</button>
+      <button id="addEvent" class="tape ml-auto flex items-center gap-1.5 rounded-[4px] border px-3 py-[8px] transition"
+        style="border-color:rgba(79,194,192,.45);background:rgba(79,194,192,.12);color:var(--cyan)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+        Agregar evento</button>
+    </div>`;
+
+  const head = DIAS.map(d => `<div class="tape bg-panel px-2 py-2 text-dim">${d}</div>`).join('');
+
+  let cuerpo = '';
+  for (let i = 0; i < celdas; i++){
+    const d = new Date(primero.getFullYear(), primero.getMonth(), i - offset + 1);
+    const iso = toISO(d);
+    const fuera = d.getMonth() !== primero.getMonth();
+    const hoy = iso === HOY;
+    const hs = HITOS.filter(h => h.fecha === iso);
+    const tk = ts.filter(t => t.fin === iso);
+    const items = [...hs.map(h => ({h})), ...tk.map(t => ({t}))];
+    const mostrar = items.slice(0, 3), extra = items.length - mostrar.length;
+
+    const chips = mostrar.map(it => {
+      if (it.h){
+        const h = it.h;
+        return `<div class="cal-chip group/h flex items-center gap-1.5 rounded-[3px] px-1.5 py-[3px]"
+          style="background:rgba(79,194,192,.14)" title="Hito · ${esc(h.titulo)}">
+          <span class="h-[6px] w-[6px] shrink-0 rotate-45" style="background:var(--cyan)"></span>
+          <span class="truncate text-[10.5px] leading-tight" style="color:var(--cyan)">${esc(h.titulo)}</span>
+          ${h.fijo ? '' : `<button data-delh="${h.id}" title="Quitar" class="ml-auto hidden shrink-0 group-hover/h:block text-[11px] leading-none" style="color:var(--cyan)">&times;</button>`}
+        </div>`;
+      }
+      const t = it.t, e = E(t.estado);
+      return `<button data-abrir="${t.id}" class="cal-chip flex w-full items-center gap-1.5 rounded-[3px] px-1.5 py-[3px] text-left hover:bg-panel2"
+        title="${esc(t.codigo)} · ${esc(t.titulo)} · ${e.nombre}">
+        <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${e.color}"></span>
+        <span class="truncate text-[10.5px] leading-tight ${t.estado === 'completado' ? 'text-dim line-through' : 'text-mute'}">${esc(t.titulo)}</span>
+      </button>`;
+    }).join('');
+
+    cuerpo += `<div class="cal-cell relative min-h-[104px] bg-panel p-1.5 ${fuera ? 'cal-out' : ''} ${hoy ? 'cal-today-ring' : ''}">
+      <div class="mb-1.5 flex items-center px-0.5">
+        <span class="tape ${hoy ? '' : fuera ? 'text-dim/60' : 'text-dim'}" style="${hoy ? 'color:var(--cyan)' : ''}">${String(d.getDate()).padStart(2,'0')}</span>
+        ${hoy ? `<span class="tape ml-1.5" style="color:var(--cyan)">Hoy</span>` : ''}
+        <button data-add="${iso}" aria-label="Agregar el ${iso}" class="cal-add ml-auto text-dim hover:text-ink">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg></button>
+      </div>
+      <div class="space-y-[3px]">${chips}${extra > 0 ? `<div class="tape px-1.5 pt-[2px] text-dim">+${extra} más</div>` : ''}</div>
+    </div>`;
+  }
+
+  return barra + `
+    <div class="scroll-x overflow-x-auto">
+      <div class="min-w-[720px] overflow-hidden rounded-[5px] border border-line">
+        <div class="grid grid-cols-7 gap-px bg-line">${head}</div>
+        <div class="grid grid-cols-7 gap-px bg-line">${cuerpo}</div>
+      </div>
+    </div>
+    <p class="tape mt-3 text-dim">Las tareas se ubican en su fecha de entrega</p>`;
+}
+
+function wireCalendario(){
+  document.querySelectorAll('[data-cal]').forEach(b => b.onclick = () => {
+    const m = state.mes;
+    if (b.dataset.cal === 'prev') state.mes = new Date(m.getFullYear(), m.getMonth() - 1, 1);
+    if (b.dataset.cal === 'next') state.mes = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+    if (b.dataset.cal === 'hoy')  state.mes = new Date(2026, 7, 1);
+    renderViewBody();
+  });
+  document.querySelectorAll('[data-add]').forEach(b => b.onclick = ev => { ev.stopPropagation(); abrirModal(b.dataset.add); });
+  document.querySelectorAll('[data-delh]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const h = HITOS.find(x => x.id === b.dataset.delh);
+    HITOS = HITOS.filter(x => x.id !== b.dataset.delh);
+    toast('Hito eliminado: ' + h.titulo, '#C85A50');
+    renderAll();
+  });
+  const add = document.getElementById('addEvent');
+  if (add) add.onclick = () => abrirModal(HOY.startsWith(toISO(state.mes).slice(0,7)) ? HOY : toISO(state.mes));
+}
+
+/* ═══════════════════════════════════════════════════
+   PROYECTOS
+   ═══════════════════════════════════════════════════ */
+
+function renderProyectos(){
+  const secciones = [...new Set(PROYECTOS.map(p => p.seccion))];
+  return secciones.map(sec => {
+    const ps = PROYECTOS.filter(p => p.seccion === sec);
+    return `<div class="mb-7">
+      <div class="stencil-thin text-[11px] text-mute mb-3">${esc(sec)}</div>
+      <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+      ${ps.map((p, i) => {
+        const ts = tareasDe(p.id, 'proyecto');
+        const e = E(p.estado), av = pct(avance(ts)), r = rango(ts);
+        const abiertas = ts.filter(t => t.estado !== 'completado').length;
+        return `<button data-proyecto="${p.id}" class="rise block w-full rounded-[5px] border border-line bg-panel p-4 text-left hover:border-dim transition"
+          style="animation-delay:${i*40}ms">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="tape rounded-[2px] border border-line px-1.5 py-[3px] text-dim">${esc(p.area)}</span>
+            <span class="tape ml-auto rounded-[2px] px-2 py-[3px]" style="background:${e.color}1f;color:${e.color}">${e.nombre}</span>
+          </div>
+          <h4 class="text-[13.5px] font-medium leading-snug mb-2">${esc(p.nombre)}</h4>
+          <div class="tape text-dim mb-3">${ts.length} tareas · ${abiertas} abiertas${r ? ` · ${fecha(r.inicio)} – ${fecha(r.fin)}` : ' · sin fechas'}</div>
+          <div class="h-[5px] w-full rounded-full bg-panel2 overflow-hidden">
+            <div class="h-full rounded-full" style="width:${av}%;background:${e.color}"></div></div>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="tape text-dim">${av}%</span>
+            ${p.entrega ? `<span class="tape ml-auto" style="color:var(--cyan)">Entrega ${fecha(p.entrega)}</span>` : ''}
+          </div>
+          ${p.nota ? `<p class="mt-2 text-[11.5px] text-dim leading-relaxed">${esc(p.nota)}</p>` : ''}
+        </button>`;
+      }).join('')}
+      </div></div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   EQUIPO
+   ═══════════════════════════════════════════════════ */
+
+function renderEquipo(){
+  return `<div class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+    ${PERSONAS.map((p, i) => {
+      const mias = tareasDe(p.id, 'responsable');
+      const abiertas = mias.filter(t => t.estado !== 'completado');
+      const excede = abiertas.length > p.capacidad;
+      return `<div class="rise rounded-[5px] border border-line bg-panel p-4" style="animation-delay:${i*50}ms">
+        <div class="flex items-center gap-3">
+          ${avatar(p.id, 34)}
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-medium truncate">${esc(p.nombre)}</div>
+            <div class="tape text-dim">${esc(p.rol)}</div>
+          </div>
+          <div class="ml-auto text-right">
+            <div class="stencil text-[19px] leading-none" style="color:${excede ? '#C85A50' : p.color}">${abiertas.length}</div>
+            <div class="tape text-dim mt-1">de ${p.capacidad}</div>
+          </div>
+        </div>
+        <div class="mt-3 flex h-[6px] gap-[2px] overflow-hidden rounded-full bg-panel2">
+          ${ESTADOS.filter(e => e.id !== 'completado').map(e => {
+            const n = mias.filter(t => t.estado === e.id).length;
+            return n ? `<div style="width:${Math.min(100, n/p.capacidad*100)}%;background:${e.color}" title="${e.nombre}: ${n}"></div>` : '';
+          }).join('')}
+        </div>
+        ${excede ? `<div class="tape mt-2" style="color:#C85A50">Sobre capacidad — redistribuir</div>` : ''}
+        <div class="mt-4 space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
+          ${abiertas.length ? abiertas.map(t => `
+            <button data-abrir="${t.id}" class="flex w-full items-center gap-2 rounded-[3px] px-2 py-1.5 text-left hover:bg-panel2 transition">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style="background:${E(t.estado).color}"></span>
+              <span class="text-[12px] text-mute truncate">${esc(t.titulo)}</span>
+              <span class="tape ml-auto shrink-0 text-dim">${t.fin ? fecha(t.fin) : '—'}</span>
+            </button>`).join('') : `<div class="tape px-2 py-1.5 text-dim">Sin tareas abiertas</div>`}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function vacio(msg){
+  return `<div class="grid place-items-center rounded-[5px] border border-dashed border-line py-16 text-center">
+    <div><div class="stencil-thin text-[12px] text-mute">Nada por aquí</div>
+    <p class="mt-2 text-[13px] text-dim">${msg}</p></div></div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   PANEL DERECHO
+   ═══════════════════════════════════════════════════ */
+
+function renderRailCarga(){
+  const box = $('#railWorkload');
+  if (state.vista === 'equipo'){ box.innerHTML = ''; box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  const abiertas = TAREAS.filter(t => t.estado !== 'completado').length;
+  const saturados = PERSONAS.filter(p => tareasDe(p.id, 'responsable').filter(t => t.estado !== 'completado').length > p.capacidad);
+  box.innerHTML = `
+    <div class="flex items-baseline justify-between mb-4">
+      <h3 class="stencil-thin text-[11px] text-mute">Carga del equipo</h3>
+      <span class="tape text-dim">${abiertas} abiertas</span>
+    </div>
+    <div class="space-y-3.5">${PERSONAS.map(p => filaCarga(p, true)).join('')}</div>
+    <p class="mt-4 text-[11.5px] ${saturados.length ? 'text-bar-red' : 'text-dim'}">
+      ${saturados.length ? saturados.map(p => p.nombre).join(', ') + (saturados.length > 1 ? ' están' : ' está') + ' sobre capacidad.' : 'Todos dentro de capacidad.'}
+    </p>
+    <p class="mt-1 text-[11.5px] text-dim">Toca un nombre para filtrar.</p>`;
+  bindPersonas('#railWorkload');
+}
+
+function renderRailDetalle(){
+  const box = $('#railDetail');
+  const t = T(state.seleccion);
+  if (!t){
+    box.innerHTML = `<h3 class="stencil-thin text-[11px] text-mute mb-3">Detalle</h3>
+      ${vacio('Elige una tarea del cronograma o del tablero.')}`;
+    return;
+  }
+  const e = E(t.estado), proy = PR(t.proyecto);
+
+  box.innerHTML = `
+    <div class="flex items-center gap-2 mb-3">
+      <h3 class="stencil-thin text-[11px] text-mute">Detalle</h3>
+      <span class="tape ml-auto rounded-[2px] px-2 py-[3px]" style="background:${e.color}1f;color:${e.color}">${e.nombre}</span>
+    </div>
+
+    <div class="rounded-[5px] border border-line bg-panel p-4">
+      <div class="tape text-dim mb-2">${t.codigo} · ${esc(t.area)}</div>
+      <h4 class="text-[14px] leading-snug mb-1">${esc(t.titulo)}</h4>
+      <div class="text-[12px] text-mute mb-3">${esc(proy ? proy.nombre : 'Sin proyecto')}</div>
+      <div class="flex items-center gap-2 mb-3">
+        ${avatar(t.responsable, 24)}
+        <span class="text-[12px] text-mute">${esc(P(t.responsable).nombre)}</span>
+        ${vencida(t) ? `<span class="tape ml-auto rounded-[2px] px-1.5 py-[3px]" style="background:rgba(200,90,80,.14);color:#C85A50">Vencida</span>` : ''}
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <label class="block"><span class="tape mb-1.5 block text-dim">Inicio</span>
+          <input type="date" data-fecha="inicio" value="${t.inicio || ''}"
+            class="w-full rounded-[4px] border border-line bg-panel2 px-2 py-[6px] text-[12px] outline-none focus:border-bar-cyan transition"></label>
+        <label class="block"><span class="tape mb-1.5 block text-dim">Fin</span>
+          <input type="date" data-fecha="fin" value="${t.fin || ''}"
+            class="w-full rounded-[4px] border border-line bg-panel2 px-2 py-[6px] text-[12px] outline-none focus:border-bar-cyan transition"></label>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <div class="flex items-baseline justify-between mb-3">
+        <h3 class="stencil-thin text-[11px] text-mute">Avance</h3>
+        <span class="tape text-dim">${pct(t.progreso)}%</span>
+      </div>
+      <div class="flex gap-1.5">
+        ${[0,.25,.5,.75,1].map(v => `<button data-prog="${v}"
+          class="tape flex-1 rounded-[4px] border py-[7px] transition"
+          style="${Math.abs((t.progreso||0)-v) < .01
+            ? `border-color:${e.color}77;background:${e.color}1f;color:${e.color}`
+            : 'border-color:#2E3238;color:#5F646D'}">${v*100}</button>`).join('')}
+      </div>
+    </div>
+
+    ${t.notas ? `<div class="mt-6">
+      <h3 class="stencil-thin text-[11px] text-mute mb-2">Notas del Excel</h3>
+      <p class="rounded-[4px] border border-line bg-panel px-3 py-2.5 text-[12.5px] leading-relaxed text-mute">${esc(t.notas)}</p>
+    </div>` : ''}
+
+    <div class="mt-6">
+      <div class="flex items-baseline justify-between mb-3">
+        <h3 class="stencil-thin text-[11px] text-mute">Comentarios</h3>
+        <span class="tape text-dim">${t.comentarios.length}</span>
+      </div>
+      <div class="space-y-3.5 max-h-[240px] overflow-y-auto pr-1">
+        ${t.comentarios.length ? t.comentarios.map(c => `
+          <div class="flex gap-2.5">${avatar(c.por, 24)}
+            <div class="min-w-0">
+              <div class="flex items-baseline gap-2">
+                <span class="text-[12px] font-medium">${esc(P(c.por).nombre)}</span>
+                <span class="tape text-dim">${esc(c.cuando)}</span>
+              </div>
+              <p class="mt-1 text-[12.5px] leading-relaxed text-mute">${esc(c.texto)}</p>
+            </div></div>`).join('')
+        : `<p class="text-[12.5px] text-dim">Sin comentarios todavía.</p>`}
+      </div>
+      <div class="mt-3 rounded-[5px] border border-line bg-panel p-2.5 focus-within:border-bar-cyan transition">
+        <textarea id="commentBox" rows="2" placeholder="Escribe una nota para el equipo…"
+          class="w-full resize-none bg-transparent text-[12.5px] leading-relaxed outline-none"></textarea>
+        <div class="flex items-center gap-2 pt-2 border-t border-line">
+          <span class="tape text-dim">Enter para enviar</span>
+          <button id="postComment" class="tape ml-auto rounded-[3px] bg-panel2 border border-line px-2.5 py-[6px] text-mute hover:text-ink hover:border-dim transition">Comentar</button>
+        </div>
+      </div>
+    </div>`;
+
+  box.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
+    t.progreso = +b.dataset.prog;
+    if (t.progreso === 1 && t.estado !== 'completado') t.estado = 'completado';
+    if (t.progreso > 0 && t.progreso < 1 && t.estado === 'pendiente') t.estado = 'proceso';
+    toast(t.codigo + ' al ' + pct(t.progreso) + '%', E(t.estado).color);
+    renderAll();
+  });
+  box.querySelectorAll('[data-fecha]').forEach(inp => inp.onchange = () => {
+    t[inp.dataset.fecha] = inp.value || null;
+    if (t.inicio && t.fin && t.fin < t.inicio) t.fin = t.inicio;
+    toast('Fechas actualizadas', '#4FC2C0');
+    renderAll();
+  });
+  const enviar = () => {
+    const el = $('#commentBox'), texto = el.value.trim();
+    if (!texto) return;
+    t.comentarios.push({ por:'u-andres', cuando:'Ahora', texto });
+    toast('Comentario publicado');
+    renderAll();
+  };
+  $('#postComment').onclick = enviar;
+  $('#commentBox').addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); enviar(); }
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════ */
+
+function abrirModal(iso){
+  state.tipoEvento = 'hito';
+  $('#evDate').value = iso || HOY;
+  $('#evEnd').value  = iso || HOY;
+  $('#evTitle').value = '';
+  $('#evError').textContent = '';
+  $('#evProyecto').innerHTML = PROYECTOS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  $('#evOwner').innerHTML = PERSONAS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  $('#evStatus').innerHTML = ESTADOS.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+  pintarTipo();
+  $('#eventModal').classList.remove('hidden');
+  setTimeout(() => $('#evTitle').focus(), 40);
+}
+const cerrarModal = () => $('#eventModal').classList.add('hidden');
+
+function pintarTipo(){
+  document.querySelectorAll('[data-kind]').forEach(b => {
+    const on = b.dataset.kind === state.tipoEvento;
+    b.style.background  = on ? 'rgba(79,194,192,.12)' : 'transparent';
+    b.style.borderColor = on ? 'rgba(79,194,192,.45)' : '#2E3238';
+    b.style.color       = on ? 'var(--cyan)' : '#8E939E';
+  });
+  $('#taskFields').classList.toggle('hidden', state.tipoEvento !== 'tarea');
+  $('#fieldEnd').classList.toggle('invisible', state.tipoEvento !== 'tarea');
+}
+
+function guardarEvento(){
+  const titulo = $('#evTitle').value.trim();
+  const inicio = $('#evDate').value;
+  if (!titulo){ $('#evError').textContent = 'Ponle nombre al evento.'; return; }
+  if (!inicio){ $('#evError').textContent = 'Elige una fecha.'; return; }
+
+  if (state.tipoEvento === 'hito'){
+    HITOS.push({ id:'h' + (++uid), titulo, fecha:inicio, fijo:false });
+    toast('Hito agregado el ' + fecha(inicio), '#4FC2C0');
+  } else {
+    const fin = $('#evEnd').value || inicio;
+    const proyecto = $('#evProyecto').value;
+    const t = {
+      id:'t' + (++uid), codigo:'T-' + String(TAREAS.length + 1).padStart(3,'0'),
+      titulo, proyecto, area:(PR(proyecto) || {}).area || 'SIN ÁREA',
+      responsable:$('#evOwner').value, progreso:0, estado:$('#evStatus').value,
+      notas:null, inicio, fin: fin < inicio ? inicio : fin, comentarios:[]
+    };
+    TAREAS.push(t);
+    state.seleccion = t.id;
+    state.abiertos.add(proyecto);
+    toast(t.codigo + ' programada · ' + fecha(inicio), E(t.estado).color);
+  }
+  const d = dt(inicio);
+  state.mes = new Date(d.getFullYear(), d.getMonth(), 1);
+  cerrarModal();
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════
+   ORQUESTACIÓN
+   ═══════════════════════════════════════════════════ */
+
+function renderFiltros(){
+  const bar = $('#filterBar');
+  const chips = [];
+  if (state.persona)  chips.push(['persona',  'Responsable: ' + P(state.persona).nombre]);
+  if (state.area)     chips.push(['area',     'Área: ' + state.area]);
+  if (state.proyecto) chips.push(['proyecto', 'Proyecto: ' + (PR(state.proyecto) || {}).nombre]);
+  if (state.query)    chips.push(['query',    'Búsqueda: ' + state.query]);
+
+  if (!chips.length){ bar.classList.add('hidden'); bar.classList.remove('flex'); bar.innerHTML = ''; return; }
+  bar.classList.remove('hidden'); bar.classList.add('flex');
+  bar.innerHTML = `<span class="tape text-dim">Filtros</span>` + chips.map(([k, l]) =>
+    `<button data-quitar="${k}" class="tape flex items-center gap-1.5 rounded-[3px] border border-line bg-panel px-2.5 py-[6px] text-mute hover:text-ink hover:border-dim transition">${esc(l)} &times;</button>`
+  ).join('') + `<button data-quitar="todo" class="tape ml-auto text-dim hover:text-bar-red transition">Limpiar todo</button>`;
+
+  bar.querySelectorAll('[data-quitar]').forEach(b => b.onclick = () => {
+    const k = b.dataset.quitar;
+    if (k === 'todo'){ state.persona = state.area = state.proyecto = null; state.query = ''; $('#search').value = ''; }
+    else if (k === 'query'){ state.query = ''; $('#search').value = ''; }
+    else state[k] = null;
+    renderAll();
+  });
+}
+
+function renderViewBody(){
+  const body = $('#viewBody');
+  const lista = visibles();
+
+  const titulo = { gantt:'Cronograma', tablero:'Tablero', calendario:'Calendario',
+                   mias:'Mis tareas', proyectos:'Proyectos', equipo:'Equipo' }[state.vista];
+  const sub = {
+    gantt:'Cada fila es un proyecto o una persona. Toca una fila para ver sus tareas.',
+    tablero:'Arrastra una tarjeta entre columnas o cambia su estado desde la tarjeta.',
+    calendario:'Cada tarea aparece en su fecha de entrega; los hitos son puntos fijos.',
+    mias:'Todo lo asignado a Andrés en el tráfico.',
+    proyectos:'Los 21 proyectos del Excel, con su estado y avance.',
+    equipo:'Tareas abiertas frente a la capacidad de cada persona.'
+  }[state.vista];
+
+  let inner;
+  if (state.vista === 'gantt')            inner = renderGantt();
+  else if (state.vista === 'calendario')  inner = renderCalendario();
+  else if (state.vista === 'proyectos')   inner = renderProyectos();
+  else if (state.vista === 'equipo')      inner = renderEquipo();
+  else if (!lista.length)                 inner = vacio('Ajusta los filtros o la búsqueda.');
+  else                                    inner = renderTablero();
+
+  body.innerHTML = `<div class="mb-5">
+      <h2 class="stencil text-[15px]">${titulo}</h2>
+      <p class="text-[12.5px] text-dim mt-1.5">${sub}</p>
+    </div>${inner}`;
+
+  if (state.vista === 'gantt') wireGantt();
+  if (state.vista === 'calendario') wireCalendario();
+  if (state.vista === 'tablero' || state.vista === 'mias') wireTablero();
+
+  body.querySelectorAll('[data-abrir]').forEach(el => el.onclick = ev => {
+    ev.stopPropagation();
+    state.seleccion = el.dataset.abrir;
+    renderAll();
+  });
+  body.querySelectorAll('[data-proyecto]').forEach(el => el.onclick = () => {
+    state.proyecto = el.dataset.proyecto;
+    state.vista = 'gantt';
+    state.abiertos.add(el.dataset.proyecto);
+    renderAll();
+  });
+}
+
+function renderAll(){
+  renderNav();
+  renderNavLoad();
+  renderSlate();
+  renderReadouts();
+  renderFiltros();
+  renderViewBody();
+  renderRailCarga();
+  renderRailDetalle();
+  if (typeof Persist !== 'undefined') Persist.schedule();
+}
+
+/* ═══════════════════════════════════════════════════
+   CHROME
+   ═══════════════════════════════════════════════════ */
+
+const abrirNav  = () => { $('#sidebar').classList.remove('-translate-x-full'); $('#scrim').classList.remove('hidden'); };
+const cerrarNav = () => { if (window.innerWidth < 1024){ $('#sidebar').classList.add('-translate-x-full'); $('#scrim').classList.add('hidden'); } };
+
+$('#openNav').onclick  = abrirNav;
+$('#closeNav').onclick = cerrarNav;
+$('#scrim').onclick    = cerrarNav;
+
+document.querySelectorAll('#eventModal [data-close]').forEach(b => b.onclick = cerrarModal);
+document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { state.tipoEvento = b.dataset.kind; pintarTipo(); });
+$('#evSubmit').onclick = guardarEvento;
+$('#evTitle').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarEvento(); });
+
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape'){ cerrarModal(); cerrarNav(); }
+  if (ev.key.toLowerCase() === 'n' && !ev.metaKey && !ev.ctrlKey &&
+      !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
+    ev.preventDefault(); abrirModal(HOY);
+  }
+});
+
+let buscaTimer;
+$('#search').addEventListener('input', ev => {
+  clearTimeout(buscaTimer);
+  buscaTimer = setTimeout(() => { state.query = ev.target.value.trim().toLowerCase(); renderFiltros(); renderViewBody(); }, 140);
+});
+
+/* ═══════════════════════════════════════════════════
+   PERSISTENCIA
+   Drivers: api → window.storage → localStorage → memoria
+   ═══════════════════════════════════════════════════ */
+
+const API_BASE = '';
+const STORE_KEY = 'slate.comms.v1';
+const SEMILLA = JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS });
+
+const Persist = {
+  driver:'memory', version:0, ultimo:null, listo:false, timer:null,
+
+  async detectar(){
+    if (API_BASE){ this.driver = 'api'; return; }
+    if (typeof window !== 'undefined' && window.storage && window.storage.get){ this.driver = 'claude'; return; }
+    try { localStorage.setItem('__probe','1'); localStorage.removeItem('__probe'); this.driver = 'local'; }
+    catch { this.driver = 'memory'; }
+  },
+
+  async cargar(){
+    await this.detectar();
+    try {
+      if (this.driver === 'api'){
+        const r = await fetch(API_BASE + '/api/state');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json(); this.version = d.version || 0; return d;
+      }
+      if (this.driver === 'claude'){
+        const r = await window.storage.get(STORE_KEY);
+        return r ? JSON.parse(r.value) : null;
+      }
+      if (this.driver === 'local'){
+        const raw = localStorage.getItem(STORE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }
+    } catch (e){ console.warn('[slate] carga:', e.message); this.estado('error','Sin conexión'); }
+    return null;
+  },
+
+  foto(){ return JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS }); },
+
+  schedule(){
+    if (!this.listo) return;
+    if (this.foto() === this.ultimo) return;
+    this.estado('pending','Guardando');
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.guardar(), 450);
+  },
+
+  async guardar(){
+    const foto = this.foto();
+    try {
+      if (this.driver === 'api'){
+        const r = await fetch(API_BASE + '/api/state', {
+          method:'PUT', headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ ...JSON.parse(foto), version:this.version })
+        });
+        if (r.status === 409){
+          const f = await r.json();
+          TAREAS = f.tareas; PROYECTOS = f.proyectos; HITOS = f.hitos; this.version = f.version;
+          this.ultimo = this.foto(); renderAll();
+          toast('Tablero actualizado por un compañero', '#D6BE5C');
+          return;
+        }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        this.version = (await r.json()).version;
+      }
+      else if (this.driver === 'claude') await window.storage.set(STORE_KEY, foto);
+      else if (this.driver === 'local')  localStorage.setItem(STORE_KEY, foto);
+      else { this.estado('memory','Sin guardar'); return; }
+      this.ultimo = foto;
+      this.estado('ok', 'Guardado ' + new Date().toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' }));
+    } catch (e){ console.warn('[slate] guardar:', e.message); this.estado('error','Error al guardar'); }
+  },
+
+  async reiniciar(){
+    const s = JSON.parse(SEMILLA);
+    TAREAS = s.tareas; PROYECTOS = s.proyectos; HITOS = s.hitos;
+    state.seleccion = null; this.ultimo = null;
+    try {
+      if (this.driver === 'api')         await fetch(API_BASE + '/api/state/reset', { method:'POST' });
+      else if (this.driver === 'claude') await window.storage.delete(STORE_KEY);
+      else if (this.driver === 'local')  localStorage.removeItem(STORE_KEY);
+    } catch (e){ console.warn('[slate] reset:', e.message); }
+    renderAll();
+    toast('Datos restaurados desde el Excel', '#C85A50');
+  },
+
+  estado(tipo, texto){
+    const c = { ok:'#5EA86C', pending:'#D6BE5C', error:'#C85A50', memory:'#8E939E' };
+    const dot = document.getElementById('syncDot'), lbl = document.getElementById('syncText');
+    if (!dot) return;
+    dot.style.background = c[tipo] || '#8E939E';
+    lbl.textContent = texto + (this.driver === 'memory' ? '' : ' · ' + this.driver);
+  },
+
+  suscribir(){
+    if (this.driver !== 'api' || typeof EventSource === 'undefined') return;
+    const es = new EventSource(API_BASE + '/api/events');
+    es.onmessage = ev => {
+      const d = JSON.parse(ev.data);
+      if (d.version === this.version) return;
+      TAREAS = d.tareas; PROYECTOS = d.proyectos; HITOS = d.hitos; this.version = d.version;
+      this.ultimo = this.foto(); renderAll();
+      toast('Cambios de un compañero', '#4FC2C0');
+    };
+    es.onerror = () => this.estado('error','Reconectando');
+  }
+};
+
+$('#syncPill').onclick = () => Persist.guardar();
+$('#resetBoard').onclick = () => { if (confirm('¿Restaurar los datos originales del Excel y borrar los cambios guardados?')) Persist.reiniciar(); };
+
+/* ═══ Arranque ═══ */
+
+(async function arranque(){
+  const g = await Persist.cargar();
+  if (g && Array.isArray(g.tareas) && g.tareas.length){
+    TAREAS = g.tareas;
+    if (Array.isArray(g.proyectos)) PROYECTOS = g.proyectos;
+    if (Array.isArray(g.hitos)) HITOS = g.hitos;
+  }
+  renderAll();
+  Persist.ultimo = Persist.foto();
+  Persist.listo = true;
+  Persist.estado(Persist.driver === 'memory' ? 'memory' : 'ok',
+                 Persist.driver === 'memory' ? 'Sin guardar' : 'Al día');
+  Persist.suscribir();
+})();
+
+</script>
+</body>
+</html>
