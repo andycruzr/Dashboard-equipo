@@ -1,0 +1,30 @@
+# Plano de despliegue para Render.
+#
+# El servicio web va en plan Starter: siempre encendido.
+#
+# La base NO se crea aquí: la gratuita de Render expira a los
+# 30 días y se borra. Usa Neon (gratis permanente) o agrega
+# un Postgres Basic-256mb en Render por unos USD 6 más.
+# En cualquier caso, pega su cadena en DATABASE_URL.
+#
+# En Render: New → Blueprint → conecta el repo → Apply.
+
+services:
+  - type: web
+    name: trafico-comms
+    runtime: node
+    plan: starter          # $7/mes, siempre encendido (sin dormir)
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: STORAGE
+        value: postgres
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false          # Render te la pide al desplegar: pega la de Neon
+      - key: USUARIO_ACCESO
+        value: comms
+      - key: CLAVE_ACCESO
+        generateValue: true  # Render la genera y la ves en Environment
