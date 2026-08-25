@@ -1,0 +1,4768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0E0F12" />
+<title>Slate — Tráfico Comms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        base:   'var(--fondo)',
+        panel:  'var(--sup)',
+        panel2: 'var(--sup-alta)',
+        line:   'var(--linea)',
+        ink:    'var(--texto)',
+        mute:   'var(--texto-2)',
+        dim:    'var(--texto-3)',
+        bar: {
+          blue:    'var(--est-pendiente)',
+          yellow:  'var(--est-proceso)',
+          magenta: 'var(--est-revision)',
+          green:   'var(--est-completado)',
+          red:     'var(--alerta)',
+          cyan:    'var(--acento)'
+        }
+      },
+      fontFamily: {
+        display:['Archivo','system-ui','sans-serif'],
+        body:['"Inter Tight"','system-ui','sans-serif'],
+        mono:['"JetBrains Mono"','ui-monospace','monospace']
+      }
+    }
+  }
+}
+</script>
+<style>
+
+  /* ══════════════════════════════════════════════════════════════
+     TOKENS DE COLOR
+     Un solo lugar define los dos temas. Todo lo demás, incluido el
+     JavaScript, apunta a estas variables: cambiar de tema es cambiar
+     un atributo en <html>, no repintar componentes.
+     ══════════════════════════════════════════════════════════════ */
+
+  :root, [data-tema="oscuro"]{
+    color-scheme: dark;
+
+    --fondo:      #0A0B0C;   /* casi negro, como en la referencia */
+    --sup:        #151719;   /* tarjetas elevadas */
+    --sup-alta:   #1E2124;   /* elementos dentro de tarjetas */
+    --sup-hover:  #24272B;
+    --linea:      #212427;   /* separadores casi invisibles */
+    --borde:      #2A2E33;
+
+    --texto:      #F4F5F7;
+    --texto-2:    #A9AFB9;
+    --texto-3:    #7E8693;
+
+    --acento:     #6E9BFF;   /* azul: el color de acción */
+    --acento-suave:#1B2436;  /* fondo de los botones de acción */
+    --acento-tinta:#0A0B0C;
+
+    --est-pendiente:  #8AA9E6;
+    --est-proceso:    #E8CE72;
+    --est-revision:   #CE8FC2;
+    --est-completado: #74D08B;
+    --alerta:         #F08A7E;
+
+    /* Rellenos: en oscuro coinciden con los de texto */
+    --g-pendiente: #6E9BFF; --g-proceso: #F2C94C;
+    --g-revision:  #C77DDB; --g-completado: #43C97F; --g-alerta: #FF6B5A;
+
+    --vidrio:      color-mix(in srgb, #151719 72%, transparent);
+    --vidrio-alto: color-mix(in srgb, #191C1F 82%, transparent);
+    --filo: inset 0 1px 0 rgba(255,255,255,.07);
+    --sombra-boton: 0 2px 8px rgba(0,0,0,.45);
+
+    --sombra: 0 1px 3px rgba(0,0,0,.4);
+    --sombra-alta: 0 8px 28px -10px rgba(0,0,0,.7);
+    --r-lg: 20px; --r-md: 16px;
+  }
+
+  [data-tema="claro"]{
+    color-scheme: light;
+
+    --fondo:      #F1F2F4;   /* lienzo gris muy claro */
+    --sup:        #FFFFFF;   /* tarjetas blancas puras */
+    --sup-alta:   #F5F6F8;
+    --sup-hover:  #ECEEF1;
+    --linea:      #EDEFF2;
+    --borde:      #E1E4E9;
+
+    --texto:      #14161A;
+    --texto-2:    #5A6270;
+    --texto-3:    #69707C;
+
+    --acento:     #2456D6;
+    --acento-suave:#EBF0FE;
+    --acento-tinta:#FFFFFF;
+
+    /* Más oscuros que en el tema oscuro: sobre blanco necesitan
+       bajar luminosidad para no perder contraste. */
+    --est-pendiente:  #3F63B8;
+    --est-proceso:    #775C0A;
+    --est-revision:   #9B4B8D;
+    --est-completado: #1F6B39;
+    --alerta:         #C2402F;
+
+    /* Rellenos vivos también sobre blanco: son gráficos, no texto */
+    --g-pendiente: #3B6DF5; --g-proceso: #F2B705;
+    --g-revision:  #B45BD1; --g-completado: #17B26A; --g-alerta: #F0472F;
+
+    --vidrio:      color-mix(in srgb, #FFFFFF 68%, transparent);
+    --vidrio-alto: color-mix(in srgb, #FFFFFF 82%, transparent);
+    --filo: inset 0 1px 0 rgba(255,255,255,.85);
+    --sombra-boton: 0 4px 14px -6px color-mix(in srgb, var(--acento) 55%, transparent);
+
+    --sombra: 0 1px 2px rgba(16,20,28,.05), 0 4px 14px -8px rgba(16,20,28,.10);
+    --sombra-alta: 0 8px 28px -10px rgba(16,20,28,.18);
+  }
+
+  /* ── Vidrio ───────────────────────────────────────────────────
+     Superficies translúcidas con desenfoque detrás, más un filo de
+     luz arriba que simula el borde de un cristal. Se reserva para el
+     "cromo" de la app: cabecera, menús, modales, barra inferior.
+     Las tarjetas con texto largo quedan sólidas, porque desenfocar
+     el fondo detrás de un párrafo le quita legibilidad.            */
+  .vidrio{
+    background:var(--vidrio);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+    backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:var(--filo), var(--sombra);
+  }
+  .vidrio-alto{
+    background:var(--vidrio-alto);
+    -webkit-backdrop-filter:blur(34px) saturate(190%);
+    backdrop-filter:blur(34px) saturate(190%);
+    box-shadow:var(--filo), var(--sombra-alta);
+  }
+
+  /* Si el navegador no sabe desenfocar, se cae a superficie sólida
+     en vez de dejar el texto sobre un fondo translúcido ilegible. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+    .vidrio, .vidrio-alto{ background:var(--sup); }
+  }
+
+  /* Halo suave del lienzo: da profundidad sin ensuciar */
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(60vw 42vw at 78% -8%, color-mix(in srgb, var(--acento) 16%, transparent), transparent 68%),
+      radial-gradient(48vw 36vw at 4% 102%, color-mix(in srgb, var(--g-revision) 12%, transparent), transparent 66%);
+    opacity:.55;
+  }
+  body > *{ position:relative; z-index:1; }
+
+  /* ── Componentes ─────────────────────────────────────────────── */
+
+  /* Tarjeta grande. Esquinas amplias y sombra suave: nada de bordes
+     duros, la separación la hace la elevación. */
+  .caja{ background:var(--sup); border-radius:var(--r-lg);
+         box-shadow:var(--sombra); border:1px solid var(--linea); }
+
+  /* Cifra protagonista, como el saldo de la referencia */
+  .heroe{ font-size:clamp(30px, 5vw, 42px); font-weight:700; letter-spacing:-.03em;
+          line-height:1; font-variant-numeric:tabular-nums; }
+
+  /* Rejilla de acciones rápidas: icono arriba, etiqueta abajo */
+  .rapidas{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
+  @media (max-width:420px){ .rapidas{ gap:8px; } }
+  .rapida{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+           gap:8px; min-height:82px; padding:14px 8px;
+           background:var(--sup); border:1px solid var(--linea); border-radius:var(--r-md);
+           box-shadow:var(--sombra); color:var(--texto-2);
+           transition:transform .16s ease, box-shadow .16s ease, color .16s ease; }
+  .rapida:hover{ transform:translateY(-2px); box-shadow:var(--sombra-alta); color:var(--texto); }
+  .rapida svg{ color:var(--acento); }
+  .rapida span{ font-size:12.5px; font-weight:500; }
+
+  /* Fila de lista: círculo, título con subtítulo, valor a la derecha */
+  .item{ display:flex; align-items:center; gap:12px; width:100%;
+         padding:12px 14px; border-radius:var(--r-md);
+         background:var(--sup); border:1px solid var(--linea);
+         text-align:left; transition:background .16s ease, transform .16s ease; }
+  .item:hover{ background:var(--sup-hover); transform:translateX(2px); }
+  .item-t{ font-size:13.5px; font-weight:600; letter-spacing:-.01em; color:var(--texto); }
+  .item-s{ font-size:12px; color:var(--texto-3); margin-top:2px; }
+  .item-v{ font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; }
+
+  /* Chip de filtro con chevron */
+  .chip{ display:inline-flex; align-items:center; gap:7px;
+         padding:9px 14px; border-radius:999px;
+         background:var(--sup); border:1px solid var(--linea);
+         font-size:12.5px; font-weight:500; color:var(--texto-2);
+         box-shadow:var(--sombra); transition:color .16s ease, border-color .16s ease; }
+  .chip:hover{ color:var(--texto); border-color:var(--borde); }
+  .chip[aria-pressed="true"]{ background:var(--acento-suave); color:var(--acento);
+                              border-color:color-mix(in srgb, var(--acento) 35%, transparent); }
+
+  /* Anillo de progreso */
+  .anillo{ width:46px; height:46px; flex-shrink:0; transform:rotate(-90deg); }
+  .anillo circle{ fill:none; stroke-width:4; stroke-linecap:round; }
+  .anillo .pista{ stroke:var(--sup-alta); }
+
+  /* Barra segmentada multicolor, como el desglose por categoría */
+  .segmentos{ display:flex; gap:3px; height:8px; border-radius:999px; overflow:hidden; }
+  .segmentos > span{ transition:width .5s cubic-bezier(.4,0,.2,1); border-radius:999px; }
+
+  /* Tinte translúcido de cualquier token: sirve para las píldoras
+     de estado sin tener que declarar 20 colores extra por tema. */
+  .tinte-8  { background: color-mix(in srgb, currentColor 8%,  transparent); }
+  .tinte-14 { background: color-mix(in srgb, currentColor 14%, transparent); }
+
+  /* Alias que aún usan algunos componentes */
+  :root{ --cyan:var(--acento); }
+  html{ -webkit-text-size-adjust:100%; }
+  body{ background:var(--fondo); color:var(--texto);
+        font-family:'Inter Tight',system-ui,sans-serif;
+        transition:background .25s ease, color .25s ease; }
+
+  /* ── Tipografía ──────────────────────────────────────────────
+     Una sola familia para leer (Inter Tight) y el mono reservado a
+     datos: fechas, porcentajes, contadores. Antes el mono en
+     mayúsculas estaba en todas partes y era la causa principal de
+     que la pantalla se sintiera cargada.                          */
+
+  .titulo    { font-size:20px; font-weight:600; letter-spacing:-.022em; line-height:1.2; }
+  .subtitulo { font-size:15px; font-weight:600; letter-spacing:-.014em; line-height:1.3; }
+  .seccion   { font-size:13px; font-weight:600; letter-spacing:-.006em; color:#A3A8B2; }
+  .meta      { font-size:12.5px; line-height:1.5; color:#A3A8B2; }
+  .nota      { font-size:13px;   line-height:1.55; color:#A3A8B2; }
+  .dato      { font-family:'JetBrains Mono',ui-monospace,monospace;
+               font-size:11.5px; letter-spacing:.01em; font-variant-numeric:tabular-nums; }
+  .cifra     { font-family:'Archivo',system-ui,sans-serif; font-variation-settings:'wght' 700;
+               letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .etiqueta  { display:block; margin-bottom:7px; font-size:12.5px; font-weight:500; color:#A3A8B2; }
+  /* Texto de botones: sans, no mono. Un botón se lee, no se mide. */
+  .accion    { font-size:13px; font-weight:500; letter-spacing:-.004em; }
+
+  /* Compatibilidad: lo que aún usa .tape queda en caja normal */
+  .tape      { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11.5px;
+               letter-spacing:.01em; font-variant-numeric:tabular-nums; text-transform:none; }
+  .stencil      { font-size:17px; font-weight:600; letter-spacing:-.02em; }
+  .stencil-thin { font-size:13px; font-weight:600; letter-spacing:-.006em; }
+
+  /* Campos de formulario: un solo estilo, no diez variantes sueltas */
+  .campo{ width:100%; border-radius:14px; border:1px solid var(--linea);
+          background:var(--sup-alta); padding:11px 14px; font-size:13.5px;
+          color:var(--texto); outline:none;
+          transition:border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+  .campo:focus{ border-color:var(--acento); background:var(--sup);
+                box-shadow:0 0 0 3px color-mix(in srgb, var(--acento) 18%, transparent); }
+  .campo::placeholder{ color:var(--texto-3); }
+
+  .slate-seg{ transition:width .55s cubic-bezier(.4,0,.2,1), filter .2s ease; min-width:26px; }
+  .slate-seg:hover{ filter:brightness(1.18); }
+
+  .sprocket{ width:6px; height:6px; border-radius:999px; background:var(--linea); transition:background .25s ease; }
+  .sprocket.on{ background:currentColor; }
+
+  /* ── Superficies estilo app ─────────────────────────────────────
+     Las tarjetas flotan sobre el lienzo con sombra suave en vez de
+     encerrarse en un borde de 1px. El borde queda solo como apoyo
+     muy tenue para separar en el tema claro.                       */
+  .tarjeta{
+    background:var(--sup);
+    border:1px solid var(--linea);
+    border-radius:var(--r-lg);
+    box-shadow:var(--sombra);
+    transition:transform .2s cubic-bezier(.2,.7,.3,1), box-shadow .2s ease, border-color .2s ease;
+  }
+
+  .card{ border-radius:var(--r-md); background:var(--sup); border:1px solid var(--linea);
+         box-shadow:var(--sombra);
+         transition:transform .2s cubic-bezier(.2,.7,.3,1), box-shadow .2s ease, border-color .2s ease; }
+  .card:hover{ transform:translateY(-2px); box-shadow:var(--sombra-alta); border-color:var(--borde); }
+
+  /* Botón principal: píldora sólida con el acento */
+  .btn-principal{
+    display:inline-flex; align-items:center; gap:8px; justify-content:center;
+    background:var(--acento); color:var(--acento-tinta);
+    border:none; border-radius:999px; padding:11px 18px;
+    font-size:13.5px; font-weight:600; letter-spacing:-.006em;
+    transition:filter .16s ease, transform .16s ease;
+  }
+  .btn-principal{ box-shadow:inset 0 1px 0 rgba(255,255,255,.22), var(--sombra-boton); }
+  .btn-principal:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+  .btn-principal:active{ transform:translateY(0); }
+
+  /* Botón secundario: píldora tenue */
+  .btn-suave{
+    display:inline-flex; align-items:center; gap:7px; justify-content:center;
+    background:var(--sup-alta); color:var(--texto-2);
+    border:1px solid var(--linea); border-radius:999px; padding:10px 16px;
+    font-size:13px; font-weight:500;
+    transition:background .16s ease, color .16s ease, border-color .16s ease;
+  }
+  .btn-suave:hover{ background:var(--sup-hover); color:var(--texto); border-color:var(--borde); }
+
+  /* Píldora de estado */
+  .pildora{
+    display:inline-flex; align-items:center; gap:6px;
+    border-radius:999px; padding:4px 10px;
+    font-size:12px; font-weight:500; white-space:nowrap;
+  }
+  .card.dragging{ opacity:.35; transform:rotate(-1.2deg) scale(.98); }
+  .card.selected{ background:#25282D; border-color:#4B515A; }
+  .card.flash{ animation:flash .6s ease; }
+  @keyframes flash{ 0%{ box-shadow:0 0 0 0 rgba(255,255,255,.28);} 100%{ box-shadow:0 0 0 14px rgba(255,255,255,0);} }
+
+  .col-drop.over{ background:var(--sup-hover); outline:1.5px dashed var(--acento); outline-offset:-4px; border-radius:16px; }
+
+  .rise{ animation:rise .5s cubic-bezier(.2,.7,.3,1) backwards; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
+
+  /* ── Gantt ── */
+  .g-wrap{ display:grid; grid-template-columns:236px minmax(0,1fr); }
+  @media (max-width:640px){ .g-wrap{ grid-template-columns:150px minmax(0,1fr); } }
+  .g-labels{ border-right:1px solid var(--linea); background:var(--sup); }
+  .g-scroll{ overflow-x:auto; overflow-y:hidden; }
+  .g-row{ height:32px; display:flex; align-items:center; border-bottom:1px solid var(--linea); }
+  .g-row.g-group{ height:38px; background:var(--sup-alta); }
+  .g-row:hover{ background:var(--sup-hover); }
+  .g-row.sel{ background:var(--sup-hover); }
+  .g-bar{ position:absolute; height:14px; border-radius:999px; top:50%; transform:translateY(-50%);
+          cursor:pointer; transition:filter .15s ease, box-shadow .15s ease; }
+  .g-bar:hover{ filter:brightness(1.22); box-shadow:0 0 0 1px rgba(255,255,255,.25); }
+  .g-bar.grp{ height:18px; border-radius:999px; }
+  .g-fill{ position:absolute; inset:0; border-radius:999px;
+           background:color-mix(in srgb, var(--fondo) 45%, transparent); }
+  .g-fill span{ display:block; height:100%; border-radius:999px; background:transparent; }
+  .g-today{ position:absolute; top:0; bottom:0; width:1px; background:var(--cyan); opacity:.55; }
+  .g-hito{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed rgba(95,211,208,.4); }
+  .g-weekend{ position:absolute; top:0; bottom:0; background:rgba(255,255,255,.022); }
+  .g-monthline{ position:absolute; top:0; bottom:0; width:1px; background:var(--linea); }
+
+  select.tapeselect{ -webkit-appearance:none; appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'><path d='M0 0h8L4 5z' fill='%238E939E'/></svg>");
+    background-repeat:no-repeat; background-position:right 6px center; padding-right:18px; }
+  select.tapeselect option{ background:#1B1D21; color:#E9EAEE; }
+
+  input[type="text"]::placeholder, textarea::placeholder{ color:#7F858F; }
+  input[type="date"]{ font-family:'JetBrains Mono',ui-monospace,monospace; }
+  input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(.55); cursor:pointer; }
+
+  .zona-drop{ transition:border-color .14s ease, background .14s ease, transform .14s ease; }
+  .drop-activo{ border-color:var(--acento) !important; background:color-mix(in srgb, var(--acento) 12%, transparent);
+                transform:scale(1.03); }
+    .fila{ background:var(--sup); border:1px solid var(--linea); border-radius:var(--r-md);
+         transition:background .16s ease, border-color .16s ease, transform .16s ease; }
+  .fila:hover{ background:var(--sup-hover); border-color:var(--borde); transform:translateX(2px); }
+  .fila.sel{ background:var(--sup-hover); border-color:var(--acento); }
+  .fila:hover{ border-color:#3D424A; background:#1E2126; }
+  .fila.sel{ background:#25282D; border-color:#4B515A; }
+  details summary::-webkit-details-marker{ display:none; }
+  details summary{ list-style:none; }
+
+  .cal-cell{ transition:background .18s ease; }
+  .cal-cell:hover{ background:var(--sup-hover); }
+  .cal-cell:hover .cal-add{ opacity:1; }
+  .cal-add{ opacity:0; transition:opacity .18s ease; }
+  .cal-out{ background:var(--sup-alta); opacity:.6; }
+  .cal-chip{ transition:transform .15s ease, filter .15s ease; }
+  .cal-chip:hover{ transform:translateX(2px); filter:brightness(1.2); }
+  .cal-today-ring{ box-shadow:inset 0 0 0 1.5px var(--acento); }
+
+  .modal-in{ animation:modalIn .22s cubic-bezier(.2,.7,.3,1); }
+  @keyframes modalIn{ from{ opacity:0; transform:translateY(-8px) scale(.985);} to{ opacity:1; transform:none;} }
+
+  :focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; border-radius:3px; }
+
+  /* En pantallas táctiles todo control llega al mínimo de 44px.
+     En escritorio se deja compacto: el puntero es preciso. */
+  @media (pointer:coarse){
+    button, select, [role="button"], a{ min-height:44px; }
+    .g-row{ height:38px; }
+    .g-row.g-group{ height:44px; }
+    select.tapeselect{ min-height:36px; }
+  }
+
+  /* Navegación inferior en móvil: la mano llega abajo, no arriba. */
+  .navmovil{ padding-bottom:env(safe-area-inset-bottom); }
+
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:var(--borde); border-radius:99px; }
+  ::-webkit-scrollbar-thumb:hover{ background:var(--texto-3); }
+  .scroll-x{ scrollbar-width:thin; }
+
+  @media (prefers-reduced-motion:reduce){ *,*::before,*::after{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body class="font-body antialiased">
+
+<a href="#viewBody" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90]
+   focus:rounded-[4px] focus:border focus:border-line focus:bg-panel focus:px-4 focus:py-3 focus:text-[13px]">
+  Saltar al contenido</a>
+
+<div class="flex min-h-screen">
+
+  <div id="scrim" class="fixed inset-0 z-40 bg-black/60 hidden lg:hidden"></div>
+  <aside id="sidebar"
+    class="vidrio fixed lg:sticky top-0 z-50 h-screen w-[236px] shrink-0 border-r border-line
+           flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300">
+
+    <div class="px-5 h-[64px] flex items-center gap-3 border-b border-line">
+      <div class="flex h-7 w-7 overflow-hidden rounded-[3px]">
+        <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
+        <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
+      </div>
+      <div class="leading-none">
+        <div class="titulo">Slate</div>
+        <div class="tape text-dim mt-[3px]">Tráfico Comms</div>
+      </div>
+      <button id="closeNav" class="ml-auto lg:hidden text-mute hover:text-ink text-xl leading-none">&times;</button>
+    </div>
+
+    <nav class="p-3 space-y-1 overflow-y-auto" id="nav"></nav>
+
+
+    <div class="mt-auto p-3 border-t border-line">
+      <button id="yoChip" aria-label="Cambiar quién eres" class="flex w-full items-center gap-3 rounded-[12px] px-2.5 py-2.5 text-left hover:bg-panel2 transition">
+        <span id="yoAvatar"></span>
+        <div class="min-w-0">
+          <div id="yoNombre" class="text-[13px] font-medium truncate">—</div>
+          <div id="yoRol" class="meta">—</div>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"
+             class="ml-auto shrink-0 text-dim"><path d="M3 7.5 6 4.5 9 7.5"/></svg>
+      </button>
+      <button id="exportar"
+        class="mt-1 flex w-full items-center gap-2.5 rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-mute transition hover:bg-panel2 hover:text-ink">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 3v9M6.5 8.5 10 12l3.5-3.5M4 14.5v1.5a1 1 0 001 1h10a1 1 0 001-1v-1.5"/></svg>
+        Exportar a Excel</button>
+      <button id="resetBoard"
+        class="w-full rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-dim transition hover:text-bar-red">
+        Restaurar datos del Excel</button>
+    </div>
+  </aside>
+
+  <div class="flex-1 min-w-0 flex flex-col">
+
+    <header class="vidrio sticky top-0 z-30 h-[64px] px-5 sm:px-7 flex items-center gap-4 border-b border-line">
+      <button id="openNav" class="lg:hidden text-mute hover:text-ink" aria-label="Abrir menú">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M3 6h14M3 10h14M3 14h14"/></svg>
+      </button>
+
+      <div class="min-w-0">
+        <h1 class="titulo truncate">Tráfico Comms</h1>
+        <p class="nota mt-[5px] truncate">Cronograma del equipo · Engagement 26 oct – 13 nov</p>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <div class="relative hidden sm:block">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-dim" width="14" height="14" viewBox="0 0 16 16"
+               fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input id="search" type="text" placeholder="Buscar tarea"
+            class="vidrio w-[190px] rounded-full border border-line pl-10 pr-4 py-[9px] text-[13px]
+                   placeholder:text-dim focus:border-bar-cyan focus:outline-none transition" />
+        </div>
+        <button id="temaBtn" aria-label="Cambiar entre tema claro y oscuro"
+          class="vidrio flex h-[40px] items-center gap-2 rounded-full border border-line px-3.5 text-mute transition hover:text-ink">
+          <svg id="iconoTema" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg>
+          <span id="temaTexto" class="hidden text-[12.5px] font-medium sm:inline"></span>
+        </button>
+        <button id="nuevaTarea" title="Nueva tarea (N)" aria-label="Crear nueva tarea"
+          class="accion flex items-center gap-1.5 rounded-[9px] border px-3 py-2.5 transition"
+          style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          <span class="hidden sm:inline">Nueva</span>
+        </button>
+        <button id="syncPill" title="Guardar ahora" aria-label="Estado de guardado. Pulsa para guardar ahora."
+          class="accion flex items-center gap-1.5 rounded-[9px] border border-line bg-panel px-3 py-2.5 text-mute hover:text-ink hover:border-dim transition">
+          <span id="syncDot" class="h-[6px] w-[6px] rounded-full" style="background:#E2CA6E"></span>
+          <span id="syncText">Cargando</span>
+        </button>
+      </div>
+    </header>
+
+    <div id="filterBar" class="hidden flex-wrap items-center gap-2 px-4 sm:px-6 py-2.5 border-b border-line bg-panel/40"></div>
+
+    <div class="flex-1 xl:grid xl:grid-cols-[minmax(0,1fr)_336px]">
+      <section class="min-w-0 border-b xl:border-b-0 xl:border-r border-line">
+        <div class="vidrio px-5 sm:px-7 py-4 border-b border-line">
+          <div id="slate" class="flex h-[8px] w-full gap-[3px] overflow-hidden rounded-full" role="img"></div>
+          <div id="slateKey" class="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5"></div>
+        </div>
+        <main id="viewBody" class="p-5 sm:p-7 pb-24 lg:pb-8" tabindex="-1"></main>
+      </section>
+
+      <aside class="min-w-0">
+        <div id="railDetail" class="p-5 pb-24 lg:pb-6"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<nav id="navMovil" aria-label="Secciones"
+  class="navmovil vidrio fixed bottom-0 left-0 right-0 z-40 flex border-t border-line lg:hidden"></nav>
+
+<div id="proyModal" class="fixed inset-0 z-[77] hidden" role="dialog" aria-modal="true" aria-labelledby="prTitulo">
+  <div class="absolute inset-0 bg-black/75" data-cerrarpr></div>
+  <div class="modal-in vidrio-alto relative mx-auto mt-[8vh] w-[min(440px,92vw)] overflow-hidden rounded-[24px] border border-line">
+    <div class="flex items-center gap-3 border-b border-line px-6 py-5">
+      <h2 id="prTitulo" class="text-[17px] font-semibold tracking-tight">Nuevo proyecto</h2>
+      <button data-cerrarpr class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="space-y-4 px-6 py-5 max-h-[62vh] overflow-y-auto">
+      <label class="block">
+        <span class="etiqueta">Nombre</span>
+        <input id="prNombre" type="text" placeholder="Cápsulas cerveceras" autocomplete="off" class="campo" />
+      </label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="etiqueta">Grupo</span>
+          <select id="prSeccion" class="campo tapeselect"></select>
+        </label>
+        <label class="block">
+          <span class="etiqueta">Área</span>
+          <select id="prArea" class="campo tapeselect"></select>
+        </label>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="etiqueta">Estado</span>
+          <select id="prEstado" class="campo tapeselect"></select>
+        </label>
+        <label class="block">
+          <span class="etiqueta">Fecha de entrega</span>
+          <input id="prEntrega" type="date" class="campo" />
+        </label>
+      </div>
+      <label class="block">
+        <span class="etiqueta">Nota</span>
+        <textarea id="prNota" rows="2" placeholder="Contexto que el equipo deba saber" class="campo resize-none"></textarea>
+      </label>
+      <p id="prError" class="text-[12.5px]" style="color:#E37E73"></p>
+    </div>
+
+    <div class="flex items-center gap-2 border-t border-line px-6 py-4">
+      <button id="prBorrar" class="hidden rounded-[8px] border border-line px-3 py-2.5 text-[13px] text-dim hover:text-bar-red hover:border-bar-red transition">Eliminar</button>
+      <button data-cerrarpr class="ml-auto rounded-[8px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] text-mute hover:text-ink transition">Cancelar</button>
+      <button id="prGuardar" class="rounded-[8px] px-4 py-2.5 text-[13px] font-medium transition"
+        style="background:var(--cyan);color:#111315">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="personaModal" class="fixed inset-0 z-[76] hidden" role="dialog" aria-modal="true" aria-labelledby="pTitulo">
+  <div class="absolute inset-0 bg-black/75" data-cerrarp></div>
+  <div class="modal-in relative mx-auto mt-[9vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+      <span id="pAvatar"></span>
+      <h2 id="pTitulo" class="subtitulo">Nueva persona</h2>
+      <button data-cerrarp class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="space-y-4 px-5 py-5">
+      <div>
+        <label for="pNombre" class="etiqueta">Nombre</label>
+        <input id="pNombre" type="text" placeholder="Camila T." autocomplete="off"
+          class="campo" />
+      </div>
+      <div>
+        <label for="pRol" class="etiqueta">Rol</label>
+        <input id="pRol" type="text" placeholder="Motion y animación" autocomplete="off"
+          class="campo" />
+      </div>
+      <div>
+        <label for="pCap" class="etiqueta">Carga máxima</label>
+        <input id="pCap" type="number" min="1" max="40"
+          class="campo" />
+        <p class="nota mt-2">Tareas que puede sostener a la vez. Al pasarse, su barra se pone en rojo.</p>
+      </div>
+      <div>
+        <span class="etiqueta">Color</span>
+        <div id="pColores" class="flex flex-wrap gap-2"></div>
+      </div>
+      <p id="pError" class="tape" style="color:#E37E73"></p>
+    </div>
+
+    <div class="flex items-center gap-2 border-t border-line px-5 py-4">
+      <button id="pBorrar" class="accion hidden rounded-[4px] border border-line px-3 py-[8px] text-dim hover:text-bar-red hover:border-bar-red transition">Quitar del equipo</button>
+      <button data-cerrarp class="btn-suave ml-auto">Cancelar</button>
+      <button id="pGuardar" class="accion rounded-[9px] border px-3.5 py-2.5 transition"
+        style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 14%, transparent);color:var(--cyan)">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div id="identModal" class="fixed inset-0 z-[75] hidden" role="dialog" aria-modal="true" aria-labelledby="identTitulo">
+  <div class="absolute inset-0 bg-black/80"></div>
+  <div class="modal-in relative mx-auto mt-[10vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
+    <div class="border-b border-line px-5 py-5">
+      <div class="flex h-[18px] w-[62px] overflow-hidden rounded-[2px] mb-4">
+        <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
+        <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
+      </div>
+      <h2 id="identTitulo" class="titulo">¿Quién eres?</h2>
+      <p class="mt-2 text-[12.5px] leading-relaxed text-dim">
+        Es el tablero de todo el equipo. Elige tu nombre y verás lo tuyo primero.
+        Solo afecta a este navegador.</p>
+    </div>
+    <div id="identLista" class="max-h-[46vh] space-y-2 overflow-y-auto p-4"></div>
+    <div class="flex items-center gap-2 border-t border-line px-5 py-4">
+      <span class="meta">Puedes cambiarlo cuando quieras</span>
+      <button id="identInvitado" class="btn-suave ml-auto">
+        Solo estoy mirando</button>
+    </div>
+  </div>
+</div>
+
+<div id="eventModal" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="evTitulo">
+  <div class="absolute inset-0 bg-black/70" data-close></div>
+  <div class="modal-in relative mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+      <div class="flex h-[18px] w-[18px] overflow-hidden rounded-[2px]">
+        <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
+        <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
+      </div>
+      <h2 id="evTitulo" class="subtitulo">Nueva tarea</h2>
+      <button data-close class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="space-y-4 px-5 py-5 max-h-[62vh] overflow-y-auto">
+      <div>
+        <label class="etiqueta">Tipo</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button data-kind="hito"  class="tape rounded-[4px] border py-[9px] transition">Hito</button>
+          <button data-kind="tarea" class="tape rounded-[4px] border py-[9px] transition">Tarea</button>
+        </div>
+      </div>
+
+      <div>
+        <label for="evTitle" class="etiqueta">Nombre</label>
+        <input id="evTitle" type="text" placeholder="Entrega mezcla final"
+          class="campo" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="evDate" class="etiqueta">Inicio</label>
+          <input id="evDate" type="date"
+            class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
+        </div>
+        <div id="fieldEnd">
+          <label for="evEnd" class="etiqueta">Fin</label>
+          <input id="evEnd" type="date"
+            class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
+        </div>
+      </div>
+
+      <div id="taskFields" class="hidden space-y-4">
+        <div>
+          <label for="evProyecto" class="etiqueta">Proyecto</label>
+          <select id="evProyecto" class="campo tapeselect"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="evOwner" class="etiqueta">Responsable</label>
+            <select id="evOwner" class="campo tapeselect"></select>
+          </div>
+          <div>
+            <label for="evStatus" class="etiqueta">Estado</label>
+            <select id="evStatus" class="campo tapeselect"></select>
+          </div>
+        </div>
+      </div>
+
+      <p id="evError" class="tape" style="color:#E37E73"></p>
+    </div>
+
+    <div class="flex items-center gap-2 border-t border-line px-5 py-4">
+      <span class="meta">Esc para cerrar</span>
+      <button data-close class="btn-suave ml-auto">Cancelar</button>
+      <button id="evSubmit" class="accion rounded-[9px] border px-3.5 py-2.5 transition"
+        style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 14%, transparent);color:var(--cyan)">Crear tarea</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite" class="fixed bottom-24 lg:bottom-5 left-1/2 -translate-x-1/2 z-[60] hidden">
+  <div class="vidrio-alto flex items-center gap-2.5 rounded-full border border-line px-4 py-2.5 text-[12.5px] font-medium">
+    <span id="toastDot" class="h-2 w-2 rounded-full bg-bar-green"></span>
+    <span id="toastText" class="text-ink"></span>
+    <button id="toastUndo" class="ml-1.5 hidden rounded-full px-2.5 py-1 text-[12px] font-semibold transition"
+      style="background:color-mix(in srgb, var(--acento) 16%, transparent);color:var(--acento)">Deshacer</button>
+  </div>
+</div>
+
+<script>
+/* ═══ DATOS — generados desde GANTT_COMMS.xlsx ═══ */
+
+const AREAS = ["BIENESTAR", "CDI", "CORPO", "LEGAL", "MKT", "TALENT", "TECH"];
+
+let PERSONAS = [
+ {
+  "id": "u-andres",
+  "nombre": "Andrés",
+  "clave": "ANDRÉS",
+  "iniciales": "A",
+  "rol": "Dirección creativa",
+  "color": "#2A9083",
+  "capacidad": 8
+ },
+ {
+  "id": "u-juli",
+  "nombre": "Juli",
+  "clave": "JULI",
+  "iniciales": "J",
+  "rol": "Diseño gráfico",
+  "color": "#8A6E12",
+  "capacidad": 8
+ },
+ {
+  "id": "u-isa",
+  "nombre": "Isa",
+  "clave": "ISA",
+  "iniciales": "I",
+  "rol": "Contenido y redes",
+  "color": "#A85C9B",
+  "capacidad": 8
+ },
+ {
+  "id": "u-vale-he",
+  "nombre": "Vale H.",
+  "clave": "VALE HE",
+  "iniciales": "VH",
+  "rol": "Motion y animación",
+  "color": "#3E7FD1",
+  "capacidad": 8
+ },
+ {
+  "id": "u-nico",
+  "nombre": "Nico",
+  "clave": "NICO",
+  "iniciales": "N",
+  "rol": "Diseño y presentaciones",
+  "color": "#2F9B57",
+  "capacidad": 8
+ },
+ {
+  "id": "u-clau",
+  "nombre": "Clau",
+  "clave": "CLAU",
+  "iniciales": "C",
+  "rol": "Comunicación interna",
+  "color": "#CE5F52",
+  "capacidad": 8
+ },
+ {
+  "id": "u-vale-hu",
+  "nombre": "Vale Hu.",
+  "clave": "VALE HU",
+  "iniciales": "VH",
+  "rol": "Coordinación",
+  "color": "#C07A2E",
+  "capacidad": 8
+ },
+ {
+  "id": "u-sin",
+  "nombre": "Sin asignar",
+  "clave": null,
+  "iniciales": "—",
+  "rol": "Pendiente de asignación",
+  "color": "#7D8592",
+  "capacidad": 8
+ }
+];
+
+let PROYECTOS = [
+ {
+  "id": "p-newsletter",
+  "nombre": "NEWSLETTER",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-smartdriking",
+  "nombre": "SMARTDRIKING",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-codigo-16-9",
+  "nombre": "CÓDIGO #16-9",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 6
+ },
+ {
+  "id": "p-malto-y-malta",
+  "nombre": "MALTO Y MALTA",
+  "seccion": "ALWAYS ON",
+  "area": "CDI",
+  "estado": "revision",
+  "entrega": "2026-08-20",
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-duenos-duenas",
+  "nombre": "DUEÑOS & DUEÑAS",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 19
+ },
+ {
+  "id": "p-tech-fest",
+  "nombre": "TECH FEST",
+  "seccion": "PROYECTOS",
+  "area": "TECH",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 10
+ },
+ {
+  "id": "p-charla-con-el-mancom",
+  "nombre": "CHARLA CON EL MANCOM",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-practicantes",
+  "nombre": "PRACTICANTES",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "revision",
+  "entrega": "2026-08-20",
+  "nota": null,
+  "nTareas": 19
+ },
+ {
+  "id": "p-cuadros",
+  "nombre": "CUADROS",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-cheers-to-bars",
+  "nombre": "CHEERS TO BARS",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-ppt-talent",
+  "nombre": "PPT TALENT",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-legal",
+  "nombre": "LEGAL",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "revision",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-change-management",
+  "nombre": "CHANGE MANAGEMENT",
+  "seccion": "PROYECTOS",
+  "area": "TALENT",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 7
+ },
+ {
+  "id": "p-fairplay",
+  "nombre": "FAIRPLAY",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-leyendas",
+  "nombre": "LEYENDAS",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": "2026-10-15",
+  "nota": null,
+  "nTareas": 9
+ },
+ {
+  "id": "p-album",
+  "nombre": "ÁLBUM",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-declaracion-de-renta",
+  "nombre": "DECLARACIÓN DE RENTA",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 1
+ },
+ {
+  "id": "p-plataforma-regalos",
+  "nombre": "PLATAFORMA REGALOS",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "BIENESTAR",
+  "estado": "completado",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 3
+ },
+ {
+  "id": "p-esonova",
+  "nombre": "ESONOVÁ",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 2
+ },
+ {
+  "id": "p-capsulas-cerveceras",
+  "nombre": "CÁPSULAS CERVECERAS",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "MKT",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 6
+ },
+ {
+  "id": "p-subele-el-volumen",
+  "nombre": "SÚBELE EL VOLUMEN",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "SIN ÁREA",
+  "estado": "pendiente",
+  "entrega": null,
+  "nota": null,
+  "nTareas": 0
+ }
+];
+
+let TAREAS = [
+ {
+  "id": "t1",
+  "codigo": "T-001",
+  "titulo": "ESTRATEGIA",
+  "proyecto": "p-newsletter",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-03",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t2",
+  "codigo": "T-002",
+  "titulo": "GLOBAR BEER RESPONSIBLE DAY",
+  "proyecto": "p-smartdriking",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t3",
+  "codigo": "T-003",
+  "titulo": "CAP 3",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.8,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-05",
+  "comentarios": []
+ },
+ {
+  "id": "t4",
+  "codigo": "T-004",
+  "titulo": "CAP 4",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-19",
+  "fin": "2026-08-19",
+  "comentarios": []
+ },
+ {
+  "id": "t5",
+  "codigo": "T-005",
+  "titulo": "CAP 5",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-09-01",
+  "fin": "2026-09-01",
+  "comentarios": []
+ },
+ {
+  "id": "t6",
+  "codigo": "T-006",
+  "titulo": "ACTIVACIÓN 127",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t7",
+  "codigo": "T-007",
+  "titulo": "ACTIVACIÓN TOCANCIPÁ",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t8",
+  "codigo": "T-008",
+  "titulo": "ACTIVACIÓN BOYACÁ",
+  "proyecto": "p-codigo-16-9",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t9",
+  "codigo": "T-009",
+  "titulo": "CAP 7",
+  "proyecto": "p-malto-y-malta",
+  "area": "CDI",
+  "responsable": "u-vale-he",
+  "progreso": 0.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": "2026-08-04",
+  "fin": "2026-08-04",
+  "comentarios": []
+ },
+ {
+  "id": "t10",
+  "codigo": "T-010",
+  "titulo": "INVITACIÓN SAVE THE DATE",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t11",
+  "codigo": "T-011",
+  "titulo": "LÁMINAS ANDRE Y SERGIO",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t12",
+  "codigo": "T-012",
+  "titulo": "LOOP PANTALLAS FRASES",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-vale-he",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t13",
+  "codigo": "T-013",
+  "titulo": "BACKING NOMBRES",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-14",
+  "comentarios": []
+ },
+ {
+  "id": "t14",
+  "codigo": "T-014",
+  "titulo": "AVISO NOMINADOS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-21",
+  "comentarios": []
+ },
+ {
+  "id": "t15",
+  "codigo": "T-015",
+  "titulo": "VIDEO APERTURA",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-22",
+  "comentarios": []
+ },
+ {
+  "id": "t16",
+  "codigo": "T-016",
+  "titulo": "FONDO HOST",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-vale-he",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-17",
+  "comentarios": []
+ },
+ {
+  "id": "t17",
+  "codigo": "T-017",
+  "titulo": "VIDEO EX DUEÑOS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-22",
+  "comentarios": []
+ },
+ {
+  "id": "t18",
+  "codigo": "T-018",
+  "titulo": "PALABRAS SERGIO",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-clau",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-24",
+  "comentarios": []
+ },
+ {
+  "id": "t19",
+  "codigo": "T-019",
+  "titulo": "CORTINILLAS CATEGORÍAS Y NOMBRES",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-vale-he",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-23",
+  "comentarios": []
+ },
+ {
+  "id": "t20",
+  "codigo": "T-020",
+  "titulo": "ANIMACIÓN PERSONAS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-24",
+  "comentarios": []
+ },
+ {
+  "id": "t21",
+  "codigo": "T-021",
+  "titulo": "VIDEO CIERRE",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-24",
+  "comentarios": []
+ },
+ {
+  "id": "t22",
+  "codigo": "T-022",
+  "titulo": "CUBRIMIENTO 30 DE JULIO",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-07-30",
+  "comentarios": []
+ },
+ {
+  "id": "t23",
+  "codigo": "T-023",
+  "titulo": "CAJAS DE LUZ",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-10",
+  "fin": "2026-07-23",
+  "comentarios": []
+ },
+ {
+  "id": "t24",
+  "codigo": "T-024",
+  "titulo": "POST LK VP",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-clau",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-07-30",
+  "comentarios": []
+ },
+ {
+  "id": "t25",
+  "codigo": "T-025",
+  "titulo": "TIKTOK RECAP",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t26",
+  "codigo": "T-026",
+  "titulo": "TIKTOK QUÉ ES D&D",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t27",
+  "codigo": "T-027",
+  "titulo": "RECAP IG D&D",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t28",
+  "codigo": "T-028",
+  "titulo": "CARRUSEL DUEÑOS",
+  "proyecto": "p-duenos-duenas",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-30",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t29",
+  "codigo": "T-029",
+  "titulo": "PIEZA EXPECTATIVA PANTALLAS",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t30",
+  "codigo": "T-030",
+  "titulo": "PIEZA EXPECTATIVA ASCENSORES",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t31",
+  "codigo": "T-031",
+  "titulo": "VIDEO AI",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t32",
+  "codigo": "T-032",
+  "titulo": "CITACIÓN TOCANCIPÁ",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t33",
+  "codigo": "T-033",
+  "titulo": "CITACIÓN VALLE",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t34",
+  "codigo": "T-034",
+  "titulo": "VIDEO ESCAPE ROOM",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-28",
+  "fin": "2026-08-03",
+  "comentarios": []
+ },
+ {
+  "id": "t35",
+  "codigo": "T-035",
+  "titulo": "NEWSLETTER TECH FEST",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t36",
+  "codigo": "T-036",
+  "titulo": "CUBRIMIENTO",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t37",
+  "codigo": "T-037",
+  "titulo": "POST FOTOS LK",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t38",
+  "codigo": "T-038",
+  "titulo": "RECAP TECHFEST",
+  "proyecto": "p-tech-fest",
+  "area": "TECH",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-10",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t39",
+  "codigo": "T-039",
+  "titulo": "PPT CHARLA CON EL MANCOM",
+  "proyecto": "p-charla-con-el-mancom",
+  "area": "CORPO",
+  "responsable": "u-nico",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-05",
+  "fin": "2026-08-05",
+  "comentarios": []
+ },
+ {
+  "id": "t40",
+  "codigo": "T-040",
+  "titulo": "AJUSTES HERO + KV",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t41",
+  "codigo": "T-041",
+  "titulo": "PROPUESTA DIGITAL",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t42",
+  "codigo": "T-042",
+  "titulo": "1:1 CONVOCATORIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t43",
+  "codigo": "T-043",
+  "titulo": "CARRUSEL REQUISITOS",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t44",
+  "codigo": "T-044",
+  "titulo": "CARRUSEL ÁREAS",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t45",
+  "codigo": "T-045",
+  "titulo": "1:1 CIUDADES",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t46",
+  "codigo": "T-046",
+  "titulo": "REEL CONVOCATORIA MANUELA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t47",
+  "codigo": "T-047",
+  "titulo": "CARRESUEL TESTIMONIOS",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t48",
+  "codigo": "T-048",
+  "titulo": "1:1 CONVOCATORIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t49",
+  "codigo": "T-049",
+  "titulo": "REEL TENDENCIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t50",
+  "codigo": "T-050",
+  "titulo": "CUENTA REGRESIVA 1",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t51",
+  "codigo": "T-051",
+  "titulo": "REEL TENDENCIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t52",
+  "codigo": "T-052",
+  "titulo": "CUENTA REGRESIVA 2",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t53",
+  "codigo": "T-053",
+  "titulo": "ÚLTIMO AVISO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t54",
+  "codigo": "T-054",
+  "titulo": "REEL TENDENCIA",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t55",
+  "codigo": "T-055",
+  "titulo": "PRODUCCIÓN HERO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t56",
+  "codigo": "T-056",
+  "titulo": "EDICIÓN HERO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t57",
+  "codigo": "T-057",
+  "titulo": "ENTREGA HERO",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t58",
+  "codigo": "T-058",
+  "titulo": "COMUNICADO OFICIAL",
+  "proyecto": "p-practicantes",
+  "area": "TALENT",
+  "responsable": "u-sin",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t59",
+  "codigo": "T-059",
+  "titulo": "CUADROS SAMIRA",
+  "proyecto": "p-cuadros",
+  "area": "CORPO",
+  "responsable": "u-sin",
+  "progreso": 0.9,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": "2026-07-01",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t60",
+  "codigo": "T-060",
+  "titulo": "CUADROS SEGURIDAD",
+  "proyecto": "p-cuadros",
+  "area": "CORPO",
+  "responsable": "u-sin",
+  "progreso": 0.9,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": "2026-07-01",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t61",
+  "codigo": "T-061",
+  "titulo": "CHEERS TO BARS",
+  "proyecto": "p-cheers-to-bars",
+  "area": "CORPO",
+  "responsable": "u-sin",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t62",
+  "codigo": "T-062",
+  "titulo": "VIDEO TECH",
+  "proyecto": "p-ppt-talent",
+  "area": "TALENT",
+  "responsable": "u-nico",
+  "progreso": 0.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t63",
+  "codigo": "T-063",
+  "titulo": "CALENDARIO VACANTES",
+  "proyecto": "p-ppt-talent",
+  "area": "TALENT",
+  "responsable": "u-nico",
+  "progreso": 0.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t64",
+  "codigo": "T-064",
+  "titulo": "ANIMACIÓN LEGAL BEES",
+  "proyecto": "p-legal",
+  "area": "LEGAL",
+  "responsable": "u-vale-he",
+  "progreso": 0.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t65",
+  "codigo": "T-065",
+  "titulo": "INVITACIÓN FOCUS GROUP",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-27",
+  "fin": "2026-07-27",
+  "comentarios": []
+ },
+ {
+  "id": "t66",
+  "codigo": "T-066",
+  "titulo": "CS- PIEZA EXPECTATIVA",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-28",
+  "fin": "2026-07-28",
+  "comentarios": []
+ },
+ {
+  "id": "t67",
+  "codigo": "T-067",
+  "titulo": "CS- FORMATO TO GO",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": []
+ },
+ {
+  "id": "t68",
+  "codigo": "T-068",
+  "titulo": "CS- LANZAMIENTO",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t69",
+  "codigo": "T-069",
+  "titulo": "CF- EXPECTATIVA",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-04",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t70",
+  "codigo": "T-070",
+  "titulo": "CF- BENEFICIOS",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-07-31",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t71",
+  "codigo": "T-071",
+  "titulo": "CF- LANZAMIENTO",
+  "proyecto": "p-change-management",
+  "area": "TALENT",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t72",
+  "codigo": "T-072",
+  "titulo": "PIEZA PANTALLAS",
+  "proyecto": "p-fairplay",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-03",
+  "fin": "2026-08-05",
+  "comentarios": []
+ },
+ {
+  "id": "t73",
+  "codigo": "T-073",
+  "titulo": "TOOLKIT EVENTO",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 1.0,
+  "estado": "revision",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t74",
+  "codigo": "T-074",
+  "titulo": "VIDEO MANIFIESTO",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t75",
+  "codigo": "T-075",
+  "titulo": "SAVE THE DATE",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t76",
+  "codigo": "T-076",
+  "titulo": "FECHAS DE PLANTAS",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-vale-hu",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t77",
+  "codigo": "T-077",
+  "titulo": "PARRILLA REDES",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 1.0,
+  "estado": "revision",
+  "notas": "Cápsulas/pantallas",
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t78",
+  "codigo": "T-078",
+  "titulo": "REVISAR ARCHIVOS LEYENDAS",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-isa",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-14",
+  "fin": "2026-08-14",
+  "comentarios": []
+ },
+ {
+  "id": "t79",
+  "codigo": "T-079",
+  "titulo": "FOTOS LEYENDAS",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t80",
+  "codigo": "T-080",
+  "titulo": "VIDEOS FAMILIARES",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-10-08",
+  "fin": "2026-10-08",
+  "comentarios": []
+ },
+ {
+  "id": "t81",
+  "codigo": "T-081",
+  "titulo": "CUBRIMIENTO",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-10-15",
+  "fin": "2026-10-15",
+  "comentarios": []
+ },
+ {
+  "id": "t82",
+  "codigo": "T-082",
+  "titulo": "DISEÑO ÁLBUM",
+  "proyecto": "p-album",
+  "area": "CORPO",
+  "responsable": "u-nico",
+  "progreso": 0.2,
+  "estado": "proceso",
+  "notas": null,
+  "inicio": "2026-07-01",
+  "fin": "2026-08-01",
+  "comentarios": []
+ },
+ {
+  "id": "t83",
+  "codigo": "T-083",
+  "titulo": "ACTIVIDADES MONAS",
+  "proyecto": "p-album",
+  "area": "CORPO",
+  "responsable": "u-nico",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-15",
+  "fin": "2026-08-30",
+  "comentarios": []
+ },
+ {
+  "id": "t84",
+  "codigo": "T-084",
+  "titulo": "DECLARACIÓN DE RENTA",
+  "proyecto": "p-declaracion-de-renta",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-10",
+  "fin": "2026-08-11",
+  "comentarios": []
+ },
+ {
+  "id": "t85",
+  "codigo": "T-085",
+  "titulo": "IMAGEN NAVIDAD PORTADA 1",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": []
+ },
+ {
+  "id": "t86",
+  "codigo": "T-086",
+  "titulo": "IMAGEN NAVIDAD PORTADA 2",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": []
+ },
+ {
+  "id": "t87",
+  "codigo": "T-087",
+  "titulo": "IMAGEN DONACIÓN",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-juli",
+  "progreso": 1.0,
+  "estado": "completado",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": []
+ },
+ {
+  "id": "t88",
+  "codigo": "T-088",
+  "titulo": "CÁPSULAS PANTALLAS",
+  "proyecto": "p-esonova",
+  "area": "CORPO",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t89",
+  "codigo": "T-089",
+  "titulo": "HACKEO DE ESPACIOS",
+  "proyecto": "p-esonova",
+  "area": "CORPO",
+  "responsable": "u-juli",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": "2026-08-18",
+  "fin": "2026-08-18",
+  "comentarios": []
+ },
+ {
+  "id": "t90",
+  "codigo": "T-090",
+  "titulo": "GRABACIÓN CONTENIDO",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t91",
+  "codigo": "T-091",
+  "titulo": "SISTEMA DE DISPENSADO",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t92",
+  "codigo": "T-092",
+  "titulo": "ESTILOS DE CERVEZA",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t93",
+  "codigo": "T-093",
+  "titulo": "CRISTALERÍA",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t94",
+  "codigo": "T-094",
+  "titulo": "Conservación y servicio de la cerveza",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ },
+ {
+  "id": "t95",
+  "codigo": "T-095",
+  "titulo": "MARIDAJE",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": []
+ }
+];
+
+let HITOS = [
+ {
+  "id": "h1",
+  "titulo": "Entrega Malto y Malta",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h2",
+  "titulo": "Entrega Practicantes 2027",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h3",
+  "titulo": "Entrega Misión Cultura 2.0",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h4",
+  "titulo": "Entrega Un Paso Adelante",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h5",
+  "titulo": "Entrega Video Sala UB",
+  "fecha": "2026-08-20",
+  "fijo": true
+ },
+ {
+  "id": "h6",
+  "titulo": "Newsletter Finanzas",
+  "fecha": "2026-08-21",
+  "fijo": true
+ },
+ {
+  "id": "h7",
+  "titulo": "Evento Leyendas",
+  "fecha": "2026-10-15",
+  "fijo": true
+ },
+ {
+  "id": "h8",
+  "titulo": "Inicio ventana Engagement",
+  "fecha": "2026-10-26",
+  "fijo": true
+ },
+ {
+  "id": "h9",
+  "titulo": "Cierre ventana Engagement",
+  "fecha": "2026-11-13",
+  "fijo": true
+ }
+];
+
+/* ═══════════════════════════════════════════════════
+   ESTADOS
+   ───────────────────────────────────────────────────
+   Mapeo desde el Excel:
+     NO EMPEZADO → Pendiente
+     EN PROCESO  → En proceso
+     ENTREGADO   → En revisión   (entregado, esperando visto bueno)
+     APROBADO    → Completado
+   Cambia los nombres aquí y se propagan a toda la app.
+   ═══════════════════════════════════════════════════ */
+
+/* `color` se usa donde el token hace de TEXTO (necesita 4.5:1).
+   `relleno` se usa en barras, anillos y puntos, donde puede ser vivo. */
+const ESTADOS = [
+  { id:'pendiente',  nombre:'Pendiente',   color:'var(--est-pendiente)',  relleno:'var(--g-pendiente)',  nota:'Briefeado, sin arrancar', origen:'NO EMPEZADO' },
+  { id:'proceso',    nombre:'En proceso',  color:'var(--est-proceso)',    relleno:'var(--g-proceso)',    nota:'En producción ahora',      origen:'EN PROCESO' },
+  { id:'revision',   nombre:'En revisión', color:'var(--est-revision)',   relleno:'var(--g-revision)',   nota:'Entregado, esperando VoBo', origen:'ENTREGADO' },
+  { id:'completado', nombre:'Completado',  color:'var(--est-completado)', relleno:'var(--g-completado)', nota:'Aprobado y cerrado',       origen:'APROBADO' }
+];
+const E  = id => ESTADOS.find(e => e.id === id) || ESTADOS[0];
+const P  = id => PERSONAS.find(p => p.id === id) || PERSONAS[PERSONAS.length - 1];
+const PR = id => PROYECTOS.find(p => p.id === id);
+/* Una tarea puede no pertenecer a ningún proyecto. Se agrupan bajo
+   "Sueltas" en vez de desaparecer del cronograma. */
+const SUELTAS = 'sin-proyecto';
+const nombreProy = id => { const p = PR(id); return p ? p.nombre : 'Suelta'; };
+const T  = id => TAREAS.find(t => t.id === id);
+
+const HOY = '2026-08-23';
+let uid = 1000;
+
+/* Prioridad: no venía en el Excel, así que toda tarea entra en 'media'.
+   El equipo la sube o baja desde el panel de detalle. */
+const PRIORIDADES = [
+  { id:'alta',  nombre:'Alta',  color:'var(--alerta)', peso:0 },
+  { id:'media', nombre:'Media', color:'var(--texto-2)', peso:1 },
+  { id:'baja',  nombre:'Baja',  color:'var(--texto-3)', peso:2 }
+];
+const PRI = id => PRIORIDADES.find(x => x.id === id) || PRIORIDADES[1];
+
+/* Colores disponibles para el equipo, tomados de las barras de color
+   del tablero para que todo siga hablando el mismo idioma visual. */
+/* Colores de las personas: tonos medios que mantienen contraste
+   tanto sobre fondo oscuro como sobre blanco, porque el mismo
+   avatar se ve en los dos temas. */
+const COLORES_EQUIPO = ['#2A9083','#8A6E12','#A85C9B','#3E7FD1','#2F9B57',
+                        '#CE5F52','#C07A2E','#6C7BC4','#3F9C92','#9576C0'];
+
+/* u-sin no es una persona: es la bandeja de lo que nadie ha tomado.
+   No se edita ni se borra. */
+const esSistema = id => id === 'u-sin';
+
+/* ── Disponibilidad ──────────────────────────────────────────────
+   Dónde está hoy cada quien. Importa para dos cosas: saber a quién
+   puedes pedirle algo ahora, y avisar antes de asignarle trabajo a
+   alguien que no está. Cada estado lleva una forma además del color,
+   porque el color solo no basta para quien no lo distingue.        */
+
+const DISPONIBILIDAD = [
+  { id:'oficina',     nombre:'En la oficina', corto:'Oficina',      color:'var(--est-completado)', forma:'●', disponible:true  },
+  { id:'casa',        nombre:'Desde casa',    corto:'Casa',         color:'var(--acento)', forma:'⌂', disponible:true  },
+  { id:'vacaciones',  nombre:'De vacaciones', corto:'Vacaciones',   color:'var(--est-proceso)', forma:'✈', disponible:false },
+  { id:'incapacidad', nombre:'Incapacidad',   corto:'Incapacidad',  color:'var(--est-revision)', forma:'+', disponible:false },
+  { id:'ausente',     nombre:'No disponible', corto:'No disponible',color:'var(--alerta)', forma:'—', disponible:false }
+];
+const DISP = id => DISPONIBILIDAD.find(d => d.id === id) || DISPONIBILIDAD[0];
+
+/* Un rango con fecha vencida vuelve solo a "en la oficina":
+   nadie tiene que acordarse de apagar sus vacaciones al volver. */
+function dispHoy(p){
+  if (!p || !p.disp) return DISPONIBILIDAD[0];
+  if (p.dispHasta && p.dispHasta < HOY) return DISPONIBILIDAD[0];
+  return DISP(p.disp);
+}
+const estaDisponible = id => dispHoy(P(id)).disponible;
+
+function textoAusencia(p){
+  const d = dispHoy(p);
+  if (d.disponible) return d.nombre;
+  if (p.dispHasta) {
+    const dias = diasRestantes(p.dispHasta);
+    if (dias === 0) return `${d.nombre}, vuelve mañana`;
+    if (dias > 0)   return `${d.nombre} hasta el ${fecha(p.dispHasta)}`;
+  }
+  return d.nombre;
+}
+
+function iniciales(nombre){
+  const partes = String(nombre).trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return '?';
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return (partes[0][0] + partes[1][0]).toUpperCase();
+}
+
+function colorLibre(){
+  const usados = new Set(PERSONAS.map(p => p.color));
+  return COLORES_EQUIPO.find(c => !usados.has(c)) || COLORES_EQUIPO[PERSONAS.length % COLORES_EQUIPO.length];
+}
+
+/* Rellena campos que puedan faltar en datos guardados de versiones
+   anteriores, para que una actualización nunca rompa un tablero vivo. */
+/* Tinte translúcido de un color, sea hex o variable CSS. Antes se
+   concatenaba alfa al hex (#RRGGBB + "1f"), que deja de funcionar
+   en cuanto el color es una variable de tema. */
+/* El Excel venía TODO EN MAYÚSCULAS. Las mayúsculas sostenidas
+   cansan y borran la forma de las palabras, así que se pasan a caja
+   de frase: solo la inicial. Las siglas reales se listan a mano,
+   porque adivinarlas por longitud confunde "TECH" con una sigla. */
+const SIGLAS = new Set(['CDI','PPT','UB','NL','MKT','TI','KPI','RRHH','ABI',
+                        'PDF','MP4','MOV','IA','AI','QA','OKR','ADN','TV']);
+
+function titulizar(txt){
+  if (!txt) return txt;
+  const letras = txt.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ]/g, '');
+  // Si no venía mayormente en mayúsculas, se respeta como lo escribieron
+  if (!letras || letras.replace(/[^A-ZÁÉÍÓÚÑ]/g, '').length / letras.length < 0.8) return txt;
+
+  const palabras = txt.split(' ').map(w => {
+    const limpia = w.replace(/[^A-ZÁÉÍÓÚÑ0-9]/gi, '');
+    if (SIGLAS.has(limpia.toUpperCase())) return w;   // sigla real
+    if (/\d/.test(w) && /[#\-]/.test(w)) return w;     // códigos: #16-9
+    return w.toLowerCase();
+  });
+
+  const frase = palabras.join(' ');
+  return frase.replace(/^(\P{L}*)(\p{L})/u, (m, pre, l) => pre + l.toUpperCase());
+}
+
+const tinte = (c, pct) => `color-mix(in srgb, ${c} ${pct}%, transparent)`;
+
+function normalizar(){
+  TAREAS.forEach(t => { t.titulo = titulizar(t.titulo); });
+  PROYECTOS.forEach(p => { p.nombre = titulizar(p.nombre); });
+
+  // La bandeja de sin asignar siempre debe existir
+  if (!PERSONAS.some(p => p.id === 'u-sin')){
+    PERSONAS.push({ id:'u-sin', nombre:'Sin asignar', clave:null, iniciales:'—',
+                    rol:'Pendiente de asignación', color:'var(--texto-3)', capacidad:8 });
+  }
+  PERSONAS.forEach(p => {
+    if (!p.disp) p.disp = 'oficina';
+    if (p.dispHasta && p.dispHasta < HOY){ p.disp = 'oficina'; p.dispHasta = null; }
+    if (!p.iniciales) p.iniciales = iniciales(p.nombre);
+    if (!p.capacidad) p.capacidad = 8;
+    if (!p.color) p.color = colorLibre();
+  });
+  // Una tarea nunca puede apuntar a alguien que ya no está
+  const ids = new Set(PERSONAS.map(p => p.id));
+  TAREAS.forEach(t => { if (!ids.has(t.responsable)) t.responsable = 'u-sin'; });
+  const pids = new Set(PROYECTOS.map(p => p.id));
+  TAREAS.forEach(t => { if (t.proyecto && !pids.has(t.proyecto)) t.proyecto = null; });
+
+  TAREAS.forEach(t => {
+    if (!t.prioridad) t.prioridad = 'media';
+    if (!Array.isArray(t.comentarios)) t.comentarios = [];
+    if (t.progreso == null) t.progreso = 0;
+  });
+}
+
+const VISTAS = [
+  { id:'gantt',      label:'Cronograma', icon:'M3 5h9M3 10h13M3 15h6' },
+  { id:'tablero',    label:'Tablero',    icon:'M3 3h5v14H3zM10 3h5v9h-5z' },
+  { id:'calendario', label:'Calendario', icon:'M3.5 5h13v11.5h-13zM3.5 8.6h13M7 3.2v3.2M13 3.2v3.2' },
+  { id:'mias',       label:'Mi trabajo', icon:'M10 10a3.2 3.2 0 100-6.4A3.2 3.2 0 0010 10zM3.5 17c.6-3 3.2-4.6 6.5-4.6s5.9 1.6 6.5 4.6' },
+  { id:'proyectos',  label:'Proyectos',  icon:'M4 3h8l4 4v10H4zM12 3v4h4M6.5 11h7M6.5 14h4' },
+  { id:'equipo',     label:'Equipo',     icon:'M7 9.5a2.6 2.6 0 100-5.2 2.6 2.6 0 000 5.2zM14 9.5a2.2 2.2 0 100-4.4 2.2 2.2 0 000 4.4zM2 16c.5-2.6 2.6-4 5-4s4.5 1.4 5 4M13 12.2c2 .3 3.4 1.6 3.8 3.8' }
+];
+
+const state = {
+  vista:'gantt', persona:null, area:null, proyecto:null, query:'',
+  seleccion:null, mes:new Date(2026, 7, 1),
+  agrupar:'proyecto', zoom:9, abiertos:new Set(), tipoEvento:'hito',
+  filtroEstado:null, atajo:null,
+  yo:null                      // quién está usando ESTE navegador
+};
+
+/* ── Identidad ────────────────────────────────────────────────────
+   Cada persona del equipo abre la misma URL, así que "quién soy" se
+   guarda en el navegador, no en el tablero compartido. Cambiar de
+   persona en un equipo no cambia nada para los demás.              */
+
+const YO_KEY = 'slate.comms.yo';
+
+function cargarYo(){
+  try { return localStorage.getItem(YO_KEY); } catch { return null; }
+}
+function guardarYo(id){
+  state.yo = id;
+  try { localStorage.setItem(YO_KEY, id); } catch { /* modo incógnito */ }
+}
+const YO = () => P(state.yo || 'u-sin');
+const soyInvitado = () => !state.yo;
+
+/* ═══ Utilidades ═══ */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MESES_L = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+const dt = iso => new Date(iso + 'T00:00:00');
+const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const fecha = iso => iso ? `${String(dt(iso).getDate()).padStart(2,'0')} ${MESES[dt(iso).getMonth()]}` : '—';
+const diasRestantes = iso => Math.round((dt(iso) - dt(HOY)) / 864e5);
+const vencida = t => t.estado !== 'completado' && t.fin && diasRestantes(t.fin) < 0;
+const pct = n => Math.round((n || 0) * 100);
+
+function tareasDe(id, campo){ return TAREAS.filter(t => t[campo] === id); }
+function rango(ts){
+  const f = ts.flatMap(t => [t.inicio, t.fin]).filter(Boolean).sort();
+  return f.length ? { inicio:f[0], fin:f[f.length-1] } : null;
+}
+function avance(ts){
+  if (!ts.length) return 0;
+  return ts.reduce((s,t) => s + (t.progreso || 0), 0) / ts.length;
+}
+function estadoGrupo(ts){
+  if (!ts.length) return 'pendiente';
+  if (ts.every(t => t.estado === 'completado')) return 'completado';
+  if (ts.some(t => t.estado === 'proceso')) return 'proceso';
+  if (ts.some(t => t.estado === 'revision')) return 'revision';
+  return 'pendiente';
+}
+
+function avatar(pid, size = 26, conEstado = true){
+  const p = P(pid);
+  const d = dispHoy(p);
+  const fuera = !d.disponible && !esSistema(pid);
+  const punto = size >= 22 ? Math.max(9, Math.round(size * .36)) : 0;
+
+  return `<span class="relative inline-grid shrink-0 place-items-center rounded-full font-semibold align-middle"
+    style="width:${size}px;height:${size}px;font-size:${Math.round(size*.4)}px;background:${tinte(p.color, 14)};color:${p.color};${fuera ? 'opacity:.62' : ''}"
+    title="${esc(p.nombre)}${p.rol ? ' · ' + esc(p.rol) : ''}${fuera ? ' · ' + esc(textoAusencia(p)) : ''}">
+    ${esc(p.iniciales)}
+    ${conEstado && punto && !esSistema(pid) ? `<span aria-hidden="true"
+      class="absolute -bottom-[1px] -right-[1px] grid place-items-center rounded-full leading-none"
+      style="width:${punto}px;height:${punto}px;font-size:${Math.round(punto*.66)}px;background:${d.color};color:var(--fondo);box-shadow:0 0 0 1.5px var(--sup)">${d.forma}</span>` : ''}
+  </span>`;
+}
+
+function sprockets(t){
+  const c = E(t.estado).color;
+  const llenos = Math.round((t.progreso || 0) * 5);
+  return `<span class="flex gap-[3px]" style="color:${c}" title="Avance ${pct(t.progreso)}%">` +
+    [0,1,2,3,4].map(i => `<i class="sprocket ${i < llenos ? 'on' : ''}"></i>`).join('') + `</span>`;
+}
+
+/* ── Deshacer ──────────────────────────────────────────────────
+   Borrar era la única acción sin vuelta atrás. Ahora cualquier
+   eliminación guarda el estado anterior y el aviso trae el botón
+   para revertirla. Solo se guarda el último paso: más historial
+   invita a confiarse y aquí el objetivo es evitar el susto.     */
+
+let ultimoDeshacer = null;
+
+function recordar(descripcion){
+  ultimoDeshacer = {
+    descripcion,
+    yo: state.yo,          // quitarte a ti mismo también se deshace
+    tareas: JSON.parse(JSON.stringify(TAREAS)),
+    proyectos: JSON.parse(JSON.stringify(PROYECTOS)),
+    personas: JSON.parse(JSON.stringify(PERSONAS)),
+    hitos: JSON.parse(JSON.stringify(HITOS))
+  };
+}
+
+function deshacer(){
+  if (!ultimoDeshacer) return;
+  const p = ultimoDeshacer;
+  TAREAS = p.tareas; PROYECTOS = p.proyectos; PERSONAS = p.personas; HITOS = p.hitos;
+  if (p.yo && PERSONAS.some(x => x.id === p.yo)) guardarYo(p.yo);
+  ultimoDeshacer = null;
+  normalizar();
+  renderAll();
+  toast('Deshecho: ' + p.descripcion, 'var(--acento)');
+}
+
+let toastTimer;
+function toast(texto, color = 'var(--est-completado)', conDeshacer = false){
+  $('#toastText').textContent = texto;
+  $('#toastDot').style.background = color;
+  const btn = document.getElementById('toastUndo');
+  if (btn) btn.classList.toggle('hidden', !conDeshacer);
+  $('#toast').classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('#toast').classList.add('hidden'), conDeshacer ? 7000 : 2600);
+}
+
+function visibles(){
+  return TAREAS.filter(t => {
+    if (state.vista === 'mias' && state.yo && t.responsable !== state.yo) return false;
+    if (state.persona  && t.responsable !== state.persona) return false;
+    if (state.area     && t.area !== state.area) return false;
+    if (state.proyecto && t.proyecto !== state.proyecto) return false;
+    if (state.filtroEstado && t.estado !== state.filtroEstado) return false;
+    if (state.atajo === 'vencidas'  && !vencida(t)) return false;
+    if (state.atajo === 'sinduenio' && !(t.responsable === 'u-sin' && t.estado !== 'completado')) return false;
+    if (state.query){
+      const p = PR(t.proyecto);
+      const hay = [t.titulo, t.codigo, t.area, p && p.nombre, P(t.responsable).nombre].join(' ').toLowerCase();
+      if (!hay.includes(state.query)) return false;
+    }
+    return true;
+  });
+}
+
+/* ═══ Barra lateral ═══ */
+
+function renderNav(){
+  $('#nav').innerHTML = VISTAS.map(v => {
+    const on = state.vista === v.id;
+    return `<button data-vista="${v.id}"
+      class="w-full flex items-center gap-3 rounded-[11px] px-3 py-2.5 text-[13px] transition
+             ${on ? 'bg-panel2 text-ink' : 'text-mute hover:text-ink hover:bg-panel2/60'}">
+      <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" class="${on ? 'text-bar-cyan' : 'text-dim'}"><path d="${v.icon}"/></svg>
+      <span class="${on ? 'font-medium' : ''}">${v.label}</span>
+      ${v.id === 'mias' && state.yo ? (() => {
+        const n = TAREAS.filter(t => t.responsable === state.yo && t.estado !== 'completado').length;
+        const atras = TAREAS.filter(t => t.responsable === state.yo && vencida(t)).length;
+        return `<span class="tape ml-auto ${atras ? 'text-bar-red' : 'text-dim'}">${n}</span>`;
+      })() : ''}
+    </button>`;
+  }).join('');
+  $('#nav').querySelectorAll('button').forEach(b =>
+    b.onclick = () => { state.vista = b.dataset.vista; cerrarNav(); renderAll(); });
+}
+
+
+/* La carga del equipo vive en un solo sitio: el panel derecho.
+   Antes estaba también en la barra lateral y en la franja de arriba,
+   tres veces lo mismo compitiendo por atención. */
+function bindPersonas(scope){
+  document.querySelectorAll(scope + ' [data-persona]').forEach(b =>
+    b.onclick = () => { state.persona = state.persona === b.dataset.persona ? null : b.dataset.persona; renderAll(); });
+}
+
+/* ═══ Barra de estado + indicadores ═══ */
+
+function renderSlate(){
+  const total = TAREAS.length || 1;
+  $('#slate').setAttribute('aria-label',
+    ESTADOS.map(e => `${e.nombre}: ${TAREAS.filter(t => t.estado === e.id).length}`).join(', '));
+  $('#slate').innerHTML = ESTADOS.map(e => {
+    const n = TAREAS.filter(t => t.estado === e.id).length;
+    return `<div class="slate-seg rounded-full" style="width:${n/total*100}%;background:${e.relleno}"
+      title="${e.nombre}: ${n} tareas"></div>`;
+  }).join('');
+
+  const activas   = TAREAS.filter(t => t.estado !== 'completado');
+  const vencidas  = activas.filter(t => vencida(t)).length;
+  const sinDuenio = activas.filter(t => t.responsable === 'u-sin').length;
+
+  $('#slateKey').innerHTML =
+    ESTADOS.map(e => {
+      const n = TAREAS.filter(t => t.estado === e.id).length;
+      const on = state.filtroEstado === e.id;
+      return `<button data-filtroestado="${e.id}" aria-pressed="${on}"
+        class="flex items-baseline gap-1.5 rounded-[3px] px-1.5 py-1 transition ${on ? 'bg-panel2' : 'hover:bg-panel2'}"
+        title="Ver solo ${e.nombre.toLowerCase()}">
+        <span class="h-2 w-2 shrink-0 rounded-full translate-y-[-1px]" style="background:${e.relleno}"></span>
+        <span class="text-[12px] ${on ? 'text-ink font-medium' : 'text-mute'}">${e.nombre}</span>
+        <span class="meta">${n}</span></button>`;
+    }).join('') +
+    `<span class="ml-auto flex items-center gap-2">
+      ${vencidas ? `<button data-atajo="vencidas" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--alerta)">${vencidas} vencidas</button>` : ''}
+      ${sinDuenio ? `<button data-atajo="sinduenio" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--cyan)">${sinDuenio} sin dueño</button>` : ''}
+      <span class="meta">${pct(avance(TAREAS))}% avance</span>
+    </span>`;
+
+  document.querySelectorAll('[data-filtroestado]').forEach(b => b.onclick = () => {
+    state.filtroEstado = state.filtroEstado === b.dataset.filtroestado ? null : b.dataset.filtroestado;
+    if (state.vista === 'equipo' || state.vista === 'proyectos') state.vista = 'tablero';
+    renderAll();
+  });
+  document.querySelectorAll('[data-atajo]').forEach(b => b.onclick = () => {
+    state.atajo = state.atajo === b.dataset.atajo ? null : b.dataset.atajo;
+    if (state.vista === 'equipo' || state.vista === 'proyectos') state.vista = 'tablero';
+    renderAll();
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   VISTA PRINCIPAL — DIAGRAMA DE GANTT
+   ═══════════════════════════════════════════════════ */
+
+function ejeGantt(){
+  const fechas = [...TAREAS.flatMap(t => [t.inicio, t.fin]), ...HITOS.map(h => h.fecha)].filter(Boolean).sort();
+  const min = dt(fechas[0] || HOY), max = dt(fechas[fechas.length-1] || HOY);
+  const inicio = new Date(min.getFullYear(), min.getMonth(), 1);
+  const fin    = new Date(max.getFullYear(), max.getMonth() + 1, 0);
+  const dias   = Math.round((fin - inicio) / 864e5) + 1;
+  return { inicio, fin, dias, ancho: dias * state.zoom };
+}
+const offsetDias = (eje, iso) => Math.round((dt(iso) - eje.inicio) / 864e5);
+
+function grupos(){
+  const ts = visibles();
+  if (state.agrupar === 'persona'){
+    return PERSONAS.map(p => ({
+      id:p.id, nombre:p.nombre, meta:p.rol, color:p.color,
+      tareas: ts.filter(t => t.responsable === p.id)
+    })).filter(g => g.tareas.length);
+  }
+  if (state.agrupar === 'area'){
+    return AREAS.map(a => ({
+      id:'a-' + a, nombre:a, meta:'Área', color:'var(--texto-2)',
+      tareas: ts.filter(t => t.area === a)
+    })).filter(g => g.tareas.length);
+  }
+  const porProyecto = PROYECTOS.map(p => ({
+    id:p.id, nombre:p.nombre, meta:`${p.seccion} · ${p.area}`, color:E(p.estado).color,
+    tareas: ts.filter(t => t.proyecto === p.id)
+  })).filter(g => g.tareas.length);
+
+  const sueltas = ts.filter(t => !t.proyecto || !PR(t.proyecto));
+  if (sueltas.length) porProyecto.push({
+    id:SUELTAS, nombre:'Tareas sueltas', meta:'Sin proyecto',
+    color:E(estadoGrupo(sueltas)).color, tareas:sueltas
+  });
+  return porProyecto;
+}
+
+function barra(t, eje){
+  if (!t.inicio && !t.fin) return `<span class="tape absolute left-2 top-1/2 -translate-y-1/2 text-dim">sin fechas</span>`;
+  const ini = t.inicio || t.fin, fin = t.fin || t.inicio;
+  const x = offsetDias(eje, ini) * state.zoom;
+  const w = Math.max(state.zoom, (offsetDias(eje, fin) - offsetDias(eje, ini) + 1) * state.zoom);
+  const e = E(t.estado);
+  const rojo = vencida(t);
+  return `<button class="g-bar" data-tarea="${t.id}" style="left:${x}px;width:${w}px;background:${e.color}${rojo ? ';box-shadow:0 0 0 1px var(--alerta)' : ''}"
+      aria-label="${esc(t.titulo)}, ${fecha(ini)} a ${fecha(fin)}, ${e.nombre}, ${pct(t.progreso)} por ciento"
+      title="${esc(t.titulo)} · ${fecha(ini)} – ${fecha(fin)} · ${e.nombre} · ${pct(t.progreso)}%">
+      <div class="g-fill"><span style="width:${pct(t.progreso)}%;background:${e.relleno}"></span></div>
+    </button>`;
+}
+
+function barraGrupo(g, eje){
+  const r = rango(g.tareas);
+  if (!r) return `<span class="tape absolute left-2 top-1/2 -translate-y-1/2 text-dim">sin fechas</span>`;
+  const x = offsetDias(eje, r.inicio) * state.zoom;
+  const w = Math.max(state.zoom, (offsetDias(eje, r.fin) - offsetDias(eje, r.inicio) + 1) * state.zoom);
+  const est = state.agrupar === 'proyecto' && PR(g.id) ? PR(g.id).estado : estadoGrupo(g.tareas);
+  const c = state.agrupar === 'persona' ? g.color : E(est).color;
+  const av = pct(avance(g.tareas));
+  return `<div class="g-bar grp" style="left:${x}px;width:${w}px;background:${tinte(c, 40)};border:1px solid ${c}"
+      title="${esc(g.nombre)} · ${fecha(r.inicio)} – ${fecha(r.fin)} · ${av}%">
+      <div class="g-fill" style="background:transparent"><span style="width:${av}%;background:${c}"></span></div>
+    </div>`;
+}
+
+function renderGantt(){
+  const eje = ejeGantt();
+  const gs = grupos();
+  if (!gs.length) return vacio('Sin resultados', 'Ningún proyecto coincide con los filtros activos.', { id:'limpiar', texto:'Quitar filtros' });
+
+  /* ── Encabezado del eje ── */
+  let meses = '', dias = '', fondo = '';
+  let cur = new Date(eje.inicio);
+  while (cur <= eje.fin){
+    const ultimo = new Date(cur.getFullYear(), cur.getMonth() + 1, 0);
+    const desde = Math.max(0, offsetDias(eje, toISO(cur)));
+    const hasta = Math.min(eje.dias - 1, offsetDias(eje, toISO(ultimo)));
+    const w = (hasta - desde + 1) * state.zoom;
+    meses += `<div class="stencil-thin absolute text-[10px] text-mute border-l border-line pl-2 h-full flex items-center"
+      style="left:${desde*state.zoom}px;width:${w}px">${MESES_L[cur.getMonth()]} ${String(cur.getFullYear()).slice(2)}</div>`;
+    fondo += `<div class="g-monthline" style="left:${desde*state.zoom}px"></div>`;
+    cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+  }
+  for (let i = 0; i < eje.dias; i++){
+    const d = new Date(eje.inicio.getFullYear(), eje.inicio.getMonth(), eje.inicio.getDate() + i);
+    const finde = d.getDay() === 0 || d.getDay() === 6;
+    if (finde) fondo += `<div class="g-weekend" style="left:${i*state.zoom}px;width:${state.zoom}px"></div>`;
+    if (state.zoom >= 9 && d.getDay() === 1)
+      dias += `<div class="tape absolute text-dim" style="left:${i*state.zoom+2}px;top:4px">${String(d.getDate()).padStart(2,'0')}</div>`;
+  }
+  const hoyX = offsetDias(eje, HOY) * state.zoom;
+  fondo += `<div class="g-today" style="left:${hoyX}px"></div>`;
+  let marcas = '';
+  HITOS.forEach(h => {
+    const x = offsetDias(eje, h.fecha) * state.zoom;
+    if (x < 0 || x > eje.ancho) return;
+    fondo += `<div class="g-hito" style="left:${x}px"></div>`;
+    marcas += `<div class="absolute" style="left:${x-4}px;bottom:5px" title="${esc(h.titulo)} · ${fecha(h.fecha)}">
+      <span class="block h-[7px] w-[7px] rotate-45" style="background:var(--cyan)"></span></div>`;
+  });
+
+  /* ── Filas ── */
+  let etiquetas = '', pistas = '';
+  gs.forEach(g => {
+    const abierto = state.abiertos.has(g.id);
+    const est = state.agrupar === 'proyecto' && PR(g.id) ? PR(g.id).estado : estadoGrupo(g.tareas);
+    const c = state.agrupar === 'persona' ? g.color : E(est).color;
+
+    etiquetas += `<div class="g-row g-group cursor-pointer px-3" data-grupo="${g.id}">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"
+           class="shrink-0 text-dim transition-transform ${abierto ? 'rotate-90' : ''}"><path d="M3 1.5 6.5 5 3 8.5"/></svg>
+      <span class="ml-2 h-[7px] w-[7px] shrink-0 rounded-[1px]" style="background:${c}"></span>
+      <span class="ml-2 truncate text-[12px] font-medium">${esc(g.nombre)}</span>
+      <span class="tape ml-auto shrink-0 text-dim">${g.tareas.length}</span>
+    </div>`;
+    pistas += `<div class="g-row g-group relative" data-grupo="${g.id}">${barraGrupo(g, eje)}</div>`;
+
+    if (abierto) g.tareas.forEach(t => {
+      const sel = state.seleccion === t.id;
+      etiquetas += `<div class="g-row ${sel ? 'sel' : ''} cursor-pointer pl-8 pr-3" data-abrir="${t.id}">
+        <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${E(t.estado).color}"></span>
+        <span class="ml-2 truncate text-[11.5px] ${t.estado === 'completado' ? 'text-dim' : 'text-mute'}">${esc(t.titulo)}</span>
+      </div>`;
+      pistas += `<div class="g-row ${sel ? 'sel' : ''} relative" data-abrir="${t.id}">${barra(t, eje)}</div>`;
+    });
+  });
+
+  const sinFecha = TAREAS.filter(t => t.estado !== 'completado' && !t.inicio && !t.fin).length;
+
+  return `
+  <div class="mb-4 flex flex-wrap items-center gap-2">
+    <div class="flex rounded-[4px] border border-line overflow-hidden">
+      ${[['proyecto','Proyecto'],['persona','Persona'],['area','Área']].map(([k,l]) => `
+        <button data-agrupar="${k}" class="accion px-3.5 py-2.5 transition"
+          style="${state.agrupar===k ? 'background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)' : 'color:var(--texto-2)'}">${l}</button>`).join('')}
+    </div>
+    <div class="flex rounded-[4px] border border-line overflow-hidden">
+      ${[[5,'Mes'],[9,'Semana'],[16,'Día']].map(([z,l]) => `
+        <button data-zoom="${z}" class="accion px-3.5 py-2.5 transition"
+          style="${state.zoom===z ? 'background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)' : 'color:var(--texto-2)'}">${l}</button>`).join('')}
+    </div>
+    <button data-todos="1" class="tape rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">
+      ${state.abiertos.size ? 'Contraer todo' : 'Expandir todo'}</button>
+    <button data-irhoy="1" class="accion rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">Ir a hoy</button>
+    <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[9px] border px-3.5 py-2.5 transition"
+      style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+      Nueva tarea</button>
+  </div>
+
+  <div class="overflow-hidden rounded-[12px] border border-line">
+    <div class="g-wrap">
+      <div class="g-labels">
+        <div class="h-[44px] border-b border-line flex items-end px-3 pb-2">
+          <span class="meta">${state.agrupar === 'persona' ? 'Persona' : state.agrupar === 'area' ? 'Área' : 'Proyecto'}</span>
+        </div>
+        ${etiquetas}
+      </div>
+      <div class="g-scroll" id="gScroll">
+        <div style="width:${eje.ancho}px" class="relative">
+          <div class="h-[44px] border-b border-line relative">${meses}${dias}${marcas}</div>
+          <div class="relative">
+            <div class="absolute inset-0 pointer-events-none">${fondo}</div>
+            ${pistas}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+    ${ESTADOS.map(e => `<div class="flex items-center gap-2">
+      <span class="h-[7px] w-[7px] rounded-[1px]" style="background:${e.color}"></span>
+      <span class="text-[11.5px] text-mute">${e.nombre}</span></div>`).join('')}
+    <div class="flex items-center gap-2">
+      <span class="h-[7px] w-[7px] rotate-45" style="background:var(--cyan)"></span>
+      <span class="text-[11.5px] text-mute">Hito</span></div>
+    <span class="tape ml-auto ${sinFecha ? 'text-bar-yellow' : 'text-dim'}">${sinFecha} tareas activas sin fecha</span>
+  </div>`;
+}
+
+function wireGantt(){
+  document.querySelectorAll('[data-agrupar]').forEach(b => b.onclick = () => {
+    state.agrupar = b.dataset.agrupar; state.abiertos.clear(); renderViewBody();
+  });
+  document.querySelectorAll('[data-zoom]').forEach(b => b.onclick = () => {
+    state.zoom = +b.dataset.zoom; renderViewBody();
+  });
+  document.querySelectorAll('[data-grupo]').forEach(el => {
+    el.setAttribute('aria-expanded', state.abiertos.has(el.dataset.grupo));
+    accionable(el, () => {
+      const id = el.dataset.grupo;
+      state.abiertos.has(id) ? state.abiertos.delete(id) : state.abiertos.add(id);
+      renderViewBody();
+    });
+  });
+  const todos = document.querySelector('[data-todos]');
+  if (todos) todos.onclick = () => {
+    if (state.abiertos.size) state.abiertos.clear();
+    else grupos().forEach(g => state.abiertos.add(g.id));
+    renderViewBody();
+  };
+  const irHoy = document.querySelector('[data-irhoy]');
+  if (irHoy) irHoy.onclick = () => scrollAHoy(true);
+  document.querySelectorAll('[data-tarea]').forEach(b => b.onclick = e => {
+    e.stopPropagation(); state.seleccion = b.dataset.tarea; renderAll();
+  });
+  const add = document.getElementById('addEvent');
+  if (add) add.onclick = () => abrirModal(HOY, 'tarea');
+  scrollAHoy(false);
+}
+
+function scrollAHoy(suave){
+  const sc = document.getElementById('gScroll');
+  if (!sc) return;
+  const eje = ejeGantt();
+  const x = Math.max(0, offsetDias(eje, HOY) * state.zoom - sc.clientWidth * 0.35);
+  sc.scrollTo({ left:x, behavior: suave ? 'smooth' : 'auto' });
+}
+
+/* ═══════════════════════════════════════════════════
+   TABLERO
+   ═══════════════════════════════════════════════════ */
+
+function tarjeta(t){
+  const e = E(t.estado), p = P(t.responsable), proy = PR(t.proyecto);
+  const vd = vencida(t);
+  return `<article draggable="true" data-id="${t.id}" tabindex="0"
+    class="card group relative cursor-grab active:cursor-grabbing rounded-[12px] border border-line bg-panel
+           pl-4 pr-3 py-3 ${state.seleccion === t.id ? 'selected' : ''}">
+    <span class="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[5px]" style="background:${e.color}"></span>
+
+    <div class="flex items-center gap-2 mb-2">
+      <span class="meta">${t.codigo}</span>
+      ${chipPrioridad(t)}
+      ${vd ? `<span class="pildora" style="background:color-mix(in srgb, var(--alerta) 14%, transparent);color:var(--alerta)">Vencida</span>` : ''}
+      <span class="tape ml-auto ${vd ? 'text-bar-red' : 'text-dim'}">${t.fin ? fecha(t.fin) : 'sin fecha'}</span>
+    </div>
+
+    <h4 class="text-[13.5px] leading-snug text-ink mb-1">${esc(t.titulo)}</h4>
+    <div class="meta mb-3 truncate">${esc(nombreProy(t.proyecto))} · ${esc(t.area)}</div>
+
+    <div class="flex items-center gap-2 mb-3">
+      ${sprockets(t)}
+      <span class="meta">${pct(t.progreso)}%</span>
+      ${t.comentarios.length ? `<span class="meta ml-auto">${t.comentarios.length} ✎</span>` : ''}
+    </div>
+
+    <div class="flex items-center gap-2 pt-2.5 border-t border-line">
+      ${botonResponsable(t)}
+      <span class="text-[11.5px] text-mute truncate">${esc(p.nombre)}</span>
+      <select data-estado="${t.id}" aria-label="Estado de ${esc(t.codigo)}"
+        class="tapeselect tape ml-auto shrink-0 rounded-[3px] border bg-transparent px-1.5 py-[3px] cursor-pointer"
+        style="border-color:${tinte(e.color, 34)};color:${e.color}">
+        ${ESTADOS.map(o => `<option value="${o.id}" ${o.id === t.estado ? 'selected' : ''}>${o.nombre}</option>`).join('')}
+      </select>
+    </div>
+  </article>`;
+}
+
+function renderTablero(){
+  const lista = visibles();
+  const cols = ESTADOS.map((e, i) => {
+    const items = lista.filter(t => t.estado === e.id);
+    return `<div class="flex min-w-[268px] flex-1 flex-col rise" style="animation-delay:${i*60}ms">
+      <div class="mb-3 flex items-center gap-2 border-t-2 pt-2.5" style="border-color:${e.color}">
+        <span class="stencil-thin text-[11px]" style="color:${e.color}">${e.nombre}</span>
+        <span class="meta">${String(items.length).padStart(2,'0')}</span>
+        <span class="nota ml-auto hidden sm:inline">${e.nota}</span>
+      </div>
+      <div class="col-drop flex-1 space-y-2.5 rounded-[5px] p-1 min-h-[120px] max-h-[70vh] overflow-y-auto" data-col="${e.id}">
+        ${items.map(tarjeta).join('') || `<div class="grid h-[110px] place-items-center rounded-[12px] border border-dashed border-line">
+          <span class="meta">Suelta una tarjeta aquí</span></div>`}
+      </div></div>`;
+  }).join('');
+  return `<div class="scroll-x flex gap-4 overflow-x-auto pb-2">${cols}</div>`;
+}
+
+function wireEstados(){
+  document.querySelectorAll('[data-estado]').forEach(sel => {
+    sel.onchange = ev => moverTarea(sel.dataset.estado, ev.target.value);
+    sel.onclick = ev => ev.stopPropagation();
+  });
+}
+
+let arrastrando = null;
+function wireTablero(){
+  document.querySelectorAll('[data-id]').forEach(card => {
+    card.addEventListener('dragstart', ev => {
+      arrastrando = card.dataset.id; card.classList.add('dragging');
+      ev.dataTransfer.effectAllowed = 'move';
+      ev.dataTransfer.setData('text/plain', arrastrando);
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    card.addEventListener('click', ev => {
+      if (ev.target.closest('select')) return;
+      state.seleccion = card.dataset.id; renderAll();
+    });
+    card.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); state.seleccion = card.dataset.id; renderAll(); }
+    });
+  });
+  wireEstados();
+  document.querySelectorAll('[data-col]').forEach(col => {
+    col.addEventListener('dragover', ev => { ev.preventDefault(); col.classList.add('over'); });
+    col.addEventListener('dragleave', () => col.classList.remove('over'));
+    col.addEventListener('drop', ev => {
+      ev.preventDefault(); col.classList.remove('over');
+      if (arrastrando) moverTarea(arrastrando, col.dataset.col);
+      arrastrando = null;
+    });
+  });
+}
+
+/* Borrar una tarea es la única acción del tablero que no se puede
+   deshacer, así que el aviso dice exactamente qué se pierde. */
+function borrarTarea(id){
+  const t = T(id); if (!t) return;
+  const extra = t.comentarios.length
+    ? `\n\nSe pierden también sus ${t.comentarios.length} ${t.comentarios.length === 1 ? 'comentario' : 'comentarios'}.`
+    : '';
+  if (!confirm(`Eliminar "${t.titulo}".${extra}\n\nSi solo quieres sacarla de tu lista, cámbiale el responsable.`)) return;
+
+  recordar('eliminar ' + t.titulo);
+  TAREAS = TAREAS.filter(x => x.id !== id);
+  if (state.seleccion === id) state.seleccion = null;
+  toast('Tarea eliminada: ' + t.titulo, 'var(--alerta)', true);
+  renderAll();
+}
+
+function moverTarea(id, estado){
+  const t = T(id);
+  if (!t || t.estado === estado) return;
+  t.estado = estado;
+  if (estado === 'completado') t.progreso = 1;
+  if (estado === 'pendiente')  t.progreso = 0;
+  state.seleccion = id;
+  toast(t.codigo + ' → ' + E(estado).nombre, E(estado).color);
+  renderAll();
+  const c = document.querySelector(`[data-id="${id}"]`);
+  if (c) c.classList.add('flash');
+}
+
+/* ═══════════════════════════════════════════════════
+   CALENDARIO
+   ═══════════════════════════════════════════════════ */
+
+function renderCalendario(){
+  const primero = new Date(state.mes.getFullYear(), state.mes.getMonth(), 1);
+  const ultimo  = new Date(state.mes.getFullYear(), state.mes.getMonth() + 1, 0);
+  const offset  = (primero.getDay() + 6) % 7;
+  const celdas  = Math.ceil((offset + ultimo.getDate()) / 7) * 7;
+  const clave   = toISO(primero).slice(0, 7);
+  const ts = visibles();
+  const nMes = ts.filter(t => t.fin && t.fin.startsWith(clave)).length;
+  const nHi  = HITOS.filter(h => h.fecha.startsWith(clave)).length;
+
+  const barra = `
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-1">
+        <button data-cal="prev" aria-label="Mes anterior" class="grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
+        <button data-cal="next" aria-label="Mes siguiente" class="grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
+      </div>
+      <div class="min-w-0">
+        <div class="subtitulo">${MESES_L[primero.getMonth()]} ${primero.getFullYear()}</div>
+        <div class="tape text-dim mt-[6px]">${nMes} entregas · ${nHi} hitos</div>
+      </div>
+      <button data-cal="hoy" class="btn-suave">Hoy</button>
+      <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[9px] border px-3.5 py-2.5 transition"
+        style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+        Nueva tarea</button>
+    </div>`;
+
+  const head = DIAS.map(d => `<div class="tape bg-panel px-2 py-2 text-dim">${d}</div>`).join('');
+
+  let cuerpo = '';
+  for (let i = 0; i < celdas; i++){
+    const d = new Date(primero.getFullYear(), primero.getMonth(), i - offset + 1);
+    const iso = toISO(d);
+    const fuera = d.getMonth() !== primero.getMonth();
+    const hoy = iso === HOY;
+    const hs = HITOS.filter(h => h.fecha === iso);
+    const tk = ts.filter(t => t.fin === iso);
+    const items = [...hs.map(h => ({h})), ...tk.map(t => ({t}))];
+    const mostrar = items.slice(0, 3), extra = items.length - mostrar.length;
+
+    const chips = mostrar.map(it => {
+      if (it.h){
+        const h = it.h;
+        return `<div class="cal-chip group/h flex items-center gap-1.5 rounded-[3px] px-1.5 py-[3px]"
+          style="background:color-mix(in srgb, var(--acento) 14%, transparent)" title="Hito · ${esc(h.titulo)}">
+          <span class="h-[6px] w-[6px] shrink-0 rotate-45" style="background:var(--cyan)"></span>
+          <span class="truncate text-[10.5px] leading-tight" style="color:var(--cyan)">${esc(h.titulo)}</span>
+          ${h.fijo ? '' : `<button data-delh="${h.id}" title="Quitar" class="ml-auto hidden shrink-0 group-hover/h:block text-[11px] leading-none" style="color:var(--cyan)">&times;</button>`}
+        </div>`;
+      }
+      const t = it.t, e = E(t.estado);
+      return `<button data-abrir="${t.id}" class="cal-chip flex w-full items-center gap-1.5 rounded-[3px] px-1.5 py-[3px] text-left hover:bg-panel2"
+        title="${esc(t.codigo)} · ${esc(t.titulo)} · ${e.nombre}">
+        <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${e.color}"></span>
+        <span class="truncate text-[10.5px] leading-tight ${t.estado === 'completado' ? 'text-dim line-through' : 'text-mute'}">${esc(t.titulo)}</span>
+      </button>`;
+    }).join('');
+
+    cuerpo += `<div class="cal-cell relative min-h-[108px] bg-panel p-2 ${fuera ? 'cal-out' : ''} ${hoy ? 'cal-today-ring' : ''}">
+      <div class="mb-1.5 flex items-center px-0.5">
+        <span class="tape ${hoy ? '' : fuera ? 'text-dim/60' : 'text-dim'}" style="${hoy ? 'color:var(--cyan)' : ''}">${String(d.getDate()).padStart(2,'0')}</span>
+        ${hoy ? `<span class="tape ml-1.5" style="color:var(--cyan)">Hoy</span>` : ''}
+        <button data-add="${iso}" aria-label="Agregar el ${iso}" class="cal-add ml-auto text-dim hover:text-ink">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg></button>
+      </div>
+      <div class="space-y-[3px]">${chips}${extra > 0 ? `<div class="tape px-1.5 pt-[2px] text-dim">+${extra} más</div>` : ''}</div>
+    </div>`;
+  }
+
+  return barra + `
+    <div class="scroll-x overflow-x-auto">
+      <div class="min-w-[720px] overflow-hidden rounded-[12px] border border-line">
+        <div class="grid grid-cols-7 gap-px bg-line">${head}</div>
+        <div class="grid grid-cols-7 gap-px bg-line">${cuerpo}</div>
+      </div>
+    </div>
+    <p class="nota mt-3">Las tareas se ubican en su fecha de entrega</p>`;
+}
+
+function wireCalendario(){
+  document.querySelectorAll('[data-cal]').forEach(b => b.onclick = () => {
+    const m = state.mes;
+    if (b.dataset.cal === 'prev') state.mes = new Date(m.getFullYear(), m.getMonth() - 1, 1);
+    if (b.dataset.cal === 'next') state.mes = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+    if (b.dataset.cal === 'hoy')  state.mes = new Date(2026, 7, 1);
+    renderViewBody();
+  });
+  document.querySelectorAll('[data-add]').forEach(b => b.onclick = ev => { ev.stopPropagation(); abrirModal(b.dataset.add, 'tarea'); });
+  document.querySelectorAll('[data-delh]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const h = HITOS.find(x => x.id === b.dataset.delh);
+    HITOS = HITOS.filter(x => x.id !== b.dataset.delh);
+    toast('Hito eliminado: ' + h.titulo, 'var(--alerta)');
+    renderAll();
+  });
+  const add = document.getElementById('addEvent');
+  if (add) add.onclick = () => abrirModal(HOY.startsWith(toISO(state.mes).slice(0,7)) ? HOY : toISO(state.mes), 'tarea');
+}
+
+
+/* ═══════════════════════════════════════════════════
+   MI TRABAJO
+   La pantalla donde aterriza cada persona del equipo.
+   No repite el tablero: ordena lo suyo por urgencia real
+   (atrasado antes que próximo) y dentro de eso por la
+   prioridad que el equipo haya puesto a mano.
+   ═══════════════════════════════════════════════════ */
+
+function ordenarPorUrgencia(ts){
+  return [...ts].sort((a, b) => {
+    const pa = PRI(a.prioridad).peso, pb = PRI(b.prioridad).peso;
+    if (pa !== pb) return pa - pb;
+    if (!a.fin && b.fin) return 1;
+    if (a.fin && !b.fin) return -1;
+    if (a.fin && b.fin && a.fin !== b.fin) return a.fin < b.fin ? -1 : 1;
+    return 0;
+  });
+}
+
+/* Anillo de progreso, como los de las metas de la referencia */
+function anillo(porcentaje, color, tam = 46){
+  const r = (tam - 5) / 2, c = 2 * Math.PI * r;
+  return `<svg class="anillo" viewBox="0 0 ${tam} ${tam}" style="width:${tam}px;height:${tam}px" aria-hidden="true">
+    <circle class="pista" cx="${tam/2}" cy="${tam/2}" r="${r}"></circle>
+    <circle cx="${tam/2}" cy="${tam/2}" r="${r}" stroke="${color}"
+      stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - porcentaje/100)}"></circle>
+  </svg>`;
+}
+
+/* Barra multicolor con el reparto por estado */
+function segmentos(ts){
+  const total = ts.length || 1;
+  return `<div class="segmentos">${ESTADOS.map(e => {
+    const n = ts.filter(t => t.estado === e.id).length;
+    return n ? `<span style="width:${n/total*100}%;background:${e.relleno}" title="${e.nombre}: ${n}"></span>` : '';
+  }).join('')}</div>`;
+}
+
+const ICONOS = {
+  mas:'M10 4v12M4 10h12',
+  gente:'M7.5 9.5a2.6 2.6 0 100-5.2 2.6 2.6 0 000 5.2zM2.5 16c.5-2.6 2.4-4 5-4s4.5 1.4 5 4M14 12.2c1.8.4 3 1.6 3.4 3.6',
+  reloj:'M10 5.5V10l3 1.8M17 10a7 7 0 11-14 0 7 7 0 0114 0z',
+  tablero:'M3.5 3.5h4.2v13H3.5zM11 3.5h5.5v8H11z'
+};
+
+function chipPrioridad(t){
+  if (t.prioridad === 'media') return '';
+  const p = PRI(t.prioridad);
+  return `<span class="pildora shrink-0" style="background:${tinte(p.color, 12)};color:${p.color}">${p.nombre}</span>`;
+}
+
+function filaTarea(t, opts = {}){
+  const e = E(t.estado), proy = PR(t.proyecto);
+  const vd = vencida(t);
+  const dias = t.fin ? diasRestantes(t.fin) : null;
+  const cuando = t.fin
+    ? (dias === 0 ? 'Hoy' : dias === 1 ? 'Mañana' : dias < 0 ? `${Math.abs(dias)} d tarde` : fecha(t.fin))
+    : 'Sin fecha';
+
+  return `<div data-abrir="${t.id}" class="item ${state.seleccion === t.id ? 'sel' : ''} cursor-pointer">
+    <span class="shrink-0">${botonResponsable(t, 38)}</span>
+
+    <span class="min-w-0 flex-1">
+      <span class="flex items-center gap-2">
+        <span class="item-t truncate ${t.estado === 'completado' ? 'line-through opacity-60' : ''}">${esc(t.titulo)}</span>
+        ${chipPrioridad(t)}
+      </span>
+      <span class="item-s block truncate">${esc(nombreProy(t.proyecto))} · ${esc(t.area)}</span>
+    </span>
+
+    <span class="hidden shrink-0 text-right sm:block">
+      <span class="item-v block" style="color:${vd ? 'var(--alerta)' : dias !== null && dias <= 2 ? 'var(--est-proceso)' : 'var(--texto-2)'}">${cuando}</span>
+      <span class="pildora mt-1" style="background:${tinte(e.relleno, 14)};color:${e.color}">
+        <span class="h-1.5 w-1.5 rounded-full" style="background:${e.relleno}"></span>${e.nombre}</span>
+    </span>
+
+    ${opts.tomar ? `<button data-tomar="${t.id}" class="btn-principal shrink-0 !px-4 !py-2 !text-[12.5px]">Tomarla</button>` : ''}
+  </div>`;
+}
+
+/* Avatar que abre el menú de reasignación */
+function botonResponsable(t, tam = 24){
+  return `<button data-asignar="${t.id}" title="Cambiar responsable de: ${esc(t.titulo)}"
+    aria-label="Cambiar responsable, ahora ${esc(P(t.responsable).nombre)}"
+    class="block rounded-full ring-offset-2 ring-offset-panel transition hover:ring-2"
+    style="--tw-ring-color:${P(t.responsable).color}">${avatar(t.responsable, tam)}</button>`;
+}
+
+function seccion(titulo, ts, opts = {}){
+  if (!ts.length) return '';
+  return `<section class="mb-7">
+    <div class="mb-3 flex items-baseline gap-2.5">
+      <h3 class="subtitulo" style="${opts.color ? `color:${opts.color}` : ''}">${titulo}</h3>
+      <span class="grid h-[22px] min-w-[22px] place-items-center rounded-full px-1.5 text-[11.5px] font-semibold"
+            style="background:var(--sup-alta);color:var(--texto-2)">${ts.length}</span>
+      ${opts.nota ? `<span class="item-s ml-auto">${opts.nota}</span>` : ''}
+    </div>
+    <div class="space-y-2">${ordenarPorUrgencia(ts).map(t => filaTarea(t, opts)).join('')}</div>
+  </section>`;
+}
+
+function renderMiTrabajo(){
+  if (soyInvitado()){
+    return `<div class="rounded-[12px] border border-dashed border-line bg-panel px-6 py-12 text-center">
+      <div class="seccion">Estás como invitado</div>
+      <p class="mx-auto mt-3 max-w-[380px] text-[13px] leading-relaxed text-dim">
+        Elige tu nombre y esta pantalla te muestra solo tus tareas, ordenadas por lo que vence primero.</p>
+      <button id="elegirYo" class="accion mt-5 rounded-[4px] border px-4 py-[10px] transition"
+        style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">Elegir mi nombre</button>
+    </div>`;
+  }
+
+  const mias = TAREAS.filter(t => t.responsable === state.yo);
+  const abiertas = mias.filter(t => t.estado !== 'completado');
+  const atrasadas = abiertas.filter(t => vencida(t));
+  const semana    = abiertas.filter(t => !vencida(t) && t.fin && diasRestantes(t.fin) <= 7);
+  const despues   = abiertas.filter(t => !vencida(t) && t.fin && diasRestantes(t.fin) > 7);
+  const sinFecha  = abiertas.filter(t => !t.fin);
+  const cerradas  = mias.filter(t => t.estado === 'completado');
+  const huerfanas = TAREAS.filter(t => t.responsable === 'u-sin' && t.estado !== 'completado');
+
+  /* Una frase que diga la verdad de tu día, no un saludo vacío */
+  let resumen;
+  if (!abiertas.length) resumen = 'No tienes nada abierto. Buen momento para tomar algo de la lista sin dueño.';
+  else if (atrasadas.length) resumen = `${atrasadas.length} ${atrasadas.length === 1 ? 'tarea atrasada' : 'tareas atrasadas'}. Empieza por ahí.`;
+  else if (semana.length) resumen = `Nada atrasado. ${semana.length} ${semana.length === 1 ? 'entrega' : 'entregas'} esta semana.`;
+  else resumen = `Nada atrasado ni urgente. ${abiertas.length} ${abiertas.length === 1 ? 'tarea abierta' : 'tareas abiertas'}.`;
+
+  return `
+    <div class="caja mb-4 p-6">
+      <div class="flex items-start gap-3">
+        ${avatar(state.yo, 40)}
+        <div class="min-w-0">
+          <p class="item-s">Hola,</p>
+          <p class="subtitulo mt-0.5">${esc(YO().nombre)}</p>
+        </div>
+        <button id="cambiarYo" class="btn-suave ml-auto shrink-0 !py-2 !px-3.5 !text-[12.5px]">Cambiar</button>
+      </div>
+
+      <div class="mt-6 flex items-end gap-3">
+        <div>
+          <p class="item-s">Tareas abiertas</p>
+          <p class="heroe mt-1.5" style="${atrasadas.length ? 'color:var(--alerta)' : ''}">${abiertas.length}</p>
+        </div>
+        <p class="nota ml-auto max-w-[230px] text-right">${resumen}</p>
+      </div>
+
+      <div class="mt-5">${segmentos(abiertas.length ? abiertas : mias)}</div>
+      <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        ${ESTADOS.filter(e => e.id !== 'completado').map(e => {
+          const n = abiertas.filter(t => t.estado === e.id).length;
+          return n ? `<span class="flex items-center gap-1.5 item-s">
+            <span class="h-2 w-2 rounded-full" style="background:${e.relleno}"></span>${e.nombre} ${n}</span>` : '';
+        }).join('')}
+        <span class="item-s ml-auto">${cerradas.length} completadas</span>
+      </div>
+    </div>
+
+    <div class="rapidas mb-7">
+      <button data-rapida="nueva" class="rapida">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="${ICONOS.mas}"/></svg>
+        <span>Nueva tarea</span></button>
+      <button data-rapida="sinduenio" class="rapida">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${ICONOS.gente}"/></svg>
+        <span>Sin dueño${huerfanas.length ? ' · ' + huerfanas.length : ''}</span></button>
+      <button data-rapida="gantt" class="rapida">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="${ICONOS.reloj}"/></svg>
+        <span>Cronograma</span></button>
+      <button data-rapida="tablero" class="rapida">
+        <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="${ICONOS.tablero}"/></svg>
+        <span>Tablero</span></button>
+    </div>
+
+    ${seccion('Atrasadas', atrasadas, { color:'var(--alerta)', nota:'la fecha ya pasó' })}
+    ${seccion('Esta semana', semana, { color:'var(--est-proceso)' })}
+    ${seccion('Más adelante', despues)}
+    ${seccion('Sin fecha', sinFecha, { nota:'ponles una fecha para que salgan en el cronograma' })}
+    ${huerfanas.length ? seccion('Sin dueño — puedes tomarlas', huerfanas, { color:'var(--acento)', tomar:true }) : ''}
+    ${cerradas.length ? `<details class="mt-2">
+      <summary class="tape cursor-pointer text-dim hover:text-ink">Completadas (${cerradas.length})</summary>
+      <div class="mt-3 space-y-2">${ordenarPorUrgencia(cerradas).map(t => filaTarea(t)).join('')}</div>
+    </details>` : ''}
+
+    ${!abiertas.length && !huerfanas.length ? vacio('Todo al día', 'No tienes tareas abiertas ni quedan tareas sin dueño por tomar.', { id:'nueva', texto:'Crear una tarea' }) : ''}`;
+}
+
+function wireProyectos(){
+  const nuevo = document.getElementById('nuevoProyecto');
+  if (nuevo) nuevo.onclick = () => abrirProyecto(null);
+  document.querySelectorAll('[data-editarproy]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); abrirProyecto(b.dataset.editarproy);
+  });
+  document.querySelectorAll('[data-asignarproy]').forEach(el => {
+    const abrir = ev => { ev.stopPropagation(); menuProyecto(el.dataset.asignarproy, el); };
+    el.onclick = abrir;
+    el.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); abrir(ev); } };
+  });
+}
+
+function menuProyecto(proyId, ancla){
+  cerrarMenu();
+  const r = ancla.getBoundingClientRect();
+  const m = document.createElement('div');
+  m.id = 'menuAsignar';
+  anclaMenu = ancla;
+  m.className = 'fixed z-[80] w-[230px] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl modal-in';
+  m.style.top  = Math.min(window.innerHeight - 340, r.bottom + 6) + 'px';
+  m.style.left = Math.min(window.innerWidth - 242, Math.max(8, r.left - 110)) + 'px';
+  m.innerHTML = `<div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Pasar el proyecto a</div>
+    <div class="max-h-[280px] overflow-y-auto py-1">
+      ${PERSONAS.filter(p => !esSistema(p.id)).map(p => `<button data-proy-set="${p.id}"
+        class="flex min-h-[44px] w-full items-center gap-2.5 px-3 py-2 text-left transition hover:bg-panel2">
+        ${avatar(p.id, 24)}
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-[12.5px] text-mute">${esc(p.nombre)}</span>
+          ${dispHoy(p).disponible ? '' : `<span class="meta mt-[2px] block">${esc(dispHoy(p).corto)}</span>`}
+        </span></button>`).join('')}
+    </div>`;
+  document.body.appendChild(m);
+  m.querySelectorAll('[data-proy-set]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); cerrarMenu(); asignarProyecto(proyId, b.dataset.proySet);
+  });
+  setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
+}
+
+function wireEquipo(){
+  document.querySelectorAll('[data-disp]').forEach(b => b.onclick = () => {
+    const p = P(b.dataset.disp), d = DISP(b.dataset.dispval);
+    p.disp = d.id;
+    if (d.disponible) p.dispHasta = null;
+    toast(p.nombre + ': ' + d.nombre.toLowerCase(), d.color);
+    renderAll();
+  });
+  document.querySelectorAll('[data-dispfecha]').forEach(inp => inp.onchange = () => {
+    const p = P(inp.dataset.dispfecha);
+    p.dispHasta = inp.value || null;
+    toast(p.nombre + ' vuelve el ' + (p.dispHasta ? fecha(p.dispHasta) : '—'), dispHoy(p).color);
+    renderAll();
+  });
+
+  const nueva = document.getElementById('nuevaPersona');
+  if (nueva) nueva.onclick = () => abrirPersona(null);
+  document.querySelectorAll('[data-editarp]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); abrirPersona(b.dataset.editarp);
+  });
+}
+
+function wireMiTrabajo(){
+  document.querySelectorAll('[data-tomar]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const t = T(b.dataset.tomar);
+    t.responsable = state.yo;
+    toast('Tomaste: ' + t.titulo, YO().color);
+    renderAll();
+  });
+  document.querySelectorAll('[data-rapida]').forEach(b => b.onclick = () => {
+    const a = b.dataset.rapida;
+    if (a === 'nueva') return abrirModal(HOY, 'tarea');
+    if (a === 'sinduenio'){ state.atajo = 'sinduenio'; state.vista = 'tablero'; }
+    else state.vista = a;
+    renderAll();
+  });
+  const eleg = document.getElementById('elegirYo');
+  if (eleg) eleg.onclick = abrirIdentidad;
+  const camb = document.getElementById('cambiarYo');
+  if (camb) camb.onclick = abrirIdentidad;
+}
+
+/* ═══════════════════════════════════════════════════
+   MENÚ RÁPIDO DE ASIGNACIÓN
+   ═══════════════════════════════════════════════════ */
+
+let anclaMenu = null;
+function cerrarMenu(){
+  const m = document.getElementById('menuAsignar');
+  if (!m) return;
+  m.remove();
+  if (anclaMenu && document.body.contains(anclaMenu)) anclaMenu.focus();
+  anclaMenu = null;
+}
+
+function abrirMenuAsignar(tareaId, ancla){
+  cerrarMenu();
+  const t = T(tareaId);
+  const r = ancla.getBoundingClientRect();
+  const m = document.createElement('div');
+  m.id = 'menuAsignar';
+  anclaMenu = ancla;
+  m.className = 'fixed z-[80] w-[210px] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl modal-in';
+  m.style.top = Math.min(window.innerHeight - 330, r.bottom + 6) + 'px';
+  m.style.left = Math.min(window.innerWidth - 222, Math.max(8, r.left - 90)) + 'px';
+  m.innerHTML = `<div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Responsable</div>
+    <div class="max-h-[260px] overflow-y-auto py-1">
+      ${PERSONAS.map(p => `<button data-set="${p.id}"
+        class="flex min-h-[44px] w-full items-center gap-2.5 px-3 py-2 text-left transition hover:bg-panel2
+               ${p.id === t.responsable ? 'bg-panel2' : ''}">
+        ${avatar(p.id, 24)}
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-[12.5px] ${p.id === t.responsable ? 'text-ink' : 'text-mute'}">${esc(p.nombre)}</span>
+          ${esSistema(p.id) || dispHoy(p).disponible ? '' : `<span class="meta mt-[2px] block">${esc(dispHoy(p).corto)}</span>`}
+        </span>
+        ${p.id === t.responsable ? `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="${p.color}" stroke-width="2.2" stroke-linecap="round" class="ml-auto shrink-0"><path d="M2 6.2 4.8 9 10 3.4"/></svg>` : ''}
+      </button>`).join('')}
+    </div>`;
+  document.body.appendChild(m);
+
+  m.querySelectorAll('[data-set]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    cerrarMenu();
+    asignarA(t.id, b.dataset.set);
+  });
+  setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
+}
+
+function wireAsignar(){
+  document.querySelectorAll('[data-asignar]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    abrirMenuAsignar(b.dataset.asignar, b);
+  });
+}
+
+
+
+/* ═══════════════════════════════════════════════════
+   HOY EN EL EQUIPO
+   Franja compacta: quién está, quién no, y a quién le
+   puedes soltar una tarea encima. Es también la zona de
+   drop: arrastras una tarjeta a una persona y queda suya.
+   ═══════════════════════════════════════════════════ */
+
+function franjaEquipo(){
+  const gente = PERSONAS.filter(p => !esSistema(p.id));
+  const fuera = gente.filter(p => !dispHoy(p).disponible);
+
+  return `<div class="mb-6 tarjeta px-5 py-4">
+    <div class="mb-3 flex items-baseline gap-2">
+      <h2 class="seccion">Hoy en el equipo</h2>
+      <span class="nota">${gente.length - fuera.length} de ${gente.length} disponibles${fuera.length ? ' · ' + fuera.map(p => p.nombre.split(' ')[0]).join(', ') + ' no' : ''}</span>
+      <button data-vista="equipo" class="nota ml-auto shrink-0 text-dim hover:text-ink transition">Gestionar equipo</button>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      ${gente.map(p => {
+        const d = dispHoy(p);
+        const abiertas = TAREAS.filter(t => t.responsable === p.id && t.estado !== 'completado').length;
+        const cargado = abiertas > p.capacidad;
+        return `<button data-persona="${p.id}" data-soltar="${p.id}"
+          class="zona-drop flex min-h-[52px] items-center gap-2.5 rounded-full border px-3 py-2 text-left transition
+                 ${state.persona === p.id ? 'border-dim bg-panel2' : 'border-line hover:border-dim'}"
+          title="${esc(p.nombre)} · ${esc(textoAusencia(p))} · ${abiertas} abiertas. Arrastra una tarea aquí para asignársela.">
+          ${avatar(p.id, 26)}
+          <span class="min-w-0">
+            <span class="block truncate text-[12.5px] leading-tight ${d.disponible ? 'text-ink' : 'text-dim'}">${esc(p.nombre)}</span>
+            <span class="tape block leading-tight mt-[3px] ${cargado ? 'text-bar-red' : 'text-dim'}">${d.disponible ? abiertas + ' abiertas' : esc(d.corto)}</span>
+          </span>
+        </button>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+/* ── Arrastrar una tarea sobre una persona ─────────────────────── */
+
+function wireSoltar(){
+  document.querySelectorAll('[data-soltar]').forEach(z => {
+    z.addEventListener('dragover', ev => {
+      if (!arrastrando) return;
+      ev.preventDefault(); z.classList.add('drop-activo');
+    });
+    z.addEventListener('dragleave', () => z.classList.remove('drop-activo'));
+    z.addEventListener('drop', ev => {
+      ev.preventDefault(); ev.stopPropagation();
+      z.classList.remove('drop-activo');
+      if (!arrastrando) return;
+      asignarA(arrastrando, z.dataset.soltar);
+      arrastrando = null;
+    });
+  });
+}
+
+/* Asigna avisando si la persona no está disponible. No lo impide:
+   a veces sí quieres dejarle algo listo para cuando vuelva. */
+function asignarA(tareaId, personaId){
+  const t = T(tareaId); if (!t) return;
+  const p = P(personaId);
+  if (t.responsable === personaId){ toast('Ya era de ' + p.nombre, p.color); return; }
+
+  const d = dispHoy(p);
+  if (!d.disponible && !confirm(
+      `${p.nombre} está ${textoAusencia(p).toLowerCase()}.\n\n¿Asignarle "${t.titulo}" de todos modos?`)) return;
+
+  t.responsable = personaId;
+  toast(t.titulo + ' → ' + p.nombre, p.color);
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════
+   EQUIPO — alta, edición y baja de personas
+   El equipo vive en el tablero compartido, así que un
+   cambio aquí lo ven todos. "Sin asignar" es la bandeja
+   del sistema: no se edita ni se borra.
+   ═══════════════════════════════════════════════════ */
+
+let personaEditando = null;   // null = estamos creando
+
+function abrirPersona(id){
+  focoPrevio = document.activeElement;
+  personaEditando = id || null;
+  const p = id ? P(id) : { nombre:'', rol:'', capacidad:8, color:colorLibre(), disp:'oficina' };
+  if (id && esSistema(id)) return;
+
+  $('#pTitulo').textContent = id ? 'Editar persona' : 'Nueva persona';
+  $('#pNombre').value = p.nombre;
+  $('#pRol').value    = p.rol || '';
+  $('#pCap').value    = p.capacidad;
+  $('#pError').textContent = '';
+  $('#pBorrar').classList.toggle('hidden', !id);
+
+  pintarColores(p.color);
+  pintarAvatarModal(p.nombre, p.color);
+  $('#personaModal').classList.remove('hidden');
+  setTimeout(() => $('#pNombre').focus(), 40);
+}
+
+function cerrarPersona(){
+  $('#personaModal').classList.add('hidden');
+  if (focoPrevio && document.body.contains(focoPrevio)) focoPrevio.focus();
+  focoPrevio = null;
+}
+
+function colorElegido(){
+  const sel = document.querySelector('#pColores [data-color][aria-pressed="true"]');
+  return sel ? sel.dataset.color : COLORES_EQUIPO[0];
+}
+
+function pintarColores(activo){
+  $('#pColores').innerHTML = COLORES_EQUIPO.map(c => `
+    <button data-color="${c}" aria-pressed="${c === activo}" aria-label="Color ${c}"
+      class="h-8 w-8 rounded-full transition"
+      style="background:${c};${c === activo ? 'box-shadow:0 0 0 2px var(--fondo),0 0 0 4px ' + c : 'opacity:.55'}"></button>`).join('');
+  $('#pColores').querySelectorAll('[data-color]').forEach(b => b.onclick = () => {
+    pintarColores(b.dataset.color);
+    pintarAvatarModal($('#pNombre').value, b.dataset.color);
+  });
+}
+
+function pintarAvatarModal(nombre, color){
+  const ini = iniciales(nombre || '?');
+  $('#pAvatar').innerHTML = `<span class="grid h-8 w-8 place-items-center rounded-full text-[12px] font-semibold"
+    style="background:${color}22;color:${color}">${esc(ini)}</span>`;
+}
+
+function guardarPersona(){
+  const nombre = $('#pNombre').value.trim();
+  const rol    = $('#pRol').value.trim();
+  const cap    = Math.max(1, Math.min(40, parseInt($('#pCap').value, 10) || 8));
+  const color  = colorElegido();
+
+  if (!nombre){ $('#pError').textContent = 'Escribe el nombre.'; return; }
+  const repetido = PERSONAS.some(p => p.id !== personaEditando &&
+    p.nombre.toLowerCase() === nombre.toLowerCase());
+  if (repetido){ $('#pError').textContent = 'Ya hay alguien con ese nombre.'; return; }
+
+  if (personaEditando){
+    const p = P(personaEditando);
+    Object.assign(p, { nombre, rol, capacidad:cap, color, iniciales:iniciales(nombre) });
+    toast('Actualizaste a ' + nombre, color);
+  } else {
+    const id = 'u-' + (++uid);
+    // Se inserta antes de "Sin asignar" para que la bandeja quede siempre al final
+    const i = PERSONAS.findIndex(p => p.id === 'u-sin');
+    const nueva = { id, nombre, clave:null, iniciales:iniciales(nombre), rol, color, capacidad:cap };
+    i === -1 ? PERSONAS.push(nueva) : PERSONAS.splice(i, 0, nueva);
+    toast(nombre + ' entró al equipo', color);
+  }
+  cerrarPersona();
+  renderAll();
+}
+
+function borrarPersona(){
+  if (!personaEditando) return;
+  const p = P(personaEditando);
+  const suyas = TAREAS.filter(t => t.responsable === p.id && t.estado !== 'completado').length;
+
+  const aviso = suyas
+    ? `Quitar a ${p.nombre} del equipo.\n\n${suyas} ${suyas === 1 ? 'tarea abierta suya pasa' : 'tareas abiertas suyas pasan'} a "Sin asignar" para que alguien las tome. Su historial de comentarios se conserva.`
+    : `Quitar a ${p.nombre} del equipo. No tiene tareas abiertas.`;
+  if (!confirm(aviso)) return;
+
+  recordar('quitar a ' + p.nombre);
+  TAREAS.forEach(t => { if (t.responsable === p.id) t.responsable = 'u-sin'; });
+  PERSONAS = PERSONAS.filter(x => x.id !== p.id);
+  if (state.yo === p.id){ state.yo = null; try { localStorage.setItem(YO_KEY, ''); } catch {} }
+  if (state.persona === p.id) state.persona = null;
+
+  cerrarPersona();
+  toast(p.nombre + ' salió del equipo', 'var(--alerta)', true);
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════
+   ¿QUIÉN ERES?
+   ═══════════════════════════════════════════════════ */
+
+function abrirIdentidad(){
+  const m = document.getElementById('identModal');
+  m.querySelector('#identLista').innerHTML = PERSONAS.filter(p => p.id !== 'u-sin').map(p => {
+    const n = TAREAS.filter(t => t.responsable === p.id && t.estado !== 'completado').length;
+    return `<button data-yo="${p.id}"
+      class="flex w-full items-center gap-3 rounded-[12px] border border-line bg-panel px-3 py-2.5 text-left transition hover:border-dim
+             ${p.id === state.yo ? 'ring-1' : ''}" style="${p.id === state.yo ? `--tw-ring-color:${p.color}` : ''}">
+      ${avatar(p.id, 30)}
+      <div class="min-w-0">
+        <div class="text-[13px] font-medium truncate">${esc(p.nombre)}</div>
+        <div class="meta">${esc(p.rol)}</div>
+      </div>
+      <span class="tape ml-auto shrink-0 text-dim">${n}</span>
+    </button>`;
+  }).join('');
+  m.classList.remove('hidden');
+
+  m.querySelectorAll('[data-yo]').forEach(b => b.onclick = () => {
+    guardarYo(b.dataset.yo);
+    m.classList.add('hidden');
+    state.vista = 'mias';
+    renderAll();
+    toast('Hola, ' + YO().nombre, YO().color);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   PROYECTOS
+   ═══════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════
+   PROYECTOS — alta, edición y baja
+   Al eliminar un proyecto las tareas NO se borran:
+   quedan sueltas para que nadie pierda trabajo.
+   ═══════════════════════════════════════════════════ */
+
+let proyEditando = null;
+
+function abrirProyecto(id){
+  focoPrevio = document.activeElement;
+  proyEditando = id || null;
+  const p = id ? PR(id) : { nombre:'', seccion:'PROYECTOS', area:AREAS[0], estado:'pendiente', entrega:null, nota:'' };
+
+  const secciones = [...new Set([...PROYECTOS.map(x => x.seccion), 'PROYECTOS', 'ALWAYS ON', 'PROYECTOS NO EMPEZADOS'])].filter(Boolean);
+  const areas = [...new Set([...AREAS, ...PROYECTOS.map(x => x.area)])].filter(Boolean);
+
+  $('#prTitulo').textContent = id ? 'Editar proyecto' : 'Nuevo proyecto';
+  $('#prNombre').value  = p.nombre;
+  $('#prEntrega').value = p.entrega || '';
+  $('#prNota').value    = p.nota || '';
+  $('#prSeccion').innerHTML = secciones.map(x => `<option value="${esc(x)}" ${x === p.seccion ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  $('#prArea').innerHTML    = areas.map(x => `<option value="${esc(x)}" ${x === p.area ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  $('#prEstado').innerHTML  = ESTADOS.map(x => `<option value="${x.id}" ${x.id === p.estado ? 'selected' : ''}>${x.nombre}</option>`).join('');
+  $('#prError').textContent = '';
+  $('#prBorrar').classList.toggle('hidden', !id);
+  $('#proyModal').classList.remove('hidden');
+  setTimeout(() => $('#prNombre').focus(), 40);
+}
+
+function cerrarProyecto(){
+  $('#proyModal').classList.add('hidden');
+  if (focoPrevio && document.body.contains(focoPrevio)) focoPrevio.focus();
+  focoPrevio = null;
+}
+
+function guardarProyecto(){
+  const nombre = $('#prNombre').value.trim();
+  if (!nombre){ $('#prError').textContent = 'Escribe el nombre del proyecto.'; return; }
+  const repe = PROYECTOS.some(p => p.id !== proyEditando && p.nombre.toLowerCase() === nombre.toLowerCase());
+  if (repe){ $('#prError').textContent = 'Ya existe un proyecto con ese nombre.'; return; }
+
+  const datos = {
+    nombre,
+    seccion: $('#prSeccion').value,
+    area:    $('#prArea').value,
+    estado:  $('#prEstado').value,
+    entrega: $('#prEntrega').value || null,
+    nota:    $('#prNota').value.trim() || null
+  };
+
+  if (proyEditando){
+    const p = PR(proyEditando);
+    const cambioArea = p.area !== datos.area;
+    Object.assign(p, datos);
+    // Si cambia el área del proyecto, sus tareas la heredan
+    if (cambioArea) TAREAS.forEach(t => { if (t.proyecto === p.id) t.area = datos.area; });
+    toast('Proyecto actualizado: ' + nombre, E(p.estado).color);
+  } else {
+    const id = 'p-' + (++uid);
+    PROYECTOS.push({ id, ...datos, nTareas:0 });
+    toast('Proyecto creado: ' + nombre, E(datos.estado).color);
+  }
+  cerrarProyecto();
+  renderAll();
+}
+
+function borrarProyecto(){
+  if (!proyEditando) return;
+  const p = PR(proyEditando);
+  const suyas = TAREAS.filter(t => t.proyecto === p.id).length;
+
+  const aviso = suyas
+    ? `Eliminar el proyecto "${p.nombre}".\n\nSus ${suyas} ${suyas === 1 ? 'tarea queda suelta' : 'tareas quedan sueltas'}, no se borran. Las verás agrupadas como "Tareas sueltas".`
+    : `Eliminar el proyecto "${p.nombre}". No tiene tareas.`;
+  if (!confirm(aviso)) return;
+
+  recordar('eliminar proyecto ' + p.nombre);
+  TAREAS.forEach(t => { if (t.proyecto === p.id) t.proyecto = null; });
+  PROYECTOS = PROYECTOS.filter(x => x.id !== p.id);
+  if (state.proyecto === p.id) state.proyecto = null;
+  cerrarProyecto();
+  toast('Proyecto eliminado: ' + p.nombre, 'var(--alerta)', true);
+  renderAll();
+}
+
+/* Quiénes están metidos en un proyecto, por volumen de tareas */
+function duenios(ts){
+  const cuenta = {};
+  ts.forEach(t => { if (t.responsable !== 'u-sin') cuenta[t.responsable] = (cuenta[t.responsable] || 0) + 1; });
+  return Object.keys(cuenta).sort((a, b) => cuenta[b] - cuenta[a]).slice(0, 4);
+}
+
+/* Mover un proyecto entero de manos. Solo toca lo que sigue abierto:
+   lo ya entregado conserva a quien lo hizo. */
+function asignarProyecto(proyId, personaId){
+  const p = PR(proyId), q = P(personaId);
+  const abiertas = TAREAS.filter(t => t.proyecto === proyId && t.estado !== 'completado');
+  if (!abiertas.length){ toast('Ese proyecto no tiene tareas abiertas', 'var(--est-proceso)'); return; }
+
+  const aviso = `Pasar ${abiertas.length} ${abiertas.length === 1 ? 'tarea abierta' : 'tareas abiertas'} de "${p.nombre}" a ${q.nombre}.` +
+    (dispHoy(q).disponible ? '' : `\n\nOjo: ${q.nombre} está ${textoAusencia(q).toLowerCase()}.`);
+  if (!confirm(aviso)) return;
+
+  recordar('reasignar ' + p.nombre);
+  abiertas.forEach(t => t.responsable = personaId);
+  toast(p.nombre + ' → ' + q.nombre, q.color, true);
+  renderAll();
+}
+
+function renderProyectos(){
+  const sueltas = TAREAS.filter(t => !t.proyecto || !PR(t.proyecto));
+  const secciones = [...new Set(PROYECTOS.map(p => p.seccion))];
+
+  const tarjeta = (p, i) => {
+    const ts = tareasDe(p.id, 'proyecto');
+    const e = E(p.estado), av = pct(avance(ts)), r = rango(ts);
+    const abiertas = ts.filter(t => t.estado !== 'completado').length;
+    return `<div class="rise caja p-5" style="animation-delay:${i*35}ms">
+      <div data-proyecto="${p.id}" class="cursor-pointer">
+        <div class="flex items-start gap-4">
+          <div class="min-w-0 flex-1">
+            <span class="pildora mb-2.5" style="background:${tinte(e.color, 12)};color:${e.color}">
+              <span class="h-1.5 w-1.5 rounded-full" style="background:${e.color}"></span>${e.nombre}</span>
+            <h3 class="subtitulo truncate">${esc(p.nombre)}</h3>
+            <p class="item-s mt-1.5">${abiertas} de ${ts.length} abiertas · ${esc(p.area)}</p>
+          </div>
+          <div class="relative grid shrink-0 place-items-center">
+            ${anillo(av, e.relleno, 52)}
+            <span class="absolute item-v" style="font-size:12px">${av}%</span>
+          </div>
+        </div>
+
+        <div class="mt-4 flex items-center gap-2">
+          <span class="item-s">${r ? `${fecha(r.inicio)} — ${fecha(r.fin)}` : 'Sin fechas'}</span>
+          ${p.entrega ? `<span class="item-s ml-auto" style="color:var(--acento)">Entrega ${fecha(p.entrega)}</span>` : ''}
+        </div>
+        ${p.nota ? `<p class="nota mt-3">${esc(p.nota)}</p>` : ''}
+      </div>
+
+      <div class="mt-4 flex items-center gap-2 border-t border-line pt-4">
+        <span class="flex -space-x-2">${duenios(ts).map(id => avatar(id, 26)).join('') || `<span class="item-s">Sin equipo</span>`}</span>
+        <span class="ml-auto flex gap-2">
+          <button data-asignarproy="${p.id}" class="btn-suave !py-2 !px-3.5 !text-[12.5px]">Reasignar</button>
+          <button data-editarproy="${p.id}" aria-label="Editar ${esc(p.nombre)}"
+            class="grid h-[36px] w-[36px] shrink-0 place-items-center rounded-full border border-line text-dim transition hover:text-ink hover:border-dim">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11.2 2.3a1.6 1.6 0 012.3 2.3L5.6 12.5l-3 .9.9-3z"/></svg></button>
+        </span>
+      </div>
+    </div>`;
+  };
+
+  const bloqueSueltas = sueltas.length ? `<div class="mb-8">
+    <h2 class="seccion mb-3">Tareas sueltas</h2>
+    <div class="rounded-[12px] border border-dashed border-line bg-panel p-5">
+      <p class="nota mb-4">${sueltas.length} ${sueltas.length === 1 ? 'tarea no pertenece' : 'tareas no pertenecen'} a ningún proyecto. Sirven para pendientes que no valen un proyecto entero.</p>
+      <div class="space-y-2">${ordenarPorUrgencia(sueltas).slice(0, 6).map(t => filaTarea(t)).join('')}</div>
+      ${sueltas.length > 6 ? `<p class="meta mt-3">y ${sueltas.length - 6} más en el cronograma</p>` : ''}
+    </div></div>` : '';
+
+  return `<div class="mb-6 flex flex-wrap items-center gap-3">
+      <button id="nuevoProyecto" class="accion ml-auto flex items-center gap-2 rounded-[9px] px-4 py-2.5 transition"
+        style="background:var(--cyan);color:var(--acento-tinta)">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+        Nuevo proyecto</button>
+    </div>
+    ${bloqueSueltas}
+    ${secciones.map(sec => `<div class="mb-8">
+      <h2 class="seccion mb-3">${esc(sec)}</h2>
+      <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+        ${PROYECTOS.filter(p => p.seccion === sec).map(tarjeta).join('')}
+      </div></div>`).join('')}
+    ${!PROYECTOS.length ? vacio('Sin proyectos', 'Crea el primero para empezar a agrupar tareas.', { id:'nuevoproy', texto:'Nuevo proyecto' }) : ''}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   EQUIPO
+   ═══════════════════════════════════════════════════ */
+
+function renderEquipo(){
+  return `
+  <div class="mb-5 flex flex-wrap items-center gap-3">
+    <p class="nota max-w-[420px]">Cambia el rol, el color o la carga de cada quien. Lo que edites aquí lo ve todo el equipo.</p>
+    <button id="nuevaPersona" class="tape ml-auto flex items-center gap-1.5 rounded-[4px] border px-3 py-[9px] transition"
+      style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+      Agregar persona</button>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+    ${PERSONAS.map((p, i) => {
+      const mias = tareasDe(p.id, 'responsable');
+      const abiertas = mias.filter(t => t.estado !== 'completado');
+      const excede = abiertas.length > p.capacidad;
+      return `<div class="rise tarjeta p-5" style="animation-delay:${i*50}ms">
+        <div class="flex items-center gap-3">
+          ${avatar(p.id, 34)}
+          <div class="min-w-0">
+            <div class="text-[13.5px] font-medium truncate">${esc(p.nombre)}</div>
+            <div class="meta">${esc(p.rol)}</div>
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <div class="text-right">
+              <div class="cifra text-[20px] leading-none" style="color:${excede ? 'var(--alerta)' : p.color}">${abiertas.length}</div>
+              <div class="tape text-dim mt-1">de ${p.capacidad}</div>
+            </div>
+            ${esSistema(p.id) ? '' : `<button data-editarp="${p.id}" title="Editar a ${esc(p.nombre)}"
+              class="grid h-7 w-7 shrink-0 place-items-center rounded-[4px] border border-line text-dim hover:text-ink hover:border-dim transition">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11.2 2.3a1.6 1.6 0 012.3 2.3L5.6 12.5l-3 .9.9-3z"/></svg></button>`}
+          </div>
+        </div>
+        <div class="mt-3 flex h-[6px] gap-[2px] overflow-hidden rounded-full bg-panel2">
+          ${ESTADOS.filter(e => e.id !== 'completado').map(e => {
+            const n = mias.filter(t => t.estado === e.id).length;
+            return n ? `<div style="width:${Math.min(100, n/p.capacidad*100)}%;background:${e.color}" title="${e.nombre}: ${n}"></div>` : '';
+          }).join('')}
+        </div>
+        ${excede ? `<div class="nota mt-2" style="color:var(--alerta)">Sobre capacidad, hay que redistribuir</div>` : ''}
+
+        ${esSistema(p.id) ? '' : `
+        <div class="mt-3 border-t border-line pt-3">
+          <label for="disp-${p.id}" class="etiqueta">Dónde está</label>
+          <div class="flex flex-wrap gap-1.5">
+            ${DISPONIBILIDAD.map(d => {
+              const on = dispHoy(p).id === d.id;
+              return `<button data-disp="${p.id}" data-dispval="${d.id}" aria-pressed="${on}"
+                class="accion flex min-h-[36px] items-center gap-1.5 rounded-[8px] border px-2.5 transition"
+                style="${on ? `border-color:${tinte(d.color, 55)};background:${tinte(d.color, 12)};color:${d.color}`
+                           : 'border-color:var(--borde);color:var(--texto-3)'}">
+                <span aria-hidden="true">${d.forma}</span>${d.corto}</button>`;
+            }).join('')}
+          </div>
+          ${dispHoy(p).disponible ? '' : `
+            <label class="mt-2.5 block">
+              <span class="etiqueta">Vuelve el</span>
+              <input type="date" data-dispfecha="${p.id}" value="${p.dispHasta || ''}"
+                class="campo"></label>
+            <p class="nota mt-1.5">Al pasar esa fecha vuelve solo a "en la oficina".</p>`}
+        </div>`}
+        <div class="mt-4 space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
+          ${abiertas.length ? abiertas.map(t => `
+            <button data-abrir="${t.id}" class="flex w-full items-center gap-2 rounded-[3px] px-2 py-1.5 text-left hover:bg-panel2 transition">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style="background:${E(t.estado).color}"></span>
+              <span class="text-[12px] text-mute truncate">${esc(t.titulo)}</span>
+              <span class="tape ml-auto shrink-0 text-dim">${t.fin ? fecha(t.fin) : '—'}</span>
+            </button>`).join('') : `<div class="tape px-2 py-1.5 text-dim">Sin tareas abiertas</div>`}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* Una pantalla vacía es una invitación a hacer algo, no un cartel de
+   "no hay nada". Cada una dice cuál es el siguiente paso. */
+function vacio(titulo, msg, accion){
+  return `<div class="grid place-items-center rounded-[6px] border border-dashed border-line px-6 py-14 text-center">
+    <div class="max-w-[380px]">
+      <div class="seccion">${esc(titulo)}</div>
+      <p class="nota mt-2.5">${esc(msg)}</p>
+      ${accion ? `<button data-vacio="${accion.id}" class="tape mt-5 rounded-[4px] border px-4 py-[10px] transition"
+        style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">${esc(accion.texto)}</button>` : ''}
+    </div></div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   PANEL DERECHO
+   ═══════════════════════════════════════════════════ */
+
+function renderRailDetalle(){
+  const box = $('#railDetail');
+  const t = T(state.seleccion);
+  /* Sin tarea abierta el panel no se queda en blanco: muestra al
+     equipo, que además es la zona donde se sueltan las tareas. */
+  if (!t){
+    const gente = PERSONAS.filter(x => !esSistema(x.id));
+    const sin = TAREAS.filter(x => x.responsable === 'u-sin' && x.estado !== 'completado').length;
+    box.innerHTML = `
+      <div class="mb-4 flex items-baseline gap-2">
+        <h3 class="subtitulo">Equipo hoy</h3>
+        <button data-vista="equipo" class="item-s ml-auto transition hover:text-ink">Gestionar</button>
+      </div>
+      <div class="space-y-2">
+        ${gente.map(x => {
+          const d = dispHoy(x);
+          const ab = TAREAS.filter(y => y.responsable === x.id && y.estado !== 'completado').length;
+          const carga = Math.min(100, Math.round(ab / x.capacidad * 100));
+          const excede = ab > x.capacidad;
+          return `<button data-persona="${x.id}" data-soltar="${x.id}"
+            class="zona-drop item w-full ${state.persona === x.id ? 'sel' : ''}"
+            title="${esc(x.nombre)} · ${esc(textoAusencia(x))}. Suelta una tarea aquí para asignársela.">
+            ${avatar(x.id, 36)}
+            <span class="min-w-0 flex-1">
+              <span class="item-t block truncate">${esc(x.nombre)}</span>
+              <span class="item-s block truncate">${d.disponible ? esc(x.rol || '') : esc(textoAusencia(x))}</span>
+              <span class="mt-2 block h-[4px] w-full overflow-hidden rounded-full" style="background:var(--sup-alta)">
+                <span class="block h-full rounded-full" style="width:${carga}%;background:${excede ? 'var(--g-alerta)' : x.color}"></span>
+              </span>
+            </span>
+            <span class="item-v shrink-0" style="${excede ? 'color:var(--alerta)' : ''}">${ab}</span>
+          </button>`;
+        }).join('')}
+      </div>
+      ${sin ? `<button data-atajo="sinduenio" class="btn-suave mt-4 w-full">${sin} tareas sin dueño</button>` : ''}
+      <p class="item-s mt-4">Arrastra una tarea sobre una persona para asignársela.</p>`;
+
+    bindPersonas('#railDetail');
+    wireSoltar();
+    box.querySelectorAll('[data-vista]').forEach(b => b.onclick = () => { state.vista = b.dataset.vista; renderAll(); });
+    box.querySelectorAll('[data-atajo]').forEach(b => b.onclick = () => {
+      state.atajo = 'sinduenio'; state.vista = 'tablero'; renderAll();
+    });
+    return;
+  }
+  const e = E(t.estado), proy = PR(t.proyecto);
+
+  box.innerHTML = `
+    <div class="flex items-center gap-2 mb-3">
+      <h3 class="seccion">Detalle</h3>
+      <span class="tape ml-auto rounded-[2px] px-2 py-[3px]" style="background:${tinte(e.color, 12)};color:${e.color}">${e.nombre}</span>
+    </div>
+
+    <div class="tarjeta p-5">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="meta">${t.codigo}</span>
+        ${vencida(t) ? `<span class="pildora ml-auto" style="background:color-mix(in srgb, var(--alerta) 14%, transparent);color:var(--alerta)">Vencida</span>` : ''}
+      </div>
+
+      <textarea data-campo="titulo" rows="2"
+        class="w-full resize-none rounded-[4px] border border-transparent bg-transparent px-2 py-1.5 -mx-2
+               text-[14px] leading-snug outline-none hover:border-line focus:border-bar-cyan focus:bg-panel2 transition">${esc(t.titulo)}</textarea>
+
+      <div class="mt-3 space-y-2.5">
+        <label class="block"><span class="etiqueta">Responsable</span>
+          <select data-campo="responsable" class="campo tapeselect">
+            ${PERSONAS.map(o => `<option value="${o.id}" ${o.id === t.responsable ? 'selected' : ''}>${esc(o.nombre)}</option>`).join('')}
+          </select></label>
+
+        <label class="block"><span class="etiqueta">Proyecto</span>
+          <select data-campo="proyecto" class="campo tapeselect">
+            <option value="" ${!t.proyecto ? 'selected' : ''}>Ninguno — tarea suelta</option>
+            ${PROYECTOS.map(o => `<option value="${o.id}" ${o.id === t.proyecto ? 'selected' : ''}>${esc(o.nombre)}</option>`).join('')}
+          </select></label>
+
+        <div class="grid grid-cols-2 gap-2">
+          <label class="block"><span class="etiqueta">Estado</span>
+            <select data-campo="estado" class="tapeselect w-full rounded-[4px] border bg-panel2 px-2 py-[7px] text-[12.5px] outline-none transition"
+              style="border-color:${tinte(e.color, 34)};color:${e.color}">
+              ${ESTADOS.map(o => `<option value="${o.id}" ${o.id === t.estado ? 'selected' : ''}>${o.nombre}</option>`).join('')}
+            </select></label>
+          <label class="block"><span class="etiqueta">Prioridad</span>
+            <select data-campo="prioridad" class="tapeselect w-full rounded-[4px] border bg-panel2 px-2 py-[7px] text-[12.5px] outline-none transition"
+              style="border-color:${PRI(t.prioridad).color}55;color:${PRI(t.prioridad).color}">
+              ${PRIORIDADES.map(o => `<option value="${o.id}" ${o.id === t.prioridad ? 'selected' : ''}>${o.nombre}</option>`).join('')}
+            </select></label>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <label class="block"><span class="etiqueta">Inicio</span>
+            <input type="date" data-fecha="inicio" value="${t.inicio || ''}"
+              class="campo"></label>
+          <label class="block"><span class="etiqueta">Fin</span>
+            <input type="date" data-fecha="fin" value="${t.fin || ''}"
+              class="campo"></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <div class="flex items-baseline justify-between mb-3">
+        <h3 class="seccion">Avance</h3>
+        <span class="meta">${pct(t.progreso)}%</span>
+      </div>
+      <div class="flex gap-1.5">
+        ${[0,.25,.5,.75,1].map(v => `<button data-prog="${v}"
+          class="tape flex-1 rounded-[4px] border py-[7px] transition"
+          style="${Math.abs((t.progreso||0)-v) < .01
+            ? `border-color:${e.color}77;background:${tinte(e.color, 12)};color:${e.color}`
+            : 'border-color:var(--borde);color:var(--texto-3)'}">${v*100}</button>`).join('')}
+      </div>
+    </div>
+
+    ${t.notas ? `<div class="mt-6">
+      <h3 class="stencil-thin text-[11px] text-mute mb-2">Notas del Excel</h3>
+      <p class="rounded-[4px] border border-line bg-panel px-3 py-2.5 text-[12.5px] leading-relaxed text-mute">${esc(t.notas)}</p>
+    </div>` : ''}
+
+    <div class="mt-6">
+      <div class="flex items-baseline justify-between mb-3">
+        <h3 class="seccion">Comentarios</h3>
+        <span class="meta">${t.comentarios.length}</span>
+      </div>
+      <div class="space-y-3.5 max-h-[240px] overflow-y-auto pr-1">
+        ${t.comentarios.length ? t.comentarios.map(c => `
+          <div class="flex gap-2.5">${avatar(c.por, 24)}
+            <div class="min-w-0">
+              <div class="flex items-baseline gap-2">
+                <span class="text-[12px] font-medium">${esc(P(c.por).nombre)}</span>
+                <span class="meta">${esc(c.cuando)}</span>
+              </div>
+              <p class="mt-1 text-[12.5px] leading-relaxed text-mute">${esc(c.texto)}</p>
+            </div></div>`).join('')
+        : `<p class="text-[12.5px] text-dim">Sin comentarios todavía.</p>`}
+      </div>
+      <div class="mt-3 tarjeta p-3 focus-within:border-bar-cyan transition">
+        <textarea id="commentBox" rows="2" placeholder="Escribe una nota para el equipo…"
+          class="w-full resize-none bg-transparent text-[12.5px] leading-relaxed outline-none"></textarea>
+        <div class="flex items-center gap-2 pt-2 border-t border-line">
+          <span class="meta">Enter para enviar</span>
+          <button id="postComment" class="btn-suave ml-auto !py-2 !px-3.5 !text-[12.5px]">Comentar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-7 flex gap-2 border-t border-line pt-5">
+      <button data-duplicar="${t.id}"
+        class="flex flex-1 items-center justify-center gap-2 rounded-full border border-line px-4 py-2.5 text-[12.5px] font-medium text-mute transition hover:text-ink hover:border-dim">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+          <rect x="5.5" y="5.5" width="8" height="8" rx="2"/><path d="M10.5 5.5v-1a2 2 0 00-2-2h-4a2 2 0 00-2 2v4a2 2 0 002 2h1"/></svg>
+        Duplicar</button>
+      <button data-borrartarea="${t.id}"
+        class="flex flex-1 items-center justify-center gap-2 rounded-full border border-line px-4 py-2.5 text-[12.5px] font-medium text-dim transition hover:border-bar-red hover:text-bar-red">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.5 4h11M6 4V2.5h4V4M4 4l.6 9.5h6.8L12 4M6.5 6.5v5M9.5 6.5v5"/></svg>
+        Eliminar tarea</button>
+    </div>`;
+
+  const btnBorrar = box.querySelector('[data-borrartarea]');
+  if (btnBorrar) btnBorrar.onclick = () => borrarTarea(t.id);
+  const btnDup = box.querySelector('[data-duplicar]');
+  if (btnDup) btnDup.onclick = () => duplicarTarea(t.id);
+
+  box.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
+    t.progreso = +b.dataset.prog;
+    if (t.progreso === 1 && t.estado !== 'completado') t.estado = 'completado';
+    if (t.progreso > 0 && t.progreso < 1 && t.estado === 'pendiente') t.estado = 'proceso';
+    toast(t.codigo + ' al ' + pct(t.progreso) + '%', E(t.estado).color);
+    renderAll();
+  });
+  box.querySelectorAll('[data-campo]').forEach(el => {
+    const aplicar = () => {
+      const campo = el.dataset.campo;
+      const valor = el.value.trim ? el.value.trim() : el.value;
+      if (campo === 'titulo' && !valor) { el.value = t.titulo; return; }
+      if (t[campo] === valor) return;
+      t[campo] = valor;
+      if (campo === 'proyecto'){ t.proyecto = valor || null; if (PR(valor)) t.area = PR(valor).area; }
+      if (campo === 'estado' && valor === 'completado') t.progreso = 1;
+      const etiqueta = { titulo:'Título', responsable:'Responsable', proyecto:'Proyecto',
+                         estado:'Estado', prioridad:'Prioridad' }[campo];
+      toast(etiqueta + ' actualizado', E(t.estado).color);
+      renderAll();
+    };
+    if (el.tagName === 'SELECT') el.onchange = aplicar;
+    else { el.onblur = aplicar;
+           el.onkeydown = ev => { if (ev.key === 'Enter'){ ev.preventDefault(); el.blur(); } }; }
+  });
+
+  box.querySelectorAll('[data-fecha]').forEach(inp => inp.onchange = () => {
+    t[inp.dataset.fecha] = inp.value || null;
+    if (t.inicio && t.fin && t.fin < t.inicio) t.fin = t.inicio;
+    toast('Fechas actualizadas', 'var(--acento)');
+    renderAll();
+  });
+  const enviar = () => {
+    const el = $('#commentBox'), texto = el.value.trim();
+    if (!texto) return;
+    t.comentarios.push({ por: state.yo || 'u-sin', cuando:'Ahora', texto });
+    toast('Comentario publicado');
+    renderAll();
+  };
+  $('#postComment').onclick = enviar;
+  $('#commentBox').addEventListener('keydown', ev => {
+    if (ev.key === 'Enter' && !ev.shiftKey){ ev.preventDefault(); enviar(); }
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL
+   ═══════════════════════════════════════════════════ */
+
+let focoPrevio = null;
+function abrirModal(iso, tipo = 'tarea'){
+  focoPrevio = document.activeElement;
+  state.tipoEvento = tipo;
+  $('#evDate').value = iso || HOY;
+  $('#evEnd').value  = iso || HOY;
+  $('#evTitle').value = '';
+  $('#evError').textContent = '';
+  $('#evProyecto').innerHTML =
+    `<option value="">Ninguno — tarea suelta</option>` +
+    PROYECTOS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  $('#evOwner').innerHTML = PERSONAS.map(p =>
+    `<option value="${p.id}" ${p.id === (state.yo || 'u-sin') ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('');
+  $('#evStatus').innerHTML = ESTADOS.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
+  pintarTipo();
+  $('#eventModal').classList.remove('hidden');
+  setTimeout(() => $('#evTitle').focus(), 40);
+}
+function cerrarModal(){
+  $('#eventModal').classList.add('hidden');
+  if (focoPrevio && document.body.contains(focoPrevio)) focoPrevio.focus();
+  focoPrevio = null;
+}
+
+function pintarTipo(){
+  document.querySelectorAll('[data-kind]').forEach(b => {
+    const on = b.dataset.kind === state.tipoEvento;
+    b.style.background  = on ? 'color-mix(in srgb, var(--acento) 12%, transparent)' : 'transparent';
+    b.style.borderColor = on ? 'color-mix(in srgb, var(--acento) 45%, transparent)' : 'var(--borde)';
+    b.style.color       = on ? 'var(--cyan)' : 'var(--texto-2)';
+  });
+  const esTarea = state.tipoEvento === 'tarea';
+  $('#taskFields').classList.toggle('hidden', !esTarea);
+  $('#fieldEnd').classList.toggle('invisible', !esTarea);
+  $('#evTitulo').textContent = esTarea ? 'Nueva tarea' : 'Nuevo hito';
+  $('#evSubmit').textContent = esTarea ? 'Crear tarea' : 'Crear hito';
+  $('#evTitle').placeholder = esTarea ? 'Animar títulos del capítulo 3' : 'Entrega mezcla final';
+}
+
+function guardarEvento(){
+  const titulo = $('#evTitle').value.trim();
+  const inicio = $('#evDate').value;
+  if (!titulo){ $('#evError').textContent = 'Ponle nombre al evento.'; return; }
+  if (!inicio){ $('#evError').textContent = 'Elige una fecha.'; return; }
+
+  if (state.tipoEvento === 'hito'){
+    HITOS.push({ id:'h' + (++uid), titulo, fecha:inicio, fijo:false });
+    toast('Hito agregado el ' + fecha(inicio), 'var(--acento)');
+  } else {
+    const fin = $('#evEnd').value || inicio;
+    const proyecto = $('#evProyecto').value || null;
+    const t = {
+      id:'t' + (++uid), codigo:'T-' + String(TAREAS.length + 1).padStart(3,'0'),
+      titulo, proyecto, area:(PR(proyecto) || {}).area || 'GENERAL',
+      responsable:$('#evOwner').value, progreso:0, estado:$('#evStatus').value,
+      notas:null, inicio, fin: fin < inicio ? inicio : fin, comentarios:[]
+    };
+    TAREAS.push(t);
+    state.seleccion = t.id;
+    state.abiertos.add(proyecto || SUELTAS);
+    toast(t.codigo + ' programada · ' + fecha(inicio), E(t.estado).color);
+  }
+  const d = dt(inicio);
+  state.mes = new Date(d.getFullYear(), d.getMonth(), 1);
+  cerrarModal();
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════
+   EXPORTAR
+   Los datos entraron desde un Excel, así que tienen que
+   poder salir igual: para reportes, para respaldo, o para
+   pasarle el estado a alguien que no entra al tablero.
+   ═══════════════════════════════════════════════════ */
+
+function exportarCSV(){
+  const cabecera = ['Código','Tarea','Proyecto','Área','Responsable','Estado',
+                    'Prioridad','Avance %','Inicio','Fin','Notas','Comentarios'];
+
+  // Comillas dobles escapadas y BOM al inicio: así Excel en español
+  // abre el archivo con los acentos correctos y sin romper columnas.
+  const celda = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+  const filas = TAREAS.map(t => [
+    t.codigo, t.titulo, nombreProy(t.proyecto), t.area,
+    P(t.responsable).nombre, E(t.estado).nombre, PRI(t.prioridad).nombre,
+    pct(t.progreso), t.inicio || '', t.fin || '', t.notas || '',
+    t.comentarios.map(c => `${P(c.por).nombre}: ${c.texto}`).join(' | ')
+  ].map(celda).join(';'));
+
+  const csv = '\uFEFF' + [cabecera.map(celda).join(';'), ...filas].join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8;' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `trafico-comms-${HOY}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast(`${TAREAS.length} tareas exportadas`, 'var(--acento)');
+}
+
+/* Duplicar: la mitad del tráfico son piezas que se repiten por
+   capítulo o por mes, y volver a escribir todo es tiempo perdido. */
+function duplicarTarea(id){
+  const o = T(id); if (!o) return;
+  const copia = JSON.parse(JSON.stringify(o));
+  copia.id = 't' + (++uid);
+  copia.codigo = 'T-' + String(TAREAS.length + 1).padStart(3, '0');
+  copia.titulo = o.titulo + ' (copia)';
+  copia.estado = 'pendiente';
+  copia.progreso = 0;
+  copia.comentarios = [];          // los comentarios son del original
+  TAREAS.push(copia);
+  state.seleccion = copia.id;
+  toast('Duplicada: ' + copia.titulo, E('pendiente').color);
+  renderAll();
+}
+
+/* ═══════════════════════════════════════════════════
+   TEMA CLARO / OSCURO
+   Se guarda por navegador, igual que la identidad: cada
+   quien elige cómo quiere ver el tablero sin afectar al
+   resto. Si nunca eligió, se respeta lo que tenga puesto
+   el sistema operativo.
+   ═══════════════════════════════════════════════════ */
+
+const TEMA_KEY = 'slate.comms.tema';
+
+const LUNA = 'M16.5 12.4A6.8 6.8 0 017.6 3.5a7 7 0 108.9 8.9z';
+const SOL  = 'M10 13.2a3.2 3.2 0 100-6.4 3.2 3.2 0 000 6.4zM10 1.8v1.6M10 16.6v1.6M3.5 3.5l1.1 1.1M15.4 15.4l1.1 1.1M1.8 10h1.6M16.6 10h1.6M3.5 16.5l1.1-1.1M15.4 4.6l1.1-1.1';
+
+function temaGuardado(){
+  try { return localStorage.getItem(TEMA_KEY); } catch { return null; }
+}
+
+function aplicarTema(t){
+  document.documentElement.setAttribute('data-tema', t);
+  const icono = document.getElementById('iconoTema');
+  // Se muestra el icono del tema al que vas a cambiar, no del actual
+  if (icono) icono.innerHTML = `<path d="${t === 'oscuro' ? SOL : LUNA}"/>`;
+  const texto = document.getElementById('temaTexto');
+  if (texto) texto.textContent = t === 'oscuro' ? 'Claro' : 'Oscuro';
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', t === 'oscuro' ? '#0E0F12' : '#F4F5F7');
+}
+
+function iniciarTema(){
+  const guardado = temaGuardado();
+  const prefiereClaro = typeof matchMedia === 'function' &&
+    matchMedia('(prefers-color-scheme: light)').matches;
+  aplicarTema(guardado || (prefiereClaro ? 'claro' : 'oscuro'));
+}
+
+function alternarTema(){
+  const nuevo = document.documentElement.getAttribute('data-tema') === 'oscuro' ? 'claro' : 'oscuro';
+  aplicarTema(nuevo);
+  try { localStorage.setItem(TEMA_KEY, nuevo); } catch { /* incógnito */ }
+  toast(nuevo === 'claro' ? 'Tema claro' : 'Tema oscuro', 'var(--acento)');
+}
+
+/* ═══════════════════════════════════════════════════
+   ORQUESTACIÓN
+   ═══════════════════════════════════════════════════ */
+
+/* Todo lo que se puede pulsar con el ratón se puede pulsar con el
+   teclado. Se aplica a los <div> y <span> clicables: los <button>
+   ya lo traen del navegador. */
+function accionable(el, accion){
+  if (el.tagName !== 'BUTTON'){
+    el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    el.onkeydown = ev => {
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); accion(ev); }
+    };
+  }
+  el.onclick = accion;
+}
+
+function renderFiltros(){
+  const bar = $('#filterBar');
+  const chips = [];
+  if (state.persona)  chips.push(['persona',  'Responsable: ' + P(state.persona).nombre]);
+  if (state.area)     chips.push(['area',     'Área: ' + state.area]);
+  if (state.proyecto) chips.push(['proyecto', 'Proyecto: ' + (PR(state.proyecto) || {}).nombre]);
+  if (state.query)    chips.push(['query',    'Búsqueda: ' + state.query]);
+  if (state.filtroEstado) chips.push(['filtroEstado', E(state.filtroEstado).nombre]);
+  if (state.atajo === 'vencidas')  chips.push(['atajo', 'Solo vencidas']);
+  if (state.atajo === 'sinduenio') chips.push(['atajo', 'Solo sin dueño']);
+
+  if (!chips.length){ bar.classList.add('hidden'); bar.classList.remove('flex'); bar.innerHTML = ''; return; }
+  bar.classList.remove('hidden'); bar.classList.add('flex');
+  bar.innerHTML = `<span class="meta">Filtros</span>` + chips.map(([k, l]) =>
+    `<button data-quitar="${k}" class="btn-suave">${esc(l)} &times;</button>`
+  ).join('') + `<button data-quitar="todo" class="accion ml-auto text-dim hover:text-bar-red transition">Limpiar todo</button>`;
+
+  bar.querySelectorAll('[data-quitar]').forEach(b => b.onclick = () => {
+    const k = b.dataset.quitar;
+    if (k === 'todo'){ state.persona = state.area = state.proyecto = state.filtroEstado = state.atajo = null;
+                       state.query = ''; $('#search').value = ''; }
+    else if (k === 'query'){ state.query = ''; $('#search').value = ''; }
+    else state[k] = null;
+    renderAll();
+  });
+}
+
+function renderViewBody(){
+  const body = $('#viewBody');
+  const lista = visibles();
+
+  const titulo = { gantt:'Cronograma', tablero:'Tablero', calendario:'Calendario',
+                   mias:'Mi trabajo', proyectos:'Proyectos', equipo:'Equipo' }[state.vista];
+  const sub = {
+    gantt:'Quién hace qué y cuándo. Toca una fila para abrir sus tareas; arrastra una tarea a una persona de arriba para reasignarla.',
+    tablero:'Arrastra una tarjeta entre columnas para cambiar su estado, o suéltala sobre una persona para reasignarla.',
+    calendario:'Cada tarea cae en su fecha de entrega. Los rombos son hitos: fechas que no se mueven.',
+    mias:'Lo tuyo, ordenado por lo que vence primero. Abajo están las tareas que nadie ha tomado.',
+    proyectos:'Toca un proyecto para verlo en el cronograma. Al eliminarlo, sus tareas quedan sueltas.',
+    equipo:'Carga de cada persona y dónde está hoy. Aquí se agrega, edita o quita gente.'
+  }[state.vista];
+
+  let inner;
+  if (state.vista === 'gantt')            inner = renderGantt();
+  else if (state.vista === 'calendario')  inner = renderCalendario();
+  else if (state.vista === 'proyectos')   inner = renderProyectos();
+  else if (state.vista === 'equipo')      inner = renderEquipo();
+  else if (state.vista === 'mias')        inner = renderMiTrabajo();
+  else if (!lista.length)                 inner = vacio('Sin resultados', 'Ninguna tarea coincide con los filtros o la búsqueda.', { id:'limpiar', texto:'Quitar filtros' });
+  else                                    inner = renderTablero();
+
+  const conFranja = false;   // el equipo vive ahora en el panel derecho
+
+  body.innerHTML = `${conFranja ? franjaEquipo() : ''}
+    <div class="mb-4">
+      <h2 class="titulo">${titulo}</h2>
+      <p class="nota mt-1.5">${sub}</p>
+    </div>${inner}`;
+
+  if (state.vista === 'gantt') wireGantt();
+  if (state.vista === 'calendario') wireCalendario();
+  if (state.vista === 'tablero') wireTablero();
+  if (state.vista === 'mias'){ wireMiTrabajo(); wireEstados(); }
+  if (state.vista === 'equipo') wireEquipo();
+  if (state.vista === 'proyectos') wireProyectos();
+  wireAsignar();
+  wireSoltar();
+  body.querySelectorAll('[data-vista]').forEach(b => b.onclick = () => { state.vista = b.dataset.vista; renderAll(); });
+  body.querySelectorAll('[data-vacio]').forEach(b => b.onclick = () => {
+    if (b.dataset.vacio === 'limpiar'){
+      state.persona = state.area = state.proyecto = state.filtroEstado = state.atajo = null;
+      state.query = ''; $('#search').value = '';
+      renderAll();
+    }
+    if (b.dataset.vacio === 'nueva') abrirModal(HOY, 'tarea');
+    if (b.dataset.vacio === 'nuevoproy') abrirProyecto(null);
+  });
+
+  body.querySelectorAll('[data-abrir]').forEach(el => accionable(el, ev => {
+    ev.stopPropagation();
+    state.seleccion = el.dataset.abrir;
+    renderAll();
+  }));
+  body.querySelectorAll('[data-proyecto]').forEach(el => accionable(el, () => {
+    state.proyecto = el.dataset.proyecto;
+    state.vista = 'gantt';
+    state.abiertos.add(el.dataset.proyecto);
+    renderAll();
+  }));
+}
+
+/* Cinco destinos como máximo: más de eso en una barra inferior deja
+   de ser navegación y pasa a ser un menú. Equipo vive en la franja
+   de arriba y en el chip de la barra lateral. */
+const VISTAS_MOVIL = ['mias','gantt','tablero','calendario','proyectos'];
+
+function renderNavMovil(){
+  const n = document.getElementById('navMovil');
+  n.innerHTML = VISTAS_MOVIL.map(id => {
+    const v = VISTAS.find(x => x.id === id);
+    const on = state.vista === id;
+    const pend = id === 'mias' && state.yo
+      ? TAREAS.filter(t => t.responsable === state.yo && vencida(t)).length : 0;
+    return `<button data-vista="${id}" aria-current="${on ? 'page' : 'false'}"
+      class="relative flex flex-1 flex-col items-center justify-center gap-1 py-2.5 transition
+             ${on ? 'text-ink' : 'text-dim'}">
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" class="${on ? 'text-bar-cyan' : ''}"><path d="${v.icon}"/></svg>
+      <span class="text-[10.5px] leading-none">${v.label}</span>
+      ${pend ? `<span class="absolute right-[22%] top-1.5 grid h-[15px] min-w-[15px] place-items-center rounded-full px-1 text-[9px] font-bold"
+        style="background:var(--alerta);color:var(--fondo)">${pend}</span>` : ''}
+    </button>`;
+  }).join('');
+  n.querySelectorAll('[data-vista]').forEach(b =>
+    b.onclick = () => { state.vista = b.dataset.vista; renderAll(); window.scrollTo({ top:0 }); });
+}
+
+function renderYo(){
+  const inv = soyInvitado();
+  const p = YO();
+  document.getElementById('yoAvatar').innerHTML = inv
+    ? `<span class="grid h-8 w-8 place-items-center rounded-full text-[11px] font-semibold" style="background:var(--borde);color:var(--texto-2)">?</span>`
+    : avatar(p.id, 32);
+  document.getElementById('yoNombre').textContent = inv ? 'Elige tu nombre' : p.nombre;
+  document.getElementById('yoRol').textContent    = inv ? 'Estás como invitado' : p.rol;
+}
+
+function renderAll(){
+  normalizar();
+  renderNav();
+  renderSlate();
+  renderFiltros();
+  renderViewBody();
+  renderRailDetalle();
+  renderYo();
+  renderNavMovil();
+  if (typeof Persist !== 'undefined') Persist.schedule();
+}
+
+/* ═══════════════════════════════════════════════════
+   CHROME
+   ═══════════════════════════════════════════════════ */
+
+const abrirNav  = () => { $('#sidebar').classList.remove('-translate-x-full'); $('#scrim').classList.remove('hidden'); };
+const cerrarNav = () => { if (window.innerWidth < 1024){ $('#sidebar').classList.add('-translate-x-full'); $('#scrim').classList.add('hidden'); } };
+
+document.querySelectorAll('#personaModal [data-cerrarp]').forEach(b => b.onclick = cerrarPersona);
+document.querySelectorAll('#proyModal [data-cerrarpr]').forEach(b => b.onclick = cerrarProyecto);
+$('#prGuardar').onclick = guardarProyecto;
+$('#prBorrar').onclick  = borrarProyecto;
+$('#prNombre').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarProyecto(); });
+
+$('#pGuardar').onclick = guardarPersona;
+$('#pBorrar').onclick  = borrarPersona;
+$('#pNombre').addEventListener('input', ev => pintarAvatarModal(ev.target.value, colorElegido()));
+$('#pNombre').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarPersona(); });
+$('#pRol').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarPersona(); });
+
+$('#exportar').onclick = exportarCSV;
+$('#toastUndo').onclick = () => { $('#toast').classList.add('hidden'); deshacer(); };
+$('#temaBtn').onclick = alternarTema;
+$('#yoChip').onclick = abrirIdentidad;
+$('#nuevaTarea').onclick = () => abrirModal(HOY, 'tarea');
+$('#identInvitado').onclick = () => {
+  $('#identModal').classList.add('hidden');
+  try { localStorage.setItem(YO_KEY, ''); } catch { /* ignorar */ }
+  renderAll();
+};
+
+$('#openNav').onclick  = abrirNav;
+$('#closeNav').onclick = cerrarNav;
+$('#scrim').onclick    = cerrarNav;
+
+document.querySelectorAll('#eventModal [data-close]').forEach(b => b.onclick = cerrarModal);
+document.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { state.tipoEvento = b.dataset.kind; pintarTipo(); });
+$('#evSubmit').onclick = guardarEvento;
+$('#evTitle').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarEvento(); });
+
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape'){ cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarProyecto(); cerrarNav(); }
+  if (ev.key.toLowerCase() === 'n' && !ev.metaKey && !ev.ctrlKey &&
+      !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
+    ev.preventDefault(); abrirModal(HOY, 'tarea');
+  }
+});
+
+let buscaTimer;
+$('#search').addEventListener('input', ev => {
+  clearTimeout(buscaTimer);
+  buscaTimer = setTimeout(() => { state.query = ev.target.value.trim().toLowerCase(); renderFiltros(); renderViewBody(); }, 140);
+});
+
+/* ═══════════════════════════════════════════════════
+   PERSISTENCIA
+   Drivers: api → window.storage → localStorage → memoria
+
+   No hay que configurar nada. Si la página se sirve desde
+   el servidor Express, se detecta solo preguntando por
+   /api/health y usa la base de datos. Si la abres como
+   archivo suelto, guarda en el navegador.
+
+   API_BASE solo hace falta si el front vive en un dominio
+   distinto al de la API (por ejemplo Netlify + Render).
+   ═══════════════════════════════════════════════════ */
+
+const API_BASE = '';
+const STORE_KEY = 'slate.comms.v1';
+const SEMILLA = JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS, personas:PERSONAS });
+
+const Persist = {
+  driver:'memory', base:'', version:0, ultimo:null, listo:false, timer:null,
+
+  async detectar(){
+    // 1. API explícita, o la del mismo origen si responde
+    const candidata = API_BASE || (location.protocol.startsWith('http') ? location.origin : '');
+    if (candidata){
+      try {
+        const r = await fetch(candidata + '/api/health', { cache:'no-store' });
+        if (r.ok && (await r.json()).ok){ this.driver = 'api'; this.base = candidata; return; }
+      } catch { /* sin backend: seguimos con el navegador */ }
+    }
+    if (typeof window !== 'undefined' && window.storage && window.storage.get){ this.driver = 'claude'; return; }
+    try { localStorage.setItem('__probe','1'); localStorage.removeItem('__probe'); this.driver = 'local'; }
+    catch { this.driver = 'memory'; }
+  },
+
+  async cargar(){
+    await this.detectar();
+    try {
+      if (this.driver === 'api'){
+        const r = await fetch(this.base + '/api/state');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const d = await r.json(); this.version = d.version || 0; return d;
+      }
+      if (this.driver === 'claude'){
+        const r = await window.storage.get(STORE_KEY);
+        return r ? JSON.parse(r.value) : null;
+      }
+      if (this.driver === 'local'){
+        const raw = localStorage.getItem(STORE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }
+    } catch (e){ console.warn('[slate] carga:', e.message); this.estado('error','Sin conexión'); }
+    return null;
+  },
+
+  foto(){ return JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS, personas:PERSONAS }); },
+
+  schedule(){
+    if (!this.listo) return;
+    if (this.foto() === this.ultimo) return;
+    this.estado('pending','Guardando');
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.guardar(), 450);
+  },
+
+  async guardar(){
+    const foto = this.foto();
+    try {
+      if (this.driver === 'api'){
+        const r = await fetch(this.base + '/api/state', {
+          method:'PUT', headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({ ...JSON.parse(foto), version:this.version })
+        });
+        if (r.status === 409){
+          const f = await r.json();
+          TAREAS = f.tareas; PROYECTOS = f.proyectos; HITOS = f.hitos;
+          if (Array.isArray(f.personas)) PERSONAS = f.personas;
+          this.version = f.version;
+          this.ultimo = this.foto(); renderAll();
+          toast('Tablero actualizado por un compañero', 'var(--est-proceso)');
+          return;
+        }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        this.version = (await r.json()).version;
+      }
+      else if (this.driver === 'claude') await window.storage.set(STORE_KEY, foto);
+      else if (this.driver === 'local')  localStorage.setItem(STORE_KEY, foto);
+      else { this.estado('memory','Sin guardar'); return; }
+      this.ultimo = foto;
+      this.estado('ok', 'Guardado ' + new Date().toLocaleTimeString('es-CO', { hour:'2-digit', minute:'2-digit' }));
+    } catch (e){ console.warn('[slate] guardar:', e.message); this.estado('error','Error al guardar'); }
+  },
+
+  async reiniciar(){
+    const s = JSON.parse(SEMILLA);
+    TAREAS = s.tareas; PROYECTOS = s.proyectos; HITOS = s.hitos; PERSONAS = s.personas;
+    state.seleccion = null; this.ultimo = null;
+    try {
+      if (this.driver === 'api')         await fetch(this.base + '/api/state/reset', { method:'POST' });
+      else if (this.driver === 'claude') await window.storage.delete(STORE_KEY);
+      else if (this.driver === 'local')  localStorage.removeItem(STORE_KEY);
+    } catch (e){ console.warn('[slate] reset:', e.message); }
+    renderAll();
+    toast('Datos restaurados desde el Excel', 'var(--alerta)');
+  },
+
+  estado(tipo, texto){
+    const c = { ok:'var(--est-completado)', pending:'var(--est-proceso)', error:'var(--alerta)', memory:'var(--texto-2)' };
+    const dot = document.getElementById('syncDot'), lbl = document.getElementById('syncText');
+    if (!dot) return;
+    dot.style.background = c[tipo] || 'var(--texto-2)';
+    lbl.textContent = texto + (this.driver === 'memory' ? '' : ' · ' + this.driver);
+  },
+
+  suscribir(){
+    if (this.driver !== 'api' || typeof EventSource === 'undefined') return;
+    const es = new EventSource(this.base + '/api/events');
+    es.onmessage = ev => {
+      const d = JSON.parse(ev.data);
+      if (d.version === this.version) return;
+      TAREAS = d.tareas; PROYECTOS = d.proyectos; HITOS = d.hitos;
+      if (Array.isArray(d.personas)) PERSONAS = d.personas;
+      this.version = d.version;
+      this.ultimo = this.foto(); renderAll();
+      toast('Cambios de un compañero', 'var(--acento)');
+    };
+    es.onerror = () => this.estado('error','Reconectando');
+  }
+};
+
+$('#syncPill').onclick = () => Persist.guardar();
+$('#resetBoard').onclick = () => { if (confirm('¿Restaurar los datos originales del Excel y borrar los cambios guardados?')) Persist.reiniciar(); };
+
+/* ═══ Arranque ═══ */
+
+iniciarTema();
+
+(async function arranque(){
+  const g = await Persist.cargar();
+  if (g && Array.isArray(g.tareas) && g.tareas.length){
+    TAREAS = g.tareas;
+    if (Array.isArray(g.proyectos)) PROYECTOS = g.proyectos;
+    if (Array.isArray(g.hitos)) HITOS = g.hitos;
+    if (Array.isArray(g.personas) && g.personas.length) PERSONAS = g.personas;
+  }
+  const guardado = cargarYo();
+  state.yo = guardado || null;
+
+  normalizar();
+  renderAll();
+
+  // Primera visita en este navegador: preguntar quién es antes de nada.
+  if (guardado === null){ abrirIdentidad(); }
+  else if (guardado){ state.vista = 'mias'; renderAll(); }
+
+  Persist.ultimo = Persist.foto();
+  Persist.listo = true;
+  Persist.estado(Persist.driver === 'memory' ? 'memory' : 'ok',
+                 Persist.driver === 'memory' ? 'Sin guardar' : 'Al día');
+  Persist.suscribir();
+})();
+
+</script>
+</body>
+</html>
