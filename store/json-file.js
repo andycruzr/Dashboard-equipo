@@ -157,6 +157,45 @@ module.exports = {
     return updated;
   },
 
+  async createProyecto(fields) {
+    let created;
+    await commit(s => {
+      s.proyectos = s.proyectos || [];
+      const limpio = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
+      created = { id: nextId(s.proyectos, 'p-'), seccion:'PROYECTOS', area:null,
+                  estado:'pendiente', entrega:null, nota:null, ...limpio };
+      s.proyectos.push(created);
+      return s;
+    });
+    return created;
+  },
+
+  async updateProyecto(id, patch) {
+    let updated = null;
+    await commit(s => {
+      const p = (s.proyectos || []).find(x => x.id === id);
+      if (!p) return s;
+      const { id: _i, ...safe } = patch;
+      Object.assign(p, safe);
+      updated = p;
+      return s;
+    });
+    return updated;
+  },
+
+  /* Sus tareas quedan sueltas, no se borran. */
+  async deleteProyecto(id) {
+    let removed = false;
+    await commit(s => {
+      const antes = (s.proyectos || []).length;
+      s.proyectos = (s.proyectos || []).filter(p => p.id !== id);
+      removed = s.proyectos.length < antes;
+      if (removed) s.tareas.forEach(t => { if (t.proyecto === id) t.proyecto = null; });
+      return s;
+    });
+    return removed;
+  },
+
   async createPersona(fields) {
     let created;
     await commit(s => {

@@ -36,17 +36,37 @@ tailwind.config = {
   html{ -webkit-text-size-adjust:100%; }
   body{ background:#141517; color:#E9EAEE; font-family:'Inter Tight',system-ui,sans-serif; }
 
-  .stencil{ font-family:'Archivo',system-ui,sans-serif; font-variation-settings:'wdth' 118,'wght' 800;
-            text-transform:uppercase; letter-spacing:.02em; }
-  .stencil-thin{ font-family:'Archivo',system-ui,sans-serif; font-variation-settings:'wdth' 118,'wght' 600;
-            text-transform:uppercase; letter-spacing:.06em; }
-  /* Etiquetas y datos. 11px es el piso de legibilidad: por debajo se
-     cae en pantallas densas y en móvil. */
-  .tape{ font-family:'JetBrains Mono',ui-monospace,monospace; text-transform:uppercase;
-         letter-spacing:.09em; font-size:11px; }
-  /* Frases explicativas: mismo tamaño pequeño, pero en minúscula.
-     Las mayúsculas sostenidas se leen mal más allá de dos palabras. */
-  .nota{ font-size:12px; line-height:1.5; color:#A3A8B2; }
+  /* ── Tipografía ──────────────────────────────────────────────
+     Una sola familia para leer (Inter Tight) y el mono reservado a
+     datos: fechas, porcentajes, contadores. Antes el mono en
+     mayúsculas estaba en todas partes y era la causa principal de
+     que la pantalla se sintiera cargada.                          */
+
+  .titulo    { font-size:20px; font-weight:600; letter-spacing:-.022em; line-height:1.2; }
+  .subtitulo { font-size:15px; font-weight:600; letter-spacing:-.014em; line-height:1.3; }
+  .seccion   { font-size:13px; font-weight:600; letter-spacing:-.006em; color:#A3A8B2; }
+  .meta      { font-size:12.5px; line-height:1.5; color:#A3A8B2; }
+  .nota      { font-size:13px;   line-height:1.55; color:#A3A8B2; }
+  .dato      { font-family:'JetBrains Mono',ui-monospace,monospace;
+               font-size:11.5px; letter-spacing:.01em; font-variant-numeric:tabular-nums; }
+  .cifra     { font-family:'Archivo',system-ui,sans-serif; font-variation-settings:'wght' 700;
+               letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+  .etiqueta  { display:block; margin-bottom:7px; font-size:12.5px; font-weight:500; color:#A3A8B2; }
+  /* Texto de botones: sans, no mono. Un botón se lee, no se mide. */
+  .accion    { font-size:13px; font-weight:500; letter-spacing:-.004em; }
+
+  /* Compatibilidad: lo que aún usa .tape queda en caja normal */
+  .tape      { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11.5px;
+               letter-spacing:.01em; font-variant-numeric:tabular-nums; text-transform:none; }
+  .stencil      { font-size:17px; font-weight:600; letter-spacing:-.02em; }
+  .stencil-thin { font-size:13px; font-weight:600; letter-spacing:-.006em; }
+
+  /* Campos de formulario: un solo estilo, no diez variantes sueltas */
+  .campo{ width:100%; border-radius:9px; border:1px solid #2E3238; background:#232629;
+          padding:10px 12px; font-size:13.5px; color:#E9EAEE; outline:none;
+          transition:border-color .15s ease, background .15s ease; }
+  .campo:focus{ border-color:var(--cyan); background:#26292E; }
+  .campo::placeholder{ color:#7F858F; }
 
   .slate-seg{ transition:width .55s cubic-bezier(.4,0,.2,1), filter .2s ease; min-width:26px; }
   .slate-seg:hover{ filter:brightness(1.18); }
@@ -54,8 +74,10 @@ tailwind.config = {
   .sprocket{ width:7px; height:11px; border-radius:1.5px; background:#33373E; transition:background .25s ease; }
   .sprocket.on{ background:currentColor; }
 
-  .card{ transition:transform .18s ease, border-color .18s ease, background .18s ease; }
-  .card:hover{ transform:translateY(-2px); border-color:#3D424A; }
+  /* Tarjetas: esquinas amables, elevación por color de fondo en vez
+     de por bordes marcados. Menos líneas = menos ruido. */
+  .card{ border-radius:12px; transition:transform .18s ease, border-color .18s ease, background .18s ease; }
+  .card:hover{ transform:translateY(-1px); border-color:#3D424A; background:#1F2226; }
   .card.dragging{ opacity:.35; transform:rotate(-1.2deg) scale(.98); }
   .card.selected{ background:#25282D; border-color:#4B515A; }
   .card.flash{ animation:flash .6s ease; }
@@ -98,7 +120,7 @@ tailwind.config = {
   .zona-drop{ transition:border-color .14s ease, background .14s ease, transform .14s ease; }
   .drop-activo{ border-color:var(--cyan) !important; background:rgba(95,211,208,.1);
                 transform:scale(1.03); }
-  .fila{ transition:border-color .16s ease, background .16s ease, transform .16s ease; }
+  .fila{ border-radius:11px; transition:border-color .16s ease, background .16s ease; }
   .fila:hover{ border-color:#3D424A; background:#1E2126; }
   .fila.sel{ background:#25282D; border-color:#4B515A; }
   details summary::-webkit-details-marker{ display:none; }
@@ -152,13 +174,13 @@ tailwind.config = {
     class="fixed lg:sticky top-0 z-50 h-screen w-[240px] shrink-0 bg-panel border-r border-line
            flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300">
 
-    <div class="px-5 h-[62px] flex items-center gap-3 border-b border-line">
+    <div class="px-5 h-[64px] flex items-center gap-3 border-b border-line">
       <div class="flex h-7 w-7 overflow-hidden rounded-[3px]">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
         <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
       </div>
       <div class="leading-none">
-        <div class="stencil text-[15px]">Slate</div>
+        <div class="titulo">Slate</div>
         <div class="tape text-dim mt-[3px]">Tráfico Comms</div>
       </div>
       <button id="closeNav" class="ml-auto lg:hidden text-mute hover:text-ink text-xl leading-none">&times;</button>
@@ -169,7 +191,7 @@ tailwind.config = {
     <div class="mx-5 my-2 border-t border-line"></div>
 
     <div class="px-5 pb-3 overflow-y-auto">
-      <div class="tape text-dim mb-3">Carga del equipo</div>
+      <div class="meta mb-3">Carga del equipo</div>
       <div id="navLoad" class="space-y-[10px]"></div>
     </div>
 
@@ -178,20 +200,20 @@ tailwind.config = {
         <span id="yoAvatar"></span>
         <div class="min-w-0">
           <div id="yoNombre" class="text-[13px] font-medium truncate">—</div>
-          <div id="yoRol" class="tape text-dim">—</div>
+          <div id="yoRol" class="meta">—</div>
         </div>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"
              class="ml-auto shrink-0 text-dim"><path d="M3 7.5 6 4.5 9 7.5"/></svg>
       </button>
       <button id="resetBoard"
-        class="tape mt-1 w-full rounded-md px-2 py-2 text-left text-dim hover:text-bar-red transition">
+        class="accion mt-1 w-full rounded-md px-2 py-2 text-left text-dim hover:text-bar-red transition">
         Restaurar datos del Excel</button>
     </div>
   </aside>
 
   <div class="flex-1 min-w-0 flex flex-col">
 
-    <header class="sticky top-0 z-30 h-[62px] px-4 sm:px-6 flex items-center gap-4
+    <header class="sticky top-0 z-30 h-[64px] px-5 sm:px-7 flex items-center gap-4
                    bg-base/90 backdrop-blur border-b border-line">
       <button id="openNav" class="lg:hidden text-mute hover:text-ink" aria-label="Abrir menú">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6">
@@ -199,7 +221,7 @@ tailwind.config = {
       </button>
 
       <div class="min-w-0">
-        <h1 class="stencil text-[17px] leading-none truncate">Tráfico Comms</h1>
+        <h1 class="titulo truncate">Tráfico Comms</h1>
         <p class="nota mt-[5px] truncate">Cronograma del equipo · Engagement 26 oct – 13 nov</p>
       </div>
 
@@ -213,13 +235,13 @@ tailwind.config = {
                    placeholder:text-dim focus:border-bar-cyan focus:outline-none transition" />
         </div>
         <button id="nuevaTarea" title="Nueva tarea (N)" aria-label="Crear nueva tarea"
-          class="tape flex items-center gap-1.5 rounded-md border px-2.5 py-[8px] transition"
+          class="accion flex items-center gap-1.5 rounded-[9px] border px-3 py-2.5 transition"
           style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.12);color:var(--cyan)">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
           <span class="hidden sm:inline">Nueva</span>
         </button>
         <button id="syncPill" title="Guardar ahora" aria-label="Estado de guardado. Pulsa para guardar ahora."
-          class="tape flex items-center gap-1.5 rounded-md border border-line bg-panel px-2.5 py-[8px] text-mute hover:text-ink hover:border-dim transition">
+          class="accion flex items-center gap-1.5 rounded-[9px] border border-line bg-panel px-3 py-2.5 text-mute hover:text-ink hover:border-dim transition">
           <span id="syncDot" class="h-[6px] w-[6px] rounded-full" style="background:#E2CA6E"></span>
           <span id="syncText">Cargando</span>
         </button>
@@ -230,11 +252,11 @@ tailwind.config = {
 
     <div class="flex-1 xl:grid xl:grid-cols-[minmax(0,1fr)_336px]">
       <section class="min-w-0 border-b xl:border-b-0 xl:border-r border-line">
-        <div class="px-4 sm:px-6 py-3.5 border-b border-line">
+        <div class="px-5 sm:px-7 py-4 border-b border-line">
           <div id="slate" class="flex h-[10px] w-full gap-[2px] overflow-hidden rounded-full" role="img"></div>
           <div id="slateKey" class="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5"></div>
         </div>
-        <main id="viewBody" class="p-4 sm:p-6 pb-24 lg:pb-6" tabindex="-1"></main>
+        <main id="viewBody" class="p-5 sm:p-7 pb-24 lg:pb-8" tabindex="-1"></main>
       </section>
 
       <aside class="min-w-0">
@@ -248,43 +270,92 @@ tailwind.config = {
 <nav id="navMovil" aria-label="Secciones"
   class="navmovil fixed bottom-0 left-0 right-0 z-40 flex border-t border-line bg-panel/95 backdrop-blur lg:hidden"></nav>
 
+<div id="proyModal" class="fixed inset-0 z-[77] hidden" role="dialog" aria-modal="true" aria-labelledby="prTitulo">
+  <div class="absolute inset-0 bg-black/75" data-cerrarpr></div>
+  <div class="modal-in relative mx-auto mt-[8vh] w-[min(440px,92vw)] overflow-hidden rounded-[14px] border border-line bg-panel shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-line px-6 py-5">
+      <h2 id="prTitulo" class="text-[17px] font-semibold tracking-tight">Nuevo proyecto</h2>
+      <button data-cerrarpr class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="space-y-4 px-6 py-5 max-h-[62vh] overflow-y-auto">
+      <label class="block">
+        <span class="etiqueta">Nombre</span>
+        <input id="prNombre" type="text" placeholder="Cápsulas cerveceras" autocomplete="off" class="campo" />
+      </label>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="etiqueta">Grupo</span>
+          <select id="prSeccion" class="campo tapeselect"></select>
+        </label>
+        <label class="block">
+          <span class="etiqueta">Área</span>
+          <select id="prArea" class="campo tapeselect"></select>
+        </label>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="etiqueta">Estado</span>
+          <select id="prEstado" class="campo tapeselect"></select>
+        </label>
+        <label class="block">
+          <span class="etiqueta">Fecha de entrega</span>
+          <input id="prEntrega" type="date" class="campo" />
+        </label>
+      </div>
+      <label class="block">
+        <span class="etiqueta">Nota</span>
+        <textarea id="prNota" rows="2" placeholder="Contexto que el equipo deba saber" class="campo resize-none"></textarea>
+      </label>
+      <p id="prError" class="text-[12.5px]" style="color:#E37E73"></p>
+    </div>
+
+    <div class="flex items-center gap-2 border-t border-line px-6 py-4">
+      <button id="prBorrar" class="hidden rounded-[8px] border border-line px-3 py-2.5 text-[13px] text-dim hover:text-bar-red hover:border-bar-red transition">Eliminar</button>
+      <button data-cerrarpr class="ml-auto rounded-[8px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] text-mute hover:text-ink transition">Cancelar</button>
+      <button id="prGuardar" class="rounded-[8px] px-4 py-2.5 text-[13px] font-medium transition"
+        style="background:var(--cyan);color:#111315">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div id="personaModal" class="fixed inset-0 z-[76] hidden" role="dialog" aria-modal="true" aria-labelledby="pTitulo">
   <div class="absolute inset-0 bg-black/75" data-cerrarp></div>
-  <div class="modal-in relative mx-auto mt-[9vh] w-[min(420px,92vw)] overflow-hidden rounded-[6px] border border-line bg-panel shadow-2xl">
+  <div class="modal-in relative mx-auto mt-[9vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="flex items-center gap-3 border-b border-line px-5 py-4">
       <span id="pAvatar"></span>
-      <h2 id="pTitulo" class="stencil text-[14px]">Nueva persona</h2>
+      <h2 id="pTitulo" class="subtitulo">Nueva persona</h2>
       <button data-cerrarp class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
     </div>
 
     <div class="space-y-4 px-5 py-5">
       <div>
-        <label for="pNombre" class="tape mb-2 block text-dim">Nombre</label>
+        <label for="pNombre" class="etiqueta">Nombre</label>
         <input id="pNombre" type="text" placeholder="Camila T." autocomplete="off"
-          class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition" />
+          class="campo" />
       </div>
       <div>
-        <label for="pRol" class="tape mb-2 block text-dim">Rol</label>
+        <label for="pRol" class="etiqueta">Rol</label>
         <input id="pRol" type="text" placeholder="Motion y animación" autocomplete="off"
-          class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition" />
+          class="campo" />
       </div>
       <div>
-        <label for="pCap" class="tape mb-2 block text-dim">Carga máxima</label>
+        <label for="pCap" class="etiqueta">Carga máxima</label>
         <input id="pCap" type="number" min="1" max="40"
-          class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition" />
+          class="campo" />
         <p class="nota mt-2">Tareas que puede sostener a la vez. Al pasarse, su barra se pone en rojo.</p>
       </div>
       <div>
-        <span class="tape mb-2 block text-dim">Color</span>
+        <span class="etiqueta">Color</span>
         <div id="pColores" class="flex flex-wrap gap-2"></div>
       </div>
       <p id="pError" class="tape" style="color:#E37E73"></p>
     </div>
 
     <div class="flex items-center gap-2 border-t border-line px-5 py-4">
-      <button id="pBorrar" class="tape hidden rounded-[4px] border border-line px-3 py-[8px] text-dim hover:text-bar-red hover:border-bar-red transition">Quitar del equipo</button>
-      <button data-cerrarp class="tape ml-auto rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-mute hover:text-ink transition">Cancelar</button>
-      <button id="pGuardar" class="tape rounded-[4px] border px-3 py-[8px] transition"
+      <button id="pBorrar" class="accion hidden rounded-[4px] border border-line px-3 py-[8px] text-dim hover:text-bar-red hover:border-bar-red transition">Quitar del equipo</button>
+      <button data-cerrarp class="accion ml-auto rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-mute hover:text-ink transition">Cancelar</button>
+      <button id="pGuardar" class="accion rounded-[9px] border px-3.5 py-2.5 transition"
         style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.14);color:var(--cyan)">Guardar</button>
     </div>
   </div>
@@ -292,21 +363,21 @@ tailwind.config = {
 
 <div id="identModal" class="fixed inset-0 z-[75] hidden" role="dialog" aria-modal="true" aria-labelledby="identTitulo">
   <div class="absolute inset-0 bg-black/80"></div>
-  <div class="modal-in relative mx-auto mt-[10vh] w-[min(420px,92vw)] overflow-hidden rounded-[6px] border border-line bg-panel shadow-2xl">
+  <div class="modal-in relative mx-auto mt-[10vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="border-b border-line px-5 py-5">
       <div class="flex h-[18px] w-[62px] overflow-hidden rounded-[2px] mb-4">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
         <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
       </div>
-      <h2 id="identTitulo" class="stencil text-[16px]">¿Quién eres?</h2>
+      <h2 id="identTitulo" class="titulo">¿Quién eres?</h2>
       <p class="mt-2 text-[12.5px] leading-relaxed text-dim">
         Es el tablero de todo el equipo. Elige tu nombre y verás lo tuyo primero.
         Solo afecta a este navegador.</p>
     </div>
     <div id="identLista" class="max-h-[46vh] space-y-2 overflow-y-auto p-4"></div>
     <div class="flex items-center gap-2 border-t border-line px-5 py-4">
-      <span class="nota">Puedes cambiarlo cuando quieras</span>
-      <button id="identInvitado" class="tape ml-auto rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-mute hover:text-ink transition">
+      <span class="meta">Puedes cambiarlo cuando quieras</span>
+      <button id="identInvitado" class="accion ml-auto rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-mute hover:text-ink transition">
         Solo estoy mirando</button>
     </div>
   </div>
@@ -314,19 +385,19 @@ tailwind.config = {
 
 <div id="eventModal" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="evTitulo">
   <div class="absolute inset-0 bg-black/70" data-close></div>
-  <div class="modal-in relative mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[6px] border border-line bg-panel shadow-2xl">
+  <div class="modal-in relative mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="flex items-center gap-3 border-b border-line px-5 py-4">
       <div class="flex h-[18px] w-[18px] overflow-hidden rounded-[2px]">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
         <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
       </div>
-      <h2 id="evTitulo" class="stencil text-[13px]">Nueva tarea</h2>
+      <h2 id="evTitulo" class="subtitulo">Nueva tarea</h2>
       <button data-close class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
     </div>
 
     <div class="space-y-4 px-5 py-5 max-h-[62vh] overflow-y-auto">
       <div>
-        <label class="tape mb-2 block text-dim">Tipo</label>
+        <label class="etiqueta">Tipo</label>
         <div class="grid grid-cols-2 gap-2">
           <button data-kind="hito"  class="tape rounded-[4px] border py-[9px] transition">Hito</button>
           <button data-kind="tarea" class="tape rounded-[4px] border py-[9px] transition">Tarea</button>
@@ -334,37 +405,37 @@ tailwind.config = {
       </div>
 
       <div>
-        <label for="evTitle" class="tape mb-2 block text-dim">Nombre</label>
+        <label for="evTitle" class="etiqueta">Nombre</label>
         <input id="evTitle" type="text" placeholder="Entrega mezcla final"
-          class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition" />
+          class="campo" />
       </div>
 
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label for="evDate" class="tape mb-2 block text-dim">Inicio</label>
+          <label for="evDate" class="etiqueta">Inicio</label>
           <input id="evDate" type="date"
-            class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-[13px] outline-none focus:border-bar-cyan transition" />
+            class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
         </div>
         <div id="fieldEnd">
-          <label for="evEnd" class="tape mb-2 block text-dim">Fin</label>
+          <label for="evEnd" class="etiqueta">Fin</label>
           <input id="evEnd" type="date"
-            class="w-full rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-[13px] outline-none focus:border-bar-cyan transition" />
+            class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
         </div>
       </div>
 
       <div id="taskFields" class="hidden space-y-4">
         <div>
-          <label for="evProyecto" class="tape mb-2 block text-dim">Proyecto</label>
-          <select id="evProyecto" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition"></select>
+          <label for="evProyecto" class="etiqueta">Proyecto</label>
+          <select id="evProyecto" class="campo tapeselect"></select>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label for="evOwner" class="tape mb-2 block text-dim">Responsable</label>
-            <select id="evOwner" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition"></select>
+            <label for="evOwner" class="etiqueta">Responsable</label>
+            <select id="evOwner" class="campo tapeselect"></select>
           </div>
           <div>
-            <label for="evStatus" class="tape mb-2 block text-dim">Estado</label>
-            <select id="evStatus" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-3 py-[9px] text-[13px] outline-none focus:border-bar-cyan transition"></select>
+            <label for="evStatus" class="etiqueta">Estado</label>
+            <select id="evStatus" class="campo tapeselect"></select>
           </div>
         </div>
       </div>
@@ -373,9 +444,9 @@ tailwind.config = {
     </div>
 
     <div class="flex items-center gap-2 border-t border-line px-5 py-4">
-      <span class="nota">Esc para cerrar</span>
-      <button data-close class="tape ml-auto rounded-[4px] border border-line bg-panel2 px-3 py-[8px] text-mute hover:text-ink transition">Cancelar</button>
-      <button id="evSubmit" class="tape rounded-[4px] border px-3 py-[8px] transition"
+      <span class="meta">Esc para cerrar</span>
+      <button data-close class="accion ml-auto rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-mute hover:text-ink transition">Cancelar</button>
+      <button id="evSubmit" class="accion rounded-[9px] border px-3.5 py-2.5 transition"
         style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.14);color:var(--cyan)">Crear tarea</button>
     </div>
   </div>
@@ -2091,6 +2162,10 @@ const ESTADOS = [
 const E  = id => ESTADOS.find(e => e.id === id) || ESTADOS[0];
 const P  = id => PERSONAS.find(p => p.id === id) || PERSONAS[PERSONAS.length - 1];
 const PR = id => PROYECTOS.find(p => p.id === id);
+/* Una tarea puede no pertenecer a ningún proyecto. Se agrupan bajo
+   "Sueltas" en vez de desaparecer del cronograma. */
+const SUELTAS = 'sin-proyecto';
+const nombreProy = id => { const p = PR(id); return p ? p.nombre : 'Suelta'; };
 const T  = id => TAREAS.find(t => t.id === id);
 
 const HOY = '2026-08-23';
@@ -2179,6 +2254,8 @@ function normalizar(){
   // Una tarea nunca puede apuntar a alguien que ya no está
   const ids = new Set(PERSONAS.map(p => p.id));
   TAREAS.forEach(t => { if (!ids.has(t.responsable)) t.responsable = 'u-sin'; });
+  const pids = new Set(PROYECTOS.map(p => p.id));
+  TAREAS.forEach(t => { if (t.proyecto && !pids.has(t.proyecto)) t.proyecto = null; });
 
   TAREAS.forEach(t => {
     if (!t.prioridad) t.prioridad = 'media';
@@ -2385,12 +2462,12 @@ function renderSlate(){
         title="Ver solo ${e.nombre.toLowerCase()}">
         <span class="h-2 w-2 shrink-0 rounded-full translate-y-[-1px]" style="background:${e.color}"></span>
         <span class="text-[12px] ${on ? 'text-ink font-medium' : 'text-mute'}">${e.nombre}</span>
-        <span class="tape text-dim">${n}</span></button>`;
+        <span class="meta">${n}</span></button>`;
     }).join('') +
     `<span class="ml-auto flex items-center gap-2">
-      ${vencidas ? `<button data-atajo="vencidas" class="tape rounded-[3px] px-1.5 py-1 transition hover:bg-panel2" style="color:#E37E73">${vencidas} vencidas</button>` : ''}
-      ${sinDuenio ? `<button data-atajo="sinduenio" class="tape rounded-[3px] px-1.5 py-1 transition hover:bg-panel2" style="color:var(--cyan)">${sinDuenio} sin dueño</button>` : ''}
-      <span class="tape text-dim">${pct(avance(TAREAS))}% avance</span>
+      ${vencidas ? `<button data-atajo="vencidas" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:#E37E73">${vencidas} vencidas</button>` : ''}
+      ${sinDuenio ? `<button data-atajo="sinduenio" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--cyan)">${sinDuenio} sin dueño</button>` : ''}
+      <span class="meta">${pct(avance(TAREAS))}% avance</span>
     </span>`;
 
   document.querySelectorAll('[data-filtroestado]').forEach(b => b.onclick = () => {
@@ -2433,10 +2510,17 @@ function grupos(){
       tareas: ts.filter(t => t.area === a)
     })).filter(g => g.tareas.length);
   }
-  return PROYECTOS.map(p => ({
+  const porProyecto = PROYECTOS.map(p => ({
     id:p.id, nombre:p.nombre, meta:`${p.seccion} · ${p.area}`, color:E(p.estado).color,
     tareas: ts.filter(t => t.proyecto === p.id)
   })).filter(g => g.tareas.length);
+
+  const sueltas = ts.filter(t => !t.proyecto || !PR(t.proyecto));
+  if (sueltas.length) porProyecto.push({
+    id:SUELTAS, nombre:'Tareas sueltas', meta:'Sin proyecto',
+    color:E(estadoGrupo(sueltas)).color, tareas:sueltas
+  });
+  return porProyecto;
 }
 
 function barra(t, eje){
@@ -2535,28 +2619,28 @@ function renderGantt(){
   <div class="mb-4 flex flex-wrap items-center gap-2">
     <div class="flex rounded-[4px] border border-line overflow-hidden">
       ${[['proyecto','Proyecto'],['persona','Persona'],['area','Área']].map(([k,l]) => `
-        <button data-agrupar="${k}" class="tape px-3 py-[8px] transition"
+        <button data-agrupar="${k}" class="accion px-3.5 py-2.5 transition"
           style="${state.agrupar===k ? 'background:rgba(95,211,208,.12);color:var(--cyan)' : 'color:#A3A8B2'}">${l}</button>`).join('')}
     </div>
     <div class="flex rounded-[4px] border border-line overflow-hidden">
       ${[[5,'Mes'],[9,'Semana'],[16,'Día']].map(([z,l]) => `
-        <button data-zoom="${z}" class="tape px-3 py-[8px] transition"
+        <button data-zoom="${z}" class="accion px-3.5 py-2.5 transition"
           style="${state.zoom===z ? 'background:rgba(95,211,208,.12);color:var(--cyan)' : 'color:#A3A8B2'}">${l}</button>`).join('')}
     </div>
     <button data-todos="1" class="tape rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">
       ${state.abiertos.size ? 'Contraer todo' : 'Expandir todo'}</button>
-    <button data-irhoy="1" class="tape rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">Ir a hoy</button>
-    <button id="addEvent" class="tape ml-auto flex items-center gap-1.5 rounded-[4px] border px-3 py-[8px] transition"
+    <button data-irhoy="1" class="accion rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">Ir a hoy</button>
+    <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[9px] border px-3.5 py-2.5 transition"
       style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.12);color:var(--cyan)">
       <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
       Nueva tarea</button>
   </div>
 
-  <div class="overflow-hidden rounded-[5px] border border-line">
+  <div class="overflow-hidden rounded-[12px] border border-line">
     <div class="g-wrap">
       <div class="g-labels">
         <div class="h-[44px] border-b border-line flex items-end px-3 pb-2">
-          <span class="tape text-dim">${state.agrupar === 'persona' ? 'Persona' : state.agrupar === 'area' ? 'Área' : 'Proyecto'}</span>
+          <span class="meta">${state.agrupar === 'persona' ? 'Persona' : state.agrupar === 'area' ? 'Área' : 'Proyecto'}</span>
         </div>
         ${etiquetas}
       </div>
@@ -2630,24 +2714,24 @@ function tarjeta(t){
   const e = E(t.estado), p = P(t.responsable), proy = PR(t.proyecto);
   const vd = vencida(t);
   return `<article draggable="true" data-id="${t.id}" tabindex="0"
-    class="card group relative cursor-grab active:cursor-grabbing rounded-[5px] border border-line bg-panel
+    class="card group relative cursor-grab active:cursor-grabbing rounded-[12px] border border-line bg-panel
            pl-4 pr-3 py-3 ${state.seleccion === t.id ? 'selected' : ''}">
     <span class="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[5px]" style="background:${e.color}"></span>
 
     <div class="flex items-center gap-2 mb-2">
-      <span class="tape text-dim">${t.codigo}</span>
+      <span class="meta">${t.codigo}</span>
       ${chipPrioridad(t)}
-      ${vd ? `<span class="tape px-1.5 py-[2px] rounded-[2px]" style="background:rgba(227,126,115,.14);color:#E37E73">Vencida</span>` : ''}
+      ${vd ? `<span class="dato rounded-full px-2 py-[3px]" style="background:rgba(227,126,115,.16);color:#E37E73">Vencida</span>` : ''}
       <span class="tape ml-auto ${vd ? 'text-bar-red' : 'text-dim'}">${t.fin ? fecha(t.fin) : 'sin fecha'}</span>
     </div>
 
     <h4 class="text-[13.5px] leading-snug text-ink mb-1">${esc(t.titulo)}</h4>
-    <div class="tape text-dim mb-3 truncate">${esc(proy ? proy.nombre : '—')} · ${esc(t.area)}</div>
+    <div class="meta mb-3 truncate">${esc(nombreProy(t.proyecto))} · ${esc(t.area)}</div>
 
     <div class="flex items-center gap-2 mb-3">
       ${sprockets(t)}
-      <span class="tape text-dim">${pct(t.progreso)}%</span>
-      ${t.comentarios.length ? `<span class="tape ml-auto text-dim">${t.comentarios.length} ✎</span>` : ''}
+      <span class="meta">${pct(t.progreso)}%</span>
+      ${t.comentarios.length ? `<span class="meta ml-auto">${t.comentarios.length} ✎</span>` : ''}
     </div>
 
     <div class="flex items-center gap-2 pt-2.5 border-t border-line">
@@ -2669,12 +2753,12 @@ function renderTablero(){
     return `<div class="flex min-w-[268px] flex-1 flex-col rise" style="animation-delay:${i*60}ms">
       <div class="mb-3 flex items-center gap-2 border-t-2 pt-2.5" style="border-color:${e.color}">
         <span class="stencil-thin text-[11px]" style="color:${e.color}">${e.nombre}</span>
-        <span class="tape text-dim">${String(items.length).padStart(2,'0')}</span>
+        <span class="meta">${String(items.length).padStart(2,'0')}</span>
         <span class="nota ml-auto hidden sm:inline">${e.nota}</span>
       </div>
       <div class="col-drop flex-1 space-y-2.5 rounded-[5px] p-1 min-h-[120px] max-h-[70vh] overflow-y-auto" data-col="${e.id}">
-        ${items.map(tarjeta).join('') || `<div class="grid h-[110px] place-items-center rounded-[5px] border border-dashed border-line">
-          <span class="tape text-dim">Suelta una tarjeta aquí</span></div>`}
+        ${items.map(tarjeta).join('') || `<div class="grid h-[110px] place-items-center rounded-[12px] border border-dashed border-line">
+          <span class="meta">Suelta una tarjeta aquí</span></div>`}
       </div></div>`;
   }).join('');
   return `<div class="scroll-x flex gap-4 overflow-x-auto pb-2">${cols}</div>`;
@@ -2752,11 +2836,11 @@ function renderCalendario(){
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
       </div>
       <div class="min-w-0">
-        <div class="stencil text-[15px] leading-none">${MESES_L[primero.getMonth()]} ${primero.getFullYear()}</div>
+        <div class="subtitulo">${MESES_L[primero.getMonth()]} ${primero.getFullYear()}</div>
         <div class="tape text-dim mt-[6px]">${nMes} entregas · ${nHi} hitos</div>
       </div>
-      <button data-cal="hoy" class="tape rounded-[4px] border border-line bg-panel px-2.5 py-[8px] text-mute hover:text-ink hover:border-dim transition">Hoy</button>
-      <button id="addEvent" class="tape ml-auto flex items-center gap-1.5 rounded-[4px] border px-3 py-[8px] transition"
+      <button data-cal="hoy" class="accion rounded-[9px] border border-line bg-panel px-3 py-2.5 text-mute hover:text-ink hover:border-dim transition">Hoy</button>
+      <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[9px] border px-3.5 py-2.5 transition"
         style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.12);color:var(--cyan)">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
         Nueva tarea</button>
@@ -2806,7 +2890,7 @@ function renderCalendario(){
 
   return barra + `
     <div class="scroll-x overflow-x-auto">
-      <div class="min-w-[720px] overflow-hidden rounded-[5px] border border-line">
+      <div class="min-w-[720px] overflow-hidden rounded-[12px] border border-line">
         <div class="grid grid-cols-7 gap-px bg-line">${head}</div>
         <div class="grid grid-cols-7 gap-px bg-line">${cuerpo}</div>
       </div>
@@ -2857,7 +2941,7 @@ function ordenarPorUrgencia(ts){
 function chipPrioridad(t){
   if (t.prioridad === 'media') return '';
   const p = PRI(t.prioridad);
-  return `<span class="tape shrink-0 rounded-[2px] px-1.5 py-[2px]"
+  return `<span class="dato shrink-0 rounded-full px-2 py-[3px]"
     style="background:${p.color}1f;color:${p.color}">${p.nombre}</span>`;
 }
 
@@ -2870,7 +2954,7 @@ function filaTarea(t, opts = {}){
     : 'sin fecha';
 
   return `<div data-abrir="${t.id}"
-    class="fila group flex cursor-pointer items-center gap-3 rounded-[5px] border border-line bg-panel px-3 py-2.5
+    class="fila group flex cursor-pointer items-center gap-3 rounded-[12px] border border-line bg-panel px-3 py-2.5
            ${state.seleccion === t.id ? 'sel' : ''}">
     <span class="h-[26px] w-[3px] shrink-0 rounded-full" style="background:${e.color}"></span>
 
@@ -2879,13 +2963,13 @@ function filaTarea(t, opts = {}){
         ${chipPrioridad(t)}
         <span class="truncate text-[13px] ${t.estado === 'completado' ? 'text-dim line-through' : 'text-ink'}">${esc(t.titulo)}</span>
       </div>
-      <div class="tape mt-[5px] truncate text-dim">${esc(proy ? proy.nombre : 'Sin proyecto')} · ${esc(t.area)}</div>
+      <div class="meta mt-[5px] truncate">${esc(nombreProy(t.proyecto))} · ${esc(t.area)}</div>
     </div>
 
     <span class="tape hidden shrink-0 sm:block ${vd ? 'text-bar-red' : dias !== null && dias <= 2 ? 'text-bar-yellow' : 'text-dim'}">${cuando}</span>
 
     ${opts.tomar
-      ? `<button data-tomar="${t.id}" class="tape shrink-0 rounded-[4px] border px-2.5 py-[6px] transition"
+      ? `<button data-tomar="${t.id}" class="accion shrink-0 rounded-[4px] border px-2.5 py-[6px] transition"
            style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.12);color:var(--cyan)">Tomarla</button>`
       : `<div class="shrink-0">${botonResponsable(t)}</div>`}
 
@@ -2909,7 +2993,7 @@ function seccion(titulo, ts, opts = {}){
   return `<section class="mb-7">
     <div class="mb-3 flex items-baseline gap-2">
       <h3 class="stencil-thin text-[11px]" style="color:${opts.color || '#A3A8B2'}">${titulo}</h3>
-      <span class="tape text-dim">${ts.length}</span>
+      <span class="meta">${ts.length}</span>
       ${opts.nota ? `<span class="nota ml-auto">${opts.nota}</span>` : ''}
     </div>
     <div class="space-y-2">${ordenarPorUrgencia(ts).map(t => filaTarea(t, opts)).join('')}</div>
@@ -2918,11 +3002,11 @@ function seccion(titulo, ts, opts = {}){
 
 function renderMiTrabajo(){
   if (soyInvitado()){
-    return `<div class="rounded-[5px] border border-dashed border-line bg-panel px-6 py-12 text-center">
-      <div class="stencil-thin text-[12px] text-mute">Estás como invitado</div>
+    return `<div class="rounded-[12px] border border-dashed border-line bg-panel px-6 py-12 text-center">
+      <div class="seccion">Estás como invitado</div>
       <p class="mx-auto mt-3 max-w-[380px] text-[13px] leading-relaxed text-dim">
         Elige tu nombre y esta pantalla te muestra solo tus tareas, ordenadas por lo que vence primero.</p>
-      <button id="elegirYo" class="tape mt-5 rounded-[4px] border px-4 py-[10px] transition"
+      <button id="elegirYo" class="accion mt-5 rounded-[4px] border px-4 py-[10px] transition"
         style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.12);color:var(--cyan)">Elegir mi nombre</button>
     </div>`;
   }
@@ -2944,10 +3028,10 @@ function renderMiTrabajo(){
   else resumen = `Nada atrasado ni urgente. ${abiertas.length} ${abiertas.length === 1 ? 'tarea abierta' : 'tareas abiertas'}.`;
 
   return `
-    <div class="mb-7 flex items-start gap-4 rounded-[5px] border border-line bg-panel p-5">
+    <div class="mb-7 flex items-start gap-4 rounded-[12px] border border-line bg-panel p-5">
       ${avatar(state.yo, 44)}
       <div class="min-w-0">
-        <div class="stencil text-[16px] leading-none">Hola, ${esc(YO().nombre)}</div>
+        <div class="titulo">Hola, ${esc(YO().nombre)}</div>
         <p class="mt-2 text-[13px] leading-relaxed ${atrasadas.length ? 'text-bar-red' : 'text-mute'}">${resumen}</p>
       </div>
       <button id="cambiarYo" class="tape ml-auto shrink-0 rounded-[4px] border border-line px-2.5 py-[7px] text-dim hover:text-ink hover:border-dim transition">
@@ -2968,6 +3052,11 @@ function renderMiTrabajo(){
 }
 
 function wireProyectos(){
+  const nuevo = document.getElementById('nuevoProyecto');
+  if (nuevo) nuevo.onclick = () => abrirProyecto(null);
+  document.querySelectorAll('[data-editarproy]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); abrirProyecto(b.dataset.editarproy);
+  });
   document.querySelectorAll('[data-asignarproy]').forEach(el => {
     const abrir = ev => { ev.stopPropagation(); menuProyecto(el.dataset.asignarproy, el); };
     el.onclick = abrir;
@@ -2981,17 +3070,17 @@ function menuProyecto(proyId, ancla){
   const m = document.createElement('div');
   m.id = 'menuAsignar';
   anclaMenu = ancla;
-  m.className = 'fixed z-[80] w-[230px] overflow-hidden rounded-[6px] border border-line bg-panel shadow-2xl modal-in';
+  m.className = 'fixed z-[80] w-[230px] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl modal-in';
   m.style.top  = Math.min(window.innerHeight - 340, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 242, Math.max(8, r.left - 110)) + 'px';
-  m.innerHTML = `<div class="tape border-b border-line px-3 py-2.5 text-dim">Pasar el proyecto a</div>
+  m.innerHTML = `<div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Pasar el proyecto a</div>
     <div class="max-h-[280px] overflow-y-auto py-1">
       ${PERSONAS.filter(p => !esSistema(p.id)).map(p => `<button data-proy-set="${p.id}"
         class="flex min-h-[44px] w-full items-center gap-2.5 px-3 py-2 text-left transition hover:bg-panel2">
         ${avatar(p.id, 24)}
         <span class="min-w-0 flex-1">
           <span class="block truncate text-[12.5px] text-mute">${esc(p.nombre)}</span>
-          ${dispHoy(p).disponible ? '' : `<span class="tape block text-dim mt-[2px]">${esc(dispHoy(p).corto)}</span>`}
+          ${dispHoy(p).disponible ? '' : `<span class="meta mt-[2px] block">${esc(dispHoy(p).corto)}</span>`}
         </span></button>`).join('')}
     </div>`;
   document.body.appendChild(m);
@@ -3057,10 +3146,10 @@ function abrirMenuAsignar(tareaId, ancla){
   const m = document.createElement('div');
   m.id = 'menuAsignar';
   anclaMenu = ancla;
-  m.className = 'fixed z-[80] w-[210px] overflow-hidden rounded-[5px] border border-line bg-panel shadow-2xl modal-in';
+  m.className = 'fixed z-[80] w-[210px] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl modal-in';
   m.style.top = Math.min(window.innerHeight - 330, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 222, Math.max(8, r.left - 90)) + 'px';
-  m.innerHTML = `<div class="tape border-b border-line px-3 py-2.5 text-dim">Responsable</div>
+  m.innerHTML = `<div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Responsable</div>
     <div class="max-h-[260px] overflow-y-auto py-1">
       ${PERSONAS.map(p => `<button data-set="${p.id}"
         class="flex min-h-[44px] w-full items-center gap-2.5 px-3 py-2 text-left transition hover:bg-panel2
@@ -3068,7 +3157,7 @@ function abrirMenuAsignar(tareaId, ancla){
         ${avatar(p.id, 24)}
         <span class="min-w-0 flex-1">
           <span class="block truncate text-[12.5px] ${p.id === t.responsable ? 'text-ink' : 'text-mute'}">${esc(p.nombre)}</span>
-          ${esSistema(p.id) || dispHoy(p).disponible ? '' : `<span class="tape block text-dim mt-[2px]">${esc(dispHoy(p).corto)}</span>`}
+          ${esSistema(p.id) || dispHoy(p).disponible ? '' : `<span class="meta mt-[2px] block">${esc(dispHoy(p).corto)}</span>`}
         </span>
         ${p.id === t.responsable ? `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="${p.color}" stroke-width="2.2" stroke-linecap="round" class="ml-auto shrink-0"><path d="M2 6.2 4.8 9 10 3.4"/></svg>` : ''}
       </button>`).join('')}
@@ -3103,9 +3192,9 @@ function franjaEquipo(){
   const gente = PERSONAS.filter(p => !esSistema(p.id));
   const fuera = gente.filter(p => !dispHoy(p).disponible);
 
-  return `<div class="mb-5 rounded-[6px] border border-line bg-panel px-4 py-3.5">
+  return `<div class="mb-5 rounded-[12px] border border-line bg-panel px-4 py-3.5">
     <div class="mb-3 flex items-baseline gap-2">
-      <h2 class="stencil-thin text-[11px] text-mute">Hoy en el equipo</h2>
+      <h2 class="seccion">Hoy en el equipo</h2>
       <span class="nota">${gente.length - fuera.length} de ${gente.length} disponibles${fuera.length ? ' · ' + fuera.map(p => p.nombre.split(' ')[0]).join(', ') + ' no' : ''}</span>
       <button data-vista="equipo" class="nota ml-auto shrink-0 text-dim hover:text-ink transition">Gestionar equipo</button>
     </div>
@@ -3276,12 +3365,12 @@ function abrirIdentidad(){
   m.querySelector('#identLista').innerHTML = PERSONAS.filter(p => p.id !== 'u-sin').map(p => {
     const n = TAREAS.filter(t => t.responsable === p.id && t.estado !== 'completado').length;
     return `<button data-yo="${p.id}"
-      class="flex w-full items-center gap-3 rounded-[5px] border border-line bg-panel px-3 py-2.5 text-left transition hover:border-dim
+      class="flex w-full items-center gap-3 rounded-[12px] border border-line bg-panel px-3 py-2.5 text-left transition hover:border-dim
              ${p.id === state.yo ? 'ring-1' : ''}" style="${p.id === state.yo ? `--tw-ring-color:${p.color}` : ''}">
       ${avatar(p.id, 30)}
       <div class="min-w-0">
         <div class="text-[13px] font-medium truncate">${esc(p.nombre)}</div>
-        <div class="tape text-dim">${esc(p.rol)}</div>
+        <div class="meta">${esc(p.rol)}</div>
       </div>
       <span class="tape ml-auto shrink-0 text-dim">${n}</span>
     </button>`;
@@ -3300,6 +3389,91 @@ function abrirIdentidad(){
 /* ═══════════════════════════════════════════════════
    PROYECTOS
    ═══════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════
+   PROYECTOS — alta, edición y baja
+   Al eliminar un proyecto las tareas NO se borran:
+   quedan sueltas para que nadie pierda trabajo.
+   ═══════════════════════════════════════════════════ */
+
+let proyEditando = null;
+
+function abrirProyecto(id){
+  focoPrevio = document.activeElement;
+  proyEditando = id || null;
+  const p = id ? PR(id) : { nombre:'', seccion:'PROYECTOS', area:AREAS[0], estado:'pendiente', entrega:null, nota:'' };
+
+  const secciones = [...new Set([...PROYECTOS.map(x => x.seccion), 'PROYECTOS', 'ALWAYS ON', 'PROYECTOS NO EMPEZADOS'])].filter(Boolean);
+  const areas = [...new Set([...AREAS, ...PROYECTOS.map(x => x.area)])].filter(Boolean);
+
+  $('#prTitulo').textContent = id ? 'Editar proyecto' : 'Nuevo proyecto';
+  $('#prNombre').value  = p.nombre;
+  $('#prEntrega').value = p.entrega || '';
+  $('#prNota').value    = p.nota || '';
+  $('#prSeccion').innerHTML = secciones.map(x => `<option value="${esc(x)}" ${x === p.seccion ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  $('#prArea').innerHTML    = areas.map(x => `<option value="${esc(x)}" ${x === p.area ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  $('#prEstado').innerHTML  = ESTADOS.map(x => `<option value="${x.id}" ${x.id === p.estado ? 'selected' : ''}>${x.nombre}</option>`).join('');
+  $('#prError').textContent = '';
+  $('#prBorrar').classList.toggle('hidden', !id);
+  $('#proyModal').classList.remove('hidden');
+  setTimeout(() => $('#prNombre').focus(), 40);
+}
+
+function cerrarProyecto(){
+  $('#proyModal').classList.add('hidden');
+  if (focoPrevio && document.body.contains(focoPrevio)) focoPrevio.focus();
+  focoPrevio = null;
+}
+
+function guardarProyecto(){
+  const nombre = $('#prNombre').value.trim();
+  if (!nombre){ $('#prError').textContent = 'Escribe el nombre del proyecto.'; return; }
+  const repe = PROYECTOS.some(p => p.id !== proyEditando && p.nombre.toLowerCase() === nombre.toLowerCase());
+  if (repe){ $('#prError').textContent = 'Ya existe un proyecto con ese nombre.'; return; }
+
+  const datos = {
+    nombre,
+    seccion: $('#prSeccion').value,
+    area:    $('#prArea').value,
+    estado:  $('#prEstado').value,
+    entrega: $('#prEntrega').value || null,
+    nota:    $('#prNota').value.trim() || null
+  };
+
+  if (proyEditando){
+    const p = PR(proyEditando);
+    const cambioArea = p.area !== datos.area;
+    Object.assign(p, datos);
+    // Si cambia el área del proyecto, sus tareas la heredan
+    if (cambioArea) TAREAS.forEach(t => { if (t.proyecto === p.id) t.area = datos.area; });
+    toast('Proyecto actualizado: ' + nombre, E(p.estado).color);
+  } else {
+    const id = 'p-' + (++uid);
+    PROYECTOS.push({ id, ...datos, nTareas:0 });
+    toast('Proyecto creado: ' + nombre, E(datos.estado).color);
+  }
+  cerrarProyecto();
+  renderAll();
+}
+
+function borrarProyecto(){
+  if (!proyEditando) return;
+  const p = PR(proyEditando);
+  const suyas = TAREAS.filter(t => t.proyecto === p.id).length;
+
+  const aviso = suyas
+    ? `Eliminar el proyecto "${p.nombre}".\n\nSus ${suyas} ${suyas === 1 ? 'tarea queda suelta' : 'tareas quedan sueltas'}, no se borran. Las verás agrupadas como "Tareas sueltas".`
+    : `Eliminar el proyecto "${p.nombre}". No tiene tareas.`;
+  if (!confirm(aviso)) return;
+
+  TAREAS.forEach(t => { if (t.proyecto === p.id) t.proyecto = null; });
+  PROYECTOS = PROYECTOS.filter(x => x.id !== p.id);
+  if (state.proyecto === p.id) state.proyecto = null;
+  cerrarProyecto();
+  toast('Proyecto eliminado: ' + p.nombre, '#E37E73');
+  renderAll();
+}
 
 /* Quiénes están metidos en un proyecto, por volumen de tareas */
 function duenios(ts){
@@ -3325,42 +3499,68 @@ function asignarProyecto(proyId, personaId){
 }
 
 function renderProyectos(){
+  const sueltas = TAREAS.filter(t => !t.proyecto || !PR(t.proyecto));
   const secciones = [...new Set(PROYECTOS.map(p => p.seccion))];
-  return secciones.map(sec => {
-    const ps = PROYECTOS.filter(p => p.seccion === sec);
-    return `<div class="mb-7">
-      <div class="stencil-thin text-[11px] text-mute mb-3">${esc(sec)}</div>
+
+  const tarjeta = (p, i) => {
+    const ts = tareasDe(p.id, 'proyecto');
+    const e = E(p.estado), av = pct(avance(ts)), r = rango(ts);
+    const abiertas = ts.filter(t => t.estado !== 'completado').length;
+    return `<div class="rise group rounded-[12px] border border-line bg-panel p-5 transition hover:border-dim"
+      style="animation-delay:${i*35}ms">
+      <div data-proyecto="${p.id}" class="cursor-pointer">
+        <div class="mb-2.5 flex items-center gap-2">
+          <span class="h-[7px] w-[7px] shrink-0 rounded-full" style="background:${e.color}"></span>
+          <span class="meta">${esc(e.nombre)}</span>
+          <span class="meta ml-auto truncate">${esc(p.area)}</span>
+        </div>
+        <h3 class="subtitulo mb-2">${esc(p.nombre)}</h3>
+        <p class="meta mb-4">${ts.length} ${ts.length === 1 ? 'tarea' : 'tareas'} · ${abiertas} abiertas${r ? ` · ${fecha(r.inicio)} a ${fecha(r.fin)}` : ' · sin fechas'}</p>
+        <div class="mb-2 h-[4px] w-full overflow-hidden rounded-full bg-panel2">
+          <div class="h-full rounded-full transition-[width] duration-500" style="width:${av}%;background:${e.color}"></div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="dato text-dim">${av}%</span>
+          ${p.entrega ? `<span class="dato ml-auto" style="color:var(--cyan)">Entrega ${fecha(p.entrega)}</span>` : ''}
+        </div>
+        ${p.nota ? `<p class="nota mt-3">${esc(p.nota)}</p>` : ''}
+      </div>
+
+      <div class="mt-4 flex items-center gap-2 border-t border-line pt-4">
+        <span class="flex -space-x-1.5">${duenios(ts).map(id => avatar(id, 24)).join('') || `<span class="meta">Sin equipo</span>`}</span>
+        <span class="ml-auto flex gap-1.5">
+          <button data-asignarproy="${p.id}" class="accion rounded-[8px] border border-line px-3 py-2 text-mute transition hover:text-ink hover:border-dim">Reasignar</button>
+          <button data-editarproy="${p.id}" aria-label="Editar ${esc(p.nombre)}"
+            class="grid h-[34px] w-[34px] place-items-center rounded-[8px] border border-line text-dim transition hover:text-ink hover:border-dim">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11.2 2.3a1.6 1.6 0 012.3 2.3L5.6 12.5l-3 .9.9-3z"/></svg></button>
+        </span>
+      </div>
+    </div>`;
+  };
+
+  const bloqueSueltas = sueltas.length ? `<div class="mb-8">
+    <h2 class="seccion mb-3">Tareas sueltas</h2>
+    <div class="rounded-[12px] border border-dashed border-line bg-panel p-5">
+      <p class="nota mb-4">${sueltas.length} ${sueltas.length === 1 ? 'tarea no pertenece' : 'tareas no pertenecen'} a ningún proyecto. Sirven para pendientes que no valen un proyecto entero.</p>
+      <div class="space-y-2">${ordenarPorUrgencia(sueltas).slice(0, 6).map(t => filaTarea(t)).join('')}</div>
+      ${sueltas.length > 6 ? `<p class="meta mt-3">y ${sueltas.length - 6} más en el cronograma</p>` : ''}
+    </div></div>` : '';
+
+  return `<div class="mb-6 flex flex-wrap items-center gap-3">
+      <p class="nota max-w-[440px]">Cada proyecto agrupa tareas. Puedes crearlos, editarlos y eliminarlos: al eliminar uno, sus tareas quedan sueltas.</p>
+      <button id="nuevoProyecto" class="accion ml-auto flex items-center gap-2 rounded-[9px] px-4 py-2.5 transition"
+        style="background:var(--cyan);color:#111315">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+        Nuevo proyecto</button>
+    </div>
+    ${bloqueSueltas}
+    ${secciones.map(sec => `<div class="mb-8">
+      <h2 class="seccion mb-3">${esc(sec)}</h2>
       <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
-      ${ps.map((p, i) => {
-        const ts = tareasDe(p.id, 'proyecto');
-        const e = E(p.estado), av = pct(avance(ts)), r = rango(ts);
-        const abiertas = ts.filter(t => t.estado !== 'completado').length;
-        return `<div class="rise rounded-[6px] border border-line bg-panel p-4" style="animation-delay:${i*40}ms">
-          <div data-proyecto="${p.id}" role="button" tabindex="0" class="cursor-pointer">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="tape rounded-[2px] border border-line px-1.5 py-[3px] text-dim">${esc(p.area)}</span>
-            <span class="tape ml-auto rounded-[2px] px-2 py-[3px]" style="background:${e.color}1f;color:${e.color}">${e.nombre}</span>
-          </div>
-          <h4 class="text-[13.5px] font-medium leading-snug mb-2">${esc(p.nombre)}</h4>
-          <div class="tape text-dim mb-3">${ts.length} tareas · ${abiertas} abiertas${r ? ` · ${fecha(r.inicio)} – ${fecha(r.fin)}` : ' · sin fechas'}</div>
-          <div class="h-[5px] w-full rounded-full bg-panel2 overflow-hidden">
-            <div class="h-full rounded-full" style="width:${av}%;background:${e.color}"></div></div>
-          <div class="mt-2 flex items-center gap-2">
-            <span class="tape text-dim">${av}%</span>
-            ${p.entrega ? `<span class="tape ml-auto" style="color:var(--cyan)">Entrega ${fecha(p.entrega)}</span>` : ''}
-          </div>
-          </div>
-          ${p.nota ? `<p class="nota mt-2">${esc(p.nota)}</p>` : ''}
-          <div class="mt-3 flex items-center gap-2 border-t border-line pt-3">
-            <span class="flex -space-x-1.5">${duenios(ts).map(id => avatar(id, 22)).join('') || `<span class="tape text-dim">sin equipo</span>`}</span>
-            <span data-asignarproy="${p.id}" role="button" tabindex="0"
-              class="tape ml-auto flex min-h-[32px] items-center rounded-[4px] border border-line px-2.5 text-dim transition hover:text-ink hover:border-dim">
-              Reasignar proyecto</span>
-          </div>
-        </div>`;
-      }).join('')}
-      </div></div>`;
-  }).join('');
+        ${PROYECTOS.filter(p => p.seccion === sec).map(tarjeta).join('')}
+      </div></div>`).join('')}
+    ${!PROYECTOS.length ? vacio('Sin proyectos', 'Crea el primero para empezar a agrupar tareas.', { id:'nuevoproy', texto:'Nuevo proyecto' }) : ''}`;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -3381,16 +3581,16 @@ function renderEquipo(){
       const mias = tareasDe(p.id, 'responsable');
       const abiertas = mias.filter(t => t.estado !== 'completado');
       const excede = abiertas.length > p.capacidad;
-      return `<div class="rise rounded-[5px] border border-line bg-panel p-4" style="animation-delay:${i*50}ms">
+      return `<div class="rise rounded-[12px] border border-line bg-panel p-4" style="animation-delay:${i*50}ms">
         <div class="flex items-center gap-3">
           ${avatar(p.id, 34)}
           <div class="min-w-0">
             <div class="text-[13.5px] font-medium truncate">${esc(p.nombre)}</div>
-            <div class="tape text-dim">${esc(p.rol)}</div>
+            <div class="meta">${esc(p.rol)}</div>
           </div>
           <div class="ml-auto flex items-center gap-2">
             <div class="text-right">
-              <div class="stencil text-[19px] leading-none" style="color:${excede ? '#E37E73' : p.color}">${abiertas.length}</div>
+              <div class="cifra text-[20px] leading-none" style="color:${excede ? '#E37E73' : p.color}">${abiertas.length}</div>
               <div class="tape text-dim mt-1">de ${p.capacidad}</div>
             </div>
             ${esSistema(p.id) ? '' : `<button data-editarp="${p.id}" title="Editar a ${esc(p.nombre)}"
@@ -3409,12 +3609,12 @@ function renderEquipo(){
 
         ${esSistema(p.id) ? '' : `
         <div class="mt-3 border-t border-line pt-3">
-          <label for="disp-${p.id}" class="tape mb-2 block text-dim">Dónde está</label>
+          <label for="disp-${p.id}" class="etiqueta">Dónde está</label>
           <div class="flex flex-wrap gap-1.5">
             ${DISPONIBILIDAD.map(d => {
               const on = dispHoy(p).id === d.id;
               return `<button data-disp="${p.id}" data-dispval="${d.id}" aria-pressed="${on}"
-                class="tape flex min-h-[34px] items-center gap-1.5 rounded-[4px] border px-2 transition"
+                class="accion flex min-h-[36px] items-center gap-1.5 rounded-[8px] border px-2.5 transition"
                 style="${on ? `border-color:${d.color}88;background:${d.color}1f;color:${d.color}`
                            : 'border-color:#2E3238;color:#7F858F'}">
                 <span aria-hidden="true">${d.forma}</span>${d.corto}</button>`;
@@ -3422,9 +3622,9 @@ function renderEquipo(){
           </div>
           ${dispHoy(p).disponible ? '' : `
             <label class="mt-2.5 block">
-              <span class="tape mb-1.5 block text-dim">Vuelve el</span>
+              <span class="etiqueta">Vuelve el</span>
               <input type="date" data-dispfecha="${p.id}" value="${p.dispHasta || ''}"
-                class="w-full rounded-[4px] border border-line bg-panel2 px-2 py-[7px] text-[12px] outline-none focus:border-bar-cyan transition"></label>
+                class="campo"></label>
             <p class="nota mt-1.5">Al pasar esa fecha vuelve solo a "en la oficina".</p>`}
         </div>`}
         <div class="mt-4 space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
@@ -3445,7 +3645,7 @@ function renderEquipo(){
 function vacio(titulo, msg, accion){
   return `<div class="grid place-items-center rounded-[6px] border border-dashed border-line px-6 py-14 text-center">
     <div class="max-w-[380px]">
-      <div class="stencil-thin text-[12px] text-mute">${esc(titulo)}</div>
+      <div class="seccion">${esc(titulo)}</div>
       <p class="nota mt-2.5">${esc(msg)}</p>
       ${accion ? `<button data-vacio="${accion.id}" class="tape mt-5 rounded-[4px] border px-4 py-[10px] transition"
         style="border-color:rgba(95,211,208,.45);background:rgba(95,211,208,.12);color:var(--cyan)">${esc(accion.texto)}</button>` : ''}
@@ -3464,8 +3664,8 @@ function renderRailCarga(){
   const saturados = PERSONAS.filter(p => tareasDe(p.id, 'responsable').filter(t => t.estado !== 'completado').length > p.capacidad);
   box.innerHTML = `
     <div class="flex items-baseline justify-between mb-4">
-      <h3 class="stencil-thin text-[11px] text-mute">Carga del equipo</h3>
-      <span class="tape text-dim">${abiertas} abiertas</span>
+      <h3 class="seccion">Carga del equipo</h3>
+      <span class="meta">${abiertas} abiertas</span>
     </div>
     <div class="space-y-3.5">${PERSONAS.map(p => filaCarga(p, true)).join('')}</div>
     <p class="mt-4 text-[11.5px] ${saturados.length ? 'text-bar-red' : 'text-dim'}">
@@ -3487,14 +3687,14 @@ function renderRailDetalle(){
 
   box.innerHTML = `
     <div class="flex items-center gap-2 mb-3">
-      <h3 class="stencil-thin text-[11px] text-mute">Detalle</h3>
+      <h3 class="seccion">Detalle</h3>
       <span class="tape ml-auto rounded-[2px] px-2 py-[3px]" style="background:${e.color}1f;color:${e.color}">${e.nombre}</span>
     </div>
 
-    <div class="rounded-[5px] border border-line bg-panel p-4">
+    <div class="rounded-[12px] border border-line bg-panel p-4">
       <div class="flex items-center gap-2 mb-2">
-        <span class="tape text-dim">${t.codigo}</span>
-        ${vencida(t) ? `<span class="tape ml-auto rounded-[2px] px-1.5 py-[3px]" style="background:rgba(227,126,115,.14);color:#E37E73">Vencida</span>` : ''}
+        <span class="meta">${t.codigo}</span>
+        ${vencida(t) ? `<span class="dato ml-auto rounded-full px-2 py-[3px]" style="background:rgba(227,126,115,.16);color:#E37E73">Vencida</span>` : ''}
       </div>
 
       <textarea data-campo="titulo" rows="2"
@@ -3502,23 +3702,24 @@ function renderRailDetalle(){
                text-[14px] leading-snug outline-none hover:border-line focus:border-bar-cyan focus:bg-panel2 transition">${esc(t.titulo)}</textarea>
 
       <div class="mt-3 space-y-2.5">
-        <label class="block"><span class="tape mb-1.5 block text-dim">Responsable</span>
-          <select data-campo="responsable" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-2 py-[7px] text-[12.5px] outline-none focus:border-bar-cyan transition">
+        <label class="block"><span class="etiqueta">Responsable</span>
+          <select data-campo="responsable" class="campo tapeselect">
             ${PERSONAS.map(o => `<option value="${o.id}" ${o.id === t.responsable ? 'selected' : ''}>${esc(o.nombre)}</option>`).join('')}
           </select></label>
 
-        <label class="block"><span class="tape mb-1.5 block text-dim">Proyecto</span>
-          <select data-campo="proyecto" class="tapeselect w-full rounded-[4px] border border-line bg-panel2 px-2 py-[7px] text-[12.5px] outline-none focus:border-bar-cyan transition">
+        <label class="block"><span class="etiqueta">Proyecto</span>
+          <select data-campo="proyecto" class="campo tapeselect">
+            <option value="" ${!t.proyecto ? 'selected' : ''}>Ninguno — tarea suelta</option>
             ${PROYECTOS.map(o => `<option value="${o.id}" ${o.id === t.proyecto ? 'selected' : ''}>${esc(o.nombre)}</option>`).join('')}
           </select></label>
 
         <div class="grid grid-cols-2 gap-2">
-          <label class="block"><span class="tape mb-1.5 block text-dim">Estado</span>
+          <label class="block"><span class="etiqueta">Estado</span>
             <select data-campo="estado" class="tapeselect w-full rounded-[4px] border bg-panel2 px-2 py-[7px] text-[12.5px] outline-none transition"
               style="border-color:${e.color}55;color:${e.color}">
               ${ESTADOS.map(o => `<option value="${o.id}" ${o.id === t.estado ? 'selected' : ''}>${o.nombre}</option>`).join('')}
             </select></label>
-          <label class="block"><span class="tape mb-1.5 block text-dim">Prioridad</span>
+          <label class="block"><span class="etiqueta">Prioridad</span>
             <select data-campo="prioridad" class="tapeselect w-full rounded-[4px] border bg-panel2 px-2 py-[7px] text-[12.5px] outline-none transition"
               style="border-color:${PRI(t.prioridad).color}55;color:${PRI(t.prioridad).color}">
               ${PRIORIDADES.map(o => `<option value="${o.id}" ${o.id === t.prioridad ? 'selected' : ''}>${o.nombre}</option>`).join('')}
@@ -3526,20 +3727,20 @@ function renderRailDetalle(){
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <label class="block"><span class="tape mb-1.5 block text-dim">Inicio</span>
+          <label class="block"><span class="etiqueta">Inicio</span>
             <input type="date" data-fecha="inicio" value="${t.inicio || ''}"
-              class="w-full rounded-[4px] border border-line bg-panel2 px-2 py-[6px] text-[12px] outline-none focus:border-bar-cyan transition"></label>
-          <label class="block"><span class="tape mb-1.5 block text-dim">Fin</span>
+              class="campo"></label>
+          <label class="block"><span class="etiqueta">Fin</span>
             <input type="date" data-fecha="fin" value="${t.fin || ''}"
-              class="w-full rounded-[4px] border border-line bg-panel2 px-2 py-[6px] text-[12px] outline-none focus:border-bar-cyan transition"></label>
+              class="campo"></label>
         </div>
       </div>
     </div>
 
     <div class="mt-6">
       <div class="flex items-baseline justify-between mb-3">
-        <h3 class="stencil-thin text-[11px] text-mute">Avance</h3>
-        <span class="tape text-dim">${pct(t.progreso)}%</span>
+        <h3 class="seccion">Avance</h3>
+        <span class="meta">${pct(t.progreso)}%</span>
       </div>
       <div class="flex gap-1.5">
         ${[0,.25,.5,.75,1].map(v => `<button data-prog="${v}"
@@ -3557,8 +3758,8 @@ function renderRailDetalle(){
 
     <div class="mt-6">
       <div class="flex items-baseline justify-between mb-3">
-        <h3 class="stencil-thin text-[11px] text-mute">Comentarios</h3>
-        <span class="tape text-dim">${t.comentarios.length}</span>
+        <h3 class="seccion">Comentarios</h3>
+        <span class="meta">${t.comentarios.length}</span>
       </div>
       <div class="space-y-3.5 max-h-[240px] overflow-y-auto pr-1">
         ${t.comentarios.length ? t.comentarios.map(c => `
@@ -3566,18 +3767,18 @@ function renderRailDetalle(){
             <div class="min-w-0">
               <div class="flex items-baseline gap-2">
                 <span class="text-[12px] font-medium">${esc(P(c.por).nombre)}</span>
-                <span class="tape text-dim">${esc(c.cuando)}</span>
+                <span class="meta">${esc(c.cuando)}</span>
               </div>
               <p class="mt-1 text-[12.5px] leading-relaxed text-mute">${esc(c.texto)}</p>
             </div></div>`).join('')
         : `<p class="text-[12.5px] text-dim">Sin comentarios todavía.</p>`}
       </div>
-      <div class="mt-3 rounded-[5px] border border-line bg-panel p-2.5 focus-within:border-bar-cyan transition">
+      <div class="mt-3 rounded-[12px] border border-line bg-panel p-2.5 focus-within:border-bar-cyan transition">
         <textarea id="commentBox" rows="2" placeholder="Escribe una nota para el equipo…"
           class="w-full resize-none bg-transparent text-[12.5px] leading-relaxed outline-none"></textarea>
         <div class="flex items-center gap-2 pt-2 border-t border-line">
-          <span class="tape text-dim">Enter para enviar</span>
-          <button id="postComment" class="tape ml-auto rounded-[3px] bg-panel2 border border-line px-2.5 py-[6px] text-mute hover:text-ink hover:border-dim transition">Comentar</button>
+          <span class="meta">Enter para enviar</span>
+          <button id="postComment" class="accion ml-auto rounded-[3px] bg-panel2 border border-line px-2.5 py-[6px] text-mute hover:text-ink hover:border-dim transition">Comentar</button>
         </div>
       </div>
     </div>`;
@@ -3596,7 +3797,7 @@ function renderRailDetalle(){
       if (campo === 'titulo' && !valor) { el.value = t.titulo; return; }
       if (t[campo] === valor) return;
       t[campo] = valor;
-      if (campo === 'proyecto') t.area = (PR(valor) || {}).area || t.area;
+      if (campo === 'proyecto'){ t.proyecto = valor || null; if (PR(valor)) t.area = PR(valor).area; }
       if (campo === 'estado' && valor === 'completado') t.progreso = 1;
       const etiqueta = { titulo:'Título', responsable:'Responsable', proyecto:'Proyecto',
                          estado:'Estado', prioridad:'Prioridad' }[campo];
@@ -3639,7 +3840,9 @@ function abrirModal(iso, tipo = 'tarea'){
   $('#evEnd').value  = iso || HOY;
   $('#evTitle').value = '';
   $('#evError').textContent = '';
-  $('#evProyecto').innerHTML = PROYECTOS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  $('#evProyecto').innerHTML =
+    `<option value="">Ninguno — tarea suelta</option>` +
+    PROYECTOS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
   $('#evOwner').innerHTML = PERSONAS.map(p =>
     `<option value="${p.id}" ${p.id === (state.yo || 'u-sin') ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('');
   $('#evStatus').innerHTML = ESTADOS.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
@@ -3679,16 +3882,16 @@ function guardarEvento(){
     toast('Hito agregado el ' + fecha(inicio), '#5FD3D0');
   } else {
     const fin = $('#evEnd').value || inicio;
-    const proyecto = $('#evProyecto').value;
+    const proyecto = $('#evProyecto').value || null;
     const t = {
       id:'t' + (++uid), codigo:'T-' + String(TAREAS.length + 1).padStart(3,'0'),
-      titulo, proyecto, area:(PR(proyecto) || {}).area || 'SIN ÁREA',
+      titulo, proyecto, area:(PR(proyecto) || {}).area || 'GENERAL',
       responsable:$('#evOwner').value, progreso:0, estado:$('#evStatus').value,
       notas:null, inicio, fin: fin < inicio ? inicio : fin, comentarios:[]
     };
     TAREAS.push(t);
     state.seleccion = t.id;
-    state.abiertos.add(proyecto);
+    state.abiertos.add(proyecto || SUELTAS);
     toast(t.codigo + ' programada · ' + fecha(inicio), E(t.estado).color);
   }
   const d = dt(inicio);
@@ -3728,9 +3931,9 @@ function renderFiltros(){
 
   if (!chips.length){ bar.classList.add('hidden'); bar.classList.remove('flex'); bar.innerHTML = ''; return; }
   bar.classList.remove('hidden'); bar.classList.add('flex');
-  bar.innerHTML = `<span class="tape text-dim">Filtros</span>` + chips.map(([k, l]) =>
-    `<button data-quitar="${k}" class="tape flex items-center gap-1.5 rounded-[3px] border border-line bg-panel px-2.5 py-[6px] text-mute hover:text-ink hover:border-dim transition">${esc(l)} &times;</button>`
-  ).join('') + `<button data-quitar="todo" class="tape ml-auto text-dim hover:text-bar-red transition">Limpiar todo</button>`;
+  bar.innerHTML = `<span class="meta">Filtros</span>` + chips.map(([k, l]) =>
+    `<button data-quitar="${k}" class="accion flex items-center gap-1.5 rounded-[8px] border border-line bg-panel px-3 py-2 text-mute hover:text-ink hover:border-dim transition">${esc(l)} &times;</button>`
+  ).join('') + `<button data-quitar="todo" class="accion ml-auto text-dim hover:text-bar-red transition">Limpiar todo</button>`;
 
   bar.querySelectorAll('[data-quitar]').forEach(b => b.onclick = () => {
     const k = b.dataset.quitar;
@@ -3770,7 +3973,7 @@ function renderViewBody(){
 
   body.innerHTML = `${conFranja ? franjaEquipo() : ''}
     <div class="mb-4">
-      <h2 class="stencil text-[15px]">${titulo}</h2>
+      <h2 class="titulo">${titulo}</h2>
       <p class="nota mt-1.5">${sub}</p>
     </div>${inner}`;
 
@@ -3790,6 +3993,7 @@ function renderViewBody(){
       renderAll();
     }
     if (b.dataset.vacio === 'nueva') abrirModal(HOY, 'tarea');
+    if (b.dataset.vacio === 'nuevoproy') abrirProyecto(null);
   });
 
   body.querySelectorAll('[data-abrir]').forEach(el => accionable(el, ev => {
@@ -3863,6 +4067,11 @@ const abrirNav  = () => { $('#sidebar').classList.remove('-translate-x-full'); $
 const cerrarNav = () => { if (window.innerWidth < 1024){ $('#sidebar').classList.add('-translate-x-full'); $('#scrim').classList.add('hidden'); } };
 
 document.querySelectorAll('#personaModal [data-cerrarp]').forEach(b => b.onclick = cerrarPersona);
+document.querySelectorAll('#proyModal [data-cerrarpr]').forEach(b => b.onclick = cerrarProyecto);
+$('#prGuardar').onclick = guardarProyecto;
+$('#prBorrar').onclick  = borrarProyecto;
+$('#prNombre').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarProyecto(); });
+
 $('#pGuardar').onclick = guardarPersona;
 $('#pBorrar').onclick  = borrarPersona;
 $('#pNombre').addEventListener('input', ev => pintarAvatarModal(ev.target.value, colorElegido()));
@@ -3887,7 +4096,7 @@ $('#evSubmit').onclick = guardarEvento;
 $('#evTitle').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarEvento(); });
 
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape'){ cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarNav(); }
+  if (ev.key === 'Escape'){ cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarProyecto(); cerrarNav(); }
   if (ev.key.toLowerCase() === 'n' && !ev.metaKey && !ev.ctrlKey &&
       !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
     ev.preventDefault(); abrirModal(HOY, 'tarea');

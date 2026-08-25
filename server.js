@@ -46,6 +46,24 @@ app.use(express.json({ limit: '4mb' }));
 const CLAVE = process.env.CLAVE_ACCESO;
 const USUARIO = process.env.USUARIO_ACCESO || 'comms';
 
+if (CLAVE) {
+  app.use((req, res, next) => {
+    // /api/health queda abierto: es el que consulta el hosting para
+    // saber si el servicio está vivo.
+    if (req.path === '/api/health') return next();
+
+    const cabecera = req.headers.authorization || '';
+    const [tipo, b64] = cabecera.split(' ');
+    if (tipo === 'Basic' && b64) {
+      const [u, p] = Buffer.from(b64, 'base64').toString().split(':');
+      if (u === USUARIO && seguraIgual(p || '', CLAVE)) return next();
+    }
+    res.setHeader('WWW-Authenticate', 'Basic realm="Trafico Comms", charset="UTF-8"');
+    res.status(401).json({ error: 'Autenticación requerida' });
+  });
+}
+
+// Comparación de longitud constante: no filtra la clave por tiempos
 function seguraIgual(a, b) {
   const crypto = require('crypto');
   const ba = Buffer.from(a), bb = Buffer.from(b);
@@ -228,6 +246,32 @@ app.delete('/api/hitos/:id', wrap(async (req, res) => {
 app.get('/api/proyectos', wrap(async (req, res) => {
   const { proyectos } = await store.getState();
   res.json(proyectos);
+}));
+
+app.post('/api/proyectos', wrap(async (req, res) => {
+  const { nombre } = req.body || {};
+  if (!nombre) return bad(res, 'nombre es obligatorio');
+  const p = await store.createProyecto({
+    nombre, seccion: req.body.seccion, area: req.body.area,
+    estado: req.body.estado, entrega: req.body.entrega, nota: req.body.nota
+  });
+  broadcast(await store.getState());
+  res.status(201).json(p);
+}));
+
+app.patch('/api/proyectos/:id', wrap(async (req, res) => {
+  const p = await store.updateProyecto(req.params.id, req.body || {});
+  if (!p) return res.status(404).json({ error: 'Proyecto no encontrado' });
+  broadcast(await store.getState());
+  res.json(p);
+}));
+
+/* Sus tareas quedan sueltas, con proyecto en null. */
+app.delete('/api/proyectos/:id', wrap(async (req, res) => {
+  const ok = await store.deleteProyecto(req.params.id);
+  if (!ok) return res.status(404).json({ error: 'Proyecto no encontrado' });
+  broadcast(await store.getState());
+  res.status(204).end();
 }));
 
 /* ── Personas ────────────────────────────────────── */

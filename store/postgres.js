@@ -252,6 +252,38 @@ module.exports = {
     return rowCount > 0;
   },
 
+  async createProyecto(f) {
+    const { rows } = await q(
+      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, nota)
+       VALUES (COALESCE($1, 'p-' || nextval('proyecto_seq')), $2, $3, $4, $5, $6, $7)
+       RETURNING ${COLS_PROYECTO}`,
+      [f.id || null, f.nombre, f.seccion || 'PROYECTOS', f.area || null,
+       f.estado || 'pendiente', f.entrega || null, f.nota || null]);
+    await subirVersion();
+    return rows[0];
+  },
+
+  async updateProyecto(id, patch) {
+    const permitidos = ['nombre','seccion','area','estado','entrega','nota'];
+    const claves = Object.keys(patch).filter(k => permitidos.includes(k));
+    if (!claves.length) return null;
+    const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');
+    const { rows } = await q(
+      `UPDATE proyectos SET ${sets} WHERE id = $1 RETURNING ${COLS_PROYECTO}`,
+      [id, ...claves.map(k => patch[k])]);
+    if (!rows[0]) return null;
+    await subirVersion();
+    return rows[0];
+  },
+
+  /* La llave foránea es ON DELETE SET NULL: las tareas del proyecto
+     quedan sueltas en vez de borrarse con él. */
+  async deleteProyecto(id) {
+    const { rowCount } = await q('DELETE FROM proyectos WHERE id = $1', [id]);
+    if (rowCount) await subirVersion();
+    return rowCount > 0;
+  },
+
   async createPersona(f) {
     const { rows } = await q(
       `INSERT INTO personas (id, nombre, iniciales, rol, color, capacidad, disp, disp_hasta, orden)
