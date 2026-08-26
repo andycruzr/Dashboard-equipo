@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#0E0F12" />
-<title>Slate — Tráfico Comms</title>
+<title>Tráfico Comms Internas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -454,8 +454,8 @@ tailwind.config = {
       </button>
 
       <div class="min-w-0">
-        <h1 class="titulo truncate">Tráfico Comms</h1>
-        <p class="nota mt-[5px] truncate">Cronograma del equipo · Engagement 26 oct – 13 nov</p>
+        <h1 class="titulo truncate">Tráfico Comms Internas</h1>
+        
       </div>
 
       <div class="ml-auto flex items-center gap-2">
@@ -530,6 +530,14 @@ tailwind.config = {
           <span class="etiqueta">Área</span>
           <select id="prArea" class="campo tapeselect"></select>
         </label>
+      </div>
+      <div>
+        <span class="etiqueta">Duración</span>
+        <div class="grid grid-cols-2 gap-3">
+          <input id="prInicio" type="date" class="campo" aria-label="Fecha de inicio" />
+          <input id="prFin" type="date" class="campo" aria-label="Fecha de fin" />
+        </div>
+        <p id="prDias" class="nota mt-2"></p>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <label class="block">
@@ -636,10 +644,23 @@ tailwind.config = {
     <div class="space-y-4 px-5 py-5 max-h-[62vh] overflow-y-auto">
       <div>
         <label class="etiqueta">Tipo</label>
-        <div class="grid grid-cols-2 gap-2">
-          <button data-kind="hito"  class="tape rounded-[4px] border py-[9px] transition">Hito</button>
-          <button data-kind="tarea" class="tape rounded-[4px] border py-[9px] transition">Tarea</button>
+        <div class="grid grid-cols-3 gap-2">
+          <button data-kind="tarea"  class="accion rounded-[10px] border py-2.5 transition">Tarea</button>
+          <button data-kind="hito"   class="accion rounded-[10px] border py-2.5 transition">Hito</button>
+          <button data-kind="evento" class="accion rounded-[10px] border py-2.5 transition">Evento</button>
         </div>
+        <p id="evAyuda" class="nota mt-2"></p>
+      </div>
+
+      <div id="eventoFields" class="hidden grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="etiqueta">Hora</span>
+          <input id="evHora" type="time" class="campo" />
+        </label>
+        <label class="block">
+          <span class="etiqueta">Lugar</span>
+          <input id="evLugar" type="text" placeholder="Sala Cervecería" autocomplete="off" class="campo" />
+        </label>
       </div>
 
       <div>
@@ -659,6 +680,17 @@ tailwind.config = {
           <input id="evEnd" type="date"
             class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
         </div>
+      </div>
+
+      <div id="eventoFields" class="hidden grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="etiqueta">Hora</span>
+          <input id="evHora" type="time" class="campo" />
+        </label>
+        <label class="block">
+          <span class="etiqueta">Lugar</span>
+          <input id="evLugar" type="text" placeholder="Sala Cervecería" autocomplete="off" class="campo" />
+        </label>
       </div>
 
       <div id="taskFields" class="hidden space-y-4">
@@ -702,7 +734,7 @@ tailwind.config = {
 <script>
 /* ═══ DATOS — generados desde GANTT_COMMS.xlsx ═══ */
 
-const AREAS = ["BIENESTAR", "CDI", "CORPO", "LEGAL", "MKT", "TALENT", "TECH"];
+let AREAS = ["BIENESTAR", "CDI", "CORPO", "LEGAL", "MKT", "TALENT", "TECH"];
 
 let PERSONAS = [
  {
@@ -2434,6 +2466,20 @@ const COLORES_EQUIPO = ['#2A9083','#8A6E12','#A85C9B','#3E7FD1','#2F9B57',
    No se edita ni se borra. */
 const esSistema = id => id === 'u-sin';
 
+/* Los tres grupos en que se reparte el tráfico. El id es lo que se
+   guarda; la etiqueta es lo que se lee. Así se puede cambiar el texto
+   sin migrar datos. */
+const GRUPOS = [
+  { id:'ALWAYS ON',              nombre:'Always on' },
+  { id:'PROYECTOS',              nombre:'En curso' },
+  { id:'PROYECTOS NO EMPEZADOS', nombre:'No empezados' }
+];
+const nombreGrupo = id => (GRUPOS.find(g => g.id === id) || { nombre:id }).nombre;
+
+/* Roles con los que alguien puede estar metido en una tarea además
+   de ser su responsable. */
+const ROLES = ['Apoya', 'Revisa', 'Aprueba', 'Consulta'];
+
 /* ── Disponibilidad ──────────────────────────────────────────────
    Dónde está hoy cada quien. Importa para dos cosas: saber a quién
    puedes pedirle algo ahora, y avisar antes de asignarle trabajo a
@@ -2512,6 +2558,69 @@ function titulizar(txt){
 
 const tinte = (c, pct) => `color-mix(in srgb, ${c} ${pct}%, transparent)`;
 
+/* ── Colaboradores ───────────────────────────────────────────────
+   Cada tarea y cada proyecto tiene UN responsable (quien responde si
+   no sale) y, aparte, cualquier número de colaboradores con su rol.
+   Se separan a propósito: si todos son responsables, nadie lo es. */
+
+function colaboradores(x){ return Array.isArray(x.equipo) ? x.equipo : []; }
+
+function agregarColaborador(x, personaId, rol){
+  if (personaId === x.responsable) return 'Ya es el responsable';
+  if (colaboradores(x).some(c => c.persona === personaId)) return 'Ya está en el equipo';
+  x.equipo = [...colaboradores(x), { persona:personaId, rol:rol || ROLES[0] }];
+  return null;
+}
+
+function quitarColaborador(x, personaId){
+  x.equipo = colaboradores(x).filter(c => c.persona !== personaId);
+}
+
+/* Todos los implicados, responsable incluido y sin repetir */
+function implicados(x){
+  return [{ persona:x.responsable, rol:'Responsable' }, ...colaboradores(x)];
+}
+const participa = (x, pid) => x.responsable === pid || colaboradores(x).some(c => c.persona === pid);
+
+/* ── Coherencia ──────────────────────────────────────────────────
+   Corrige contradicciones objetivas, no criterios. Un proyecto "en
+   proceso" no puede seguir en "No empezados": eso es un error, no
+   una decisión. En cambio, si el equipo dejó una tarea al 100% pero
+   en revisión, eso SÍ es una decisión (está entregada, falta el
+   visto bueno) y no se toca.                                      */
+
+function coherencia(){
+  const arreglos = [];
+
+  TAREAS.forEach(t => {
+    // Completada implica terminada
+    if (t.estado === 'completado' && t.progreso !== 1){ t.progreso = 1; arreglos.push(t.codigo + ': avance al 100%'); }
+    // Fin antes que inicio no existe
+    if (t.inicio && t.fin && t.fin < t.inicio){ t.fin = t.inicio; arreglos.push(t.codigo + ': fecha de fin corregida'); }
+    // Sin asignar no puede colaborar consigo mismo
+    if (t.responsable === 'u-sin') t.equipo = colaboradores(t).filter(c => c.persona !== 'u-sin');
+  });
+
+  PROYECTOS.forEach(p => {
+    const hijas = TAREAS.filter(t => t.proyecto === p.id);
+    const arrancado = hijas.some(t => t.estado !== 'pendiente');
+
+    // "No empezados" deja de serlo en cuanto arranca, sea porque
+    // alguien cambió su estado o porque una de sus tareas avanzó
+    if (p.seccion === 'PROYECTOS NO EMPEZADOS' && (p.estado !== 'pendiente' || arrancado)){
+      p.seccion = 'PROYECTOS';
+      arreglos.push(p.nombre + ': pasó a En curso');
+    }
+    // Al revés: marcarlo pendiente sin nada arrancado lo devuelve
+    if (p.estado === 'pendiente' && !arrancado && p.seccion === 'PROYECTOS' && !hijas.length){
+      p.seccion = 'PROYECTOS NO EMPEZADOS';
+    }
+    if (p.inicio && p.fin && p.fin < p.inicio) p.fin = p.inicio;
+  });
+
+  return arreglos;
+}
+
 function normalizar(){
   TAREAS.forEach(t => { t.titulo = titulizar(t.titulo); });
   PROYECTOS.forEach(p => { p.nombre = titulizar(p.nombre); });
@@ -2531,8 +2640,24 @@ function normalizar(){
   // Una tarea nunca puede apuntar a alguien que ya no está
   const ids = new Set(PERSONAS.map(p => p.id));
   TAREAS.forEach(t => { if (!ids.has(t.responsable)) t.responsable = 'u-sin'; });
+  // Un área usada por algún dato pero ausente de la lista se recupera
+  [...TAREAS.map(t => t.area), ...PROYECTOS.map(p => p.area)]
+    .filter(Boolean).forEach(a => { if (!AREAS.includes(a)) AREAS.push(a); });
+  AREAS.sort();
+
+  HITOS.forEach(h => { if (!h.tipo) h.tipo = 'hito'; });
+
+  // Un colaborador que ya no está en el equipo se retira solo
+  const vivos = new Set(PERSONAS.map(x => x.id));
+  [...TAREAS, ...PROYECTOS].forEach(x => {
+    if (!Array.isArray(x.equipo)) return;
+    x.equipo = x.equipo.filter(c => vivos.has(c.persona) && c.persona !== x.responsable);
+  });
+
   const pids = new Set(PROYECTOS.map(p => p.id));
   TAREAS.forEach(t => { if (t.proyecto && !pids.has(t.proyecto)) t.proyecto = null; });
+
+  coherencia();
 
   TAREAS.forEach(t => {
     if (!t.prioridad) t.prioridad = 'media';
@@ -2646,7 +2771,8 @@ function recordar(descripcion){
     tareas: JSON.parse(JSON.stringify(TAREAS)),
     proyectos: JSON.parse(JSON.stringify(PROYECTOS)),
     personas: JSON.parse(JSON.stringify(PERSONAS)),
-    hitos: JSON.parse(JSON.stringify(HITOS))
+    hitos: JSON.parse(JSON.stringify(HITOS)),
+    areas: [...AREAS]
   };
 }
 
@@ -2654,6 +2780,7 @@ function deshacer(){
   if (!ultimoDeshacer) return;
   const p = ultimoDeshacer;
   TAREAS = p.tareas; PROYECTOS = p.proyectos; PERSONAS = p.personas; HITOS = p.hitos;
+  if (p.areas) AREAS = p.areas;
   if (p.yo && PERSONAS.some(x => x.id === p.yo)) guardarYo(p.yo);
   ultimoDeshacer = null;
   normalizar();
@@ -2674,7 +2801,7 @@ function toast(texto, color = 'var(--est-completado)', conDeshacer = false){
 
 function visibles(){
   return TAREAS.filter(t => {
-    if (state.vista === 'mias' && state.yo && t.responsable !== state.yo) return false;
+    if (state.vista === 'mias' && state.yo && !participa(t, state.yo)) return false;
     if (state.persona  && t.responsable !== state.persona) return false;
     if (state.area     && t.area !== state.area) return false;
     if (state.proyecto && t.proyecto !== state.proyecto) return false;
@@ -2822,7 +2949,9 @@ function barra(t, eje){
 }
 
 function barraGrupo(g, eje){
-  const r = rango(g.tareas);
+  // Si el proyecto tiene duración propia, manda sobre la de sus tareas
+  const pr = state.agrupar === 'proyecto' ? PR(g.id) : null;
+  const r = (pr && pr.inicio && pr.fin) ? { inicio:pr.inicio, fin:pr.fin } : rango(g.tareas);
   if (!r) return `<span class="tape absolute left-2 top-1/2 -translate-y-1/2 text-dim">sin fechas</span>`;
   const x = offsetDias(eje, r.inicio) * state.zoom;
   const w = Math.max(state.zoom, (offsetDias(eje, r.fin) - offsetDias(eje, r.inicio) + 1) * state.zoom);
@@ -3279,7 +3408,12 @@ function filaTarea(t, opts = {}){
     : 'Sin fecha';
 
   return `<div data-abrir="${t.id}" class="item ${state.seleccion === t.id ? 'sel' : ''} cursor-pointer">
-    <span class="shrink-0">${botonResponsable(t, 38)}</span>
+    <span class="flex shrink-0 -space-x-2">
+      ${botonResponsable(t, 38)}
+      ${colaboradores(t).slice(0, 2).map(c => avatar(c.persona, 30)).join('')}
+      ${colaboradores(t).length > 2 ? `<span class="grid h-[30px] w-[30px] place-items-center rounded-full text-[10.5px] font-semibold"
+        style="background:var(--sup-alta);color:var(--texto-3)">+${colaboradores(t).length - 2}</span>` : ''}
+    </span>
 
     <span class="min-w-0 flex-1">
       <span class="flex items-center gap-2">
@@ -3331,7 +3465,7 @@ function renderMiTrabajo(){
     </div>`;
   }
 
-  const mias = TAREAS.filter(t => t.responsable === state.yo);
+  const mias = TAREAS.filter(t => participa(t, state.yo));
   const abiertas = mias.filter(t => t.estado !== 'completado');
   const atrasadas = abiertas.filter(t => vencida(t));
   const semana    = abiertas.filter(t => !vencida(t) && t.fin && diasRestantes(t.fin) <= 7);
@@ -3411,6 +3545,9 @@ function wireProyectos(){
   document.querySelectorAll('[data-editarproy]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); abrirProyecto(b.dataset.editarproy);
   });
+  document.querySelectorAll('[data-equipoproy]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); menuEquipoProyecto(PR(b.dataset.equipoproy), b);
+  });
   document.querySelectorAll('[data-asignarproy]').forEach(el => {
     const abrir = ev => { ev.stopPropagation(); menuProyecto(el.dataset.asignarproy, el); };
     el.onclick = abrir;
@@ -3444,7 +3581,64 @@ function menuProyecto(proyId, ancla){
   setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
 }
 
+/* ── Áreas ───────────────────────────────────────────────────────
+   Son las áreas cliente del Excel (CORPO, CDI, TALENT...). Al quitar
+   una, lo que la usaba pasa a GENERAL: nada se borra. */
+
+function agregarArea(){
+  const nombre = (prompt('Nombre del área nueva') || '').trim().toUpperCase();
+  if (!nombre) return;
+  if (AREAS.includes(nombre)){ toast('Esa área ya existe', 'var(--est-proceso)'); return; }
+  recordar('agregar área ' + nombre);
+  AREAS.push(nombre);
+  AREAS.sort();
+  toast('Área agregada: ' + nombre, 'var(--acento)', true);
+  renderAll();
+}
+
+function quitarArea(nombre){
+  const nT = TAREAS.filter(t => t.area === nombre).length;
+  const nP = PROYECTOS.filter(p => p.area === nombre).length;
+  const aviso = (nT || nP)
+    ? `Quitar el área "${nombre}".\n\n${nT} ${nT === 1 ? 'tarea' : 'tareas'} y ${nP} ${nP === 1 ? 'proyecto' : 'proyectos'} pasan a GENERAL. No se borra nada.`
+    : `Quitar el área "${nombre}". No la usa nadie.`;
+  if (!confirm(aviso)) return;
+
+  recordar('quitar área ' + nombre);
+  AREAS = AREAS.filter(a => a !== nombre);
+  TAREAS.forEach(t => { if (t.area === nombre) t.area = 'GENERAL'; });
+  PROYECTOS.forEach(p => { if (p.area === nombre) p.area = 'GENERAL'; });
+  if (state.area === nombre) state.area = null;
+  toast('Área quitada: ' + nombre, 'var(--alerta)', true);
+  renderAll();
+}
+
+function bloqueAreas(){
+  return `<div class="caja mt-6 p-5">
+    <div class="mb-1 flex items-baseline gap-2">
+      <h2 class="subtitulo">Áreas</h2>
+      <button id="nuevaArea" class="btn-suave ml-auto !py-2 !px-3.5 !text-[12.5px]">Agregar área</button>
+    </div>
+    <p class="nota mb-4">Al quitar un área, sus tareas y proyectos pasan a GENERAL.</p>
+    <div class="flex flex-wrap gap-2">
+      ${AREAS.map(a => {
+        const n = TAREAS.filter(t => t.area === a).length;
+        return `<span class="chip group !py-2 !pl-3.5 !pr-2">
+          ${esc(a)} <span class="meta">${n}</span>
+          <button data-quitararea="${esc(a)}" aria-label="Quitar área ${esc(a)}"
+            class="ml-1 grid h-5 w-5 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-bar-red">&times;</button>
+        </span>`;
+      }).join('')}
+      ${!AREAS.length ? `<span class="nota">Sin áreas todavía.</span>` : ''}
+    </div>
+  </div>`;
+}
+
 function wireEquipo(){
+  const na = document.getElementById('nuevaArea');
+  if (na) na.onclick = agregarArea;
+  document.querySelectorAll('[data-quitararea]').forEach(b => b.onclick = () => quitarArea(b.dataset.quitararea));
+
   document.querySelectorAll('[data-disp]').forEach(b => b.onclick = () => {
     const p = P(b.dataset.disp), d = DISP(b.dataset.dispval);
     p.disp = d.id;
@@ -3529,6 +3723,99 @@ function abrirMenuAsignar(tareaId, ancla){
     ev.stopPropagation();
     cerrarMenu();
     asignarA(t.id, b.dataset.set);
+  });
+  setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
+}
+
+/* Equipo del proyecto: quién está metido aunque no tenga una tarea
+   suya asignada todavía (el que aprueba, el que da contexto). */
+function menuEquipoProyecto(p, ancla){
+  cerrarMenu();
+  const r = ancla.getBoundingClientRect();
+  const m = document.createElement('div');
+  m.id = 'menuAsignar'; anclaMenu = ancla;
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[260px] overflow-hidden rounded-[18px] border border-line';
+  m.style.top  = Math.min(window.innerHeight - 380, r.bottom + 6) + 'px';
+  m.style.left = Math.min(window.innerWidth - 272, Math.max(8, r.left - 140)) + 'px';
+
+  const dentro = colaboradores(p);
+  m.innerHTML = `
+    <div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Equipo de ${esc(p.nombre)}</div>
+    <div class="max-h-[300px] overflow-y-auto py-2">
+      ${PERSONAS.filter(x => !esSistema(x.id)).map(x => {
+        const c = dentro.find(y => y.persona === x.id);
+        return `<div class="flex min-h-[46px] items-center gap-2.5 px-3.5 py-2">
+          ${avatar(x.id, 26)}
+          <span class="min-w-0 flex-1 truncate text-[12.5px] ${c ? 'text-ink' : 'text-mute'}">${esc(x.nombre)}</span>
+          ${c
+            ? `<select data-rolproy="${x.id}" class="tapeselect rounded-full border border-line bg-transparent px-2 py-[3px] text-[11px] text-mute">
+                 ${ROLES.map(rr => `<option value="${rr}" ${rr === c.rol ? 'selected' : ''}>${rr}</option>`).join('')}
+               </select>
+               <button data-quitaproy="${x.id}" aria-label="Quitar" class="grid h-6 w-6 shrink-0 place-items-center rounded-full text-dim hover:text-bar-red">&times;</button>`
+            : `<button data-sumaproy="${x.id}" class="btn-suave !py-1 !px-2.5 !text-[11.5px]">Sumar</button>`}
+        </div>`;
+      }).join('')}
+    </div>`;
+  document.body.appendChild(m);
+
+  const refrescar = () => { cerrarMenu(); renderAll(); };
+  m.querySelectorAll('[data-sumaproy]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    agregarColaborador(p, b.dataset.sumaproy, ROLES[0]);
+    toast(P(b.dataset.sumaproy).nombre + ' suma a ' + p.nombre, P(b.dataset.sumaproy).color);
+    refrescar();
+  });
+  m.querySelectorAll('[data-quitaproy]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    quitarColaborador(p, b.dataset.quitaproy);
+    toast(P(b.dataset.quitaproy).nombre + ' fuera de ' + p.nombre, 'var(--alerta)');
+    refrescar();
+  });
+  m.querySelectorAll('[data-rolproy]').forEach(sel => sel.onchange = ev => {
+    ev.stopPropagation();
+    const c = colaboradores(p).find(y => y.persona === sel.dataset.rolproy);
+    if (c){ c.rol = sel.value; renderAll(); }
+  });
+  setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
+}
+
+function menuColaborador(x, ancla){
+  cerrarMenu();
+  const libres = PERSONAS.filter(p => !esSistema(p.id) && !participa(x, p.id));
+  if (!libres.length){ toast('Ya están todos en la tarea', 'var(--est-proceso)'); return; }
+
+  const r = ancla.getBoundingClientRect();
+  const m = document.createElement('div');
+  m.id = 'menuAsignar'; anclaMenu = ancla;
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[250px] overflow-hidden rounded-[18px] border border-line';
+  m.style.top  = Math.min(window.innerHeight - 360, r.bottom + 6) + 'px';
+  m.style.left = Math.min(window.innerWidth - 262, Math.max(8, r.left - 130)) + 'px';
+  m.innerHTML = `
+    <div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Sumar al equipo</div>
+    <div class="px-3.5 pt-3">
+      <select id="rolNuevo" class="campo tapeselect !py-2 !text-[12.5px]">
+        ${ROLES.map(rr => `<option value="${rr}">${rr}</option>`).join('')}
+      </select>
+    </div>
+    <div class="max-h-[240px] overflow-y-auto py-2">
+      ${libres.map(p => `<button data-colab="${p.id}"
+        class="flex min-h-[44px] w-full items-center gap-2.5 px-3.5 py-2 text-left transition hover:bg-panel2">
+        ${avatar(p.id, 26)}
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-[12.5px] text-mute">${esc(p.nombre)}</span>
+          ${dispHoy(p).disponible ? '' : `<span class="meta block">${esc(dispHoy(p).corto)}</span>`}
+        </span></button>`).join('')}
+    </div>`;
+  document.body.appendChild(m);
+
+  m.querySelectorAll('[data-colab]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const rol = m.querySelector('#rolNuevo').value;
+    const error = agregarColaborador(x, b.dataset.colab, rol);
+    cerrarMenu();
+    if (error) return toast(error, 'var(--est-proceso)');
+    toast(P(b.dataset.colab).nombre + ' suma como ' + rol.toLowerCase(), P(b.dataset.colab).color);
+    renderAll();
   });
   setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
 }
@@ -3632,7 +3919,6 @@ function abrirPersona(id){
   $('#pTitulo').textContent = id ? 'Editar persona' : 'Nueva persona';
   $('#pNombre').value = p.nombre;
   $('#pRol').value    = p.rol || '';
-  $('#pCap').value    = p.capacidad;
   $('#pError').textContent = '';
   $('#pBorrar').classList.toggle('hidden', !id);
 
@@ -3673,7 +3959,6 @@ function pintarAvatarModal(nombre, color){
 function guardarPersona(){
   const nombre = $('#pNombre').value.trim();
   const rol    = $('#pRol').value.trim();
-  const cap    = Math.max(1, Math.min(40, parseInt($('#pCap').value, 10) || 8));
   const color  = colorElegido();
 
   if (!nombre){ $('#pError').textContent = 'Escribe el nombre.'; return; }
@@ -3683,13 +3968,13 @@ function guardarPersona(){
 
   if (personaEditando){
     const p = P(personaEditando);
-    Object.assign(p, { nombre, rol, capacidad:cap, color, iniciales:iniciales(nombre) });
+    Object.assign(p, { nombre, rol, color, iniciales:iniciales(nombre) });
     toast('Actualizaste a ' + nombre, color);
   } else {
     const id = 'u-' + (++uid);
     // Se inserta antes de "Sin asignar" para que la bandeja quede siempre al final
     const i = PERSONAS.findIndex(p => p.id === 'u-sin');
-    const nueva = { id, nombre, clave:null, iniciales:iniciales(nombre), rol, color, capacidad:cap };
+    const nueva = { id, nombre, clave:null, iniciales:iniciales(nombre), rol, color, capacidad:8 };
     i === -1 ? PERSONAS.push(nueva) : PERSONAS.splice(i, 0, nueva);
     toast(nombre + ' entró al equipo', color);
   }
@@ -3764,22 +4049,38 @@ let proyEditando = null;
 function abrirProyecto(id){
   focoPrevio = document.activeElement;
   proyEditando = id || null;
-  const p = id ? PR(id) : { nombre:'', seccion:'PROYECTOS', area:AREAS[0], estado:'pendiente', entrega:null, nota:'' };
-
-  const secciones = [...new Set([...PROYECTOS.map(x => x.seccion), 'PROYECTOS', 'ALWAYS ON', 'PROYECTOS NO EMPEZADOS'])].filter(Boolean);
+  const p = id ? PR(id) : { nombre:'', seccion:'PROYECTOS', area:AREAS[0], estado:'pendiente',
+                            entrega:null, nota:'', inicio:null, fin:null };
   const areas = [...new Set([...AREAS, ...PROYECTOS.map(x => x.area)])].filter(Boolean);
 
   $('#prTitulo').textContent = id ? 'Editar proyecto' : 'Nuevo proyecto';
   $('#prNombre').value  = p.nombre;
   $('#prEntrega').value = p.entrega || '';
+  $('#prInicio').value   = p.inicio || '';
+  $('#prFin').value      = p.fin || '';
+  pintarDuracion();
   $('#prNota').value    = p.nota || '';
-  $('#prSeccion').innerHTML = secciones.map(x => `<option value="${esc(x)}" ${x === p.seccion ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  $('#prSeccion').innerHTML = GRUPOS.map(g =>
+    `<option value="${esc(g.id)}" ${g.id === p.seccion ? 'selected' : ''}>${esc(g.nombre)}</option>`).join('');
   $('#prArea').innerHTML    = areas.map(x => `<option value="${esc(x)}" ${x === p.area ? 'selected' : ''}>${esc(x)}</option>`).join('');
   $('#prEstado').innerHTML  = ESTADOS.map(x => `<option value="${x.id}" ${x.id === p.estado ? 'selected' : ''}>${x.nombre}</option>`).join('');
   $('#prError').textContent = '';
   $('#prBorrar').classList.toggle('hidden', !id);
   $('#proyModal').classList.remove('hidden');
   setTimeout(() => $('#prNombre').focus(), 40);
+}
+
+/* La duración se muestra en días para que se entienda el tamaño del
+   proyecto sin tener que restar fechas mentalmente. */
+function pintarDuracion(){
+  const i = $('#prInicio').value, f = $('#prFin').value;
+  const el = $('#prDias');
+  if (!i || !f){ el.textContent = 'Si la dejas vacía, se calcula desde las fechas de sus tareas.'; return; }
+  if (f < i){ el.textContent = 'La fecha de fin es anterior al inicio.'; el.style.color = 'var(--alerta)'; return; }
+  el.style.color = '';
+  const dias = Math.round((dt(f) - dt(i)) / 864e5) + 1;
+  const semanas = Math.round(dias / 7 * 10) / 10;
+  el.textContent = `${dias} días${dias >= 14 ? ` · unas ${semanas} semanas` : ''}`;
 }
 
 function cerrarProyecto(){
@@ -3794,12 +4095,18 @@ function guardarProyecto(){
   const repe = PROYECTOS.some(p => p.id !== proyEditando && p.nombre.toLowerCase() === nombre.toLowerCase());
   if (repe){ $('#prError').textContent = 'Ya existe un proyecto con ese nombre.'; return; }
 
+  const ini = $('#prInicio').value || null;
+  let   fin = $('#prFin').value || null;
+  if (ini && fin && fin < ini){ $('#prError').textContent = 'La fecha de fin no puede ser anterior al inicio.'; return; }
+
   const datos = {
     nombre,
     seccion: $('#prSeccion').value,
     area:    $('#prArea').value,
     estado:  $('#prEstado').value,
     entrega: $('#prEntrega').value || null,
+    inicio:  ini,
+    fin:     fin,
     nota:    $('#prNota').value.trim() || null
   };
 
@@ -3809,7 +4116,11 @@ function guardarProyecto(){
     Object.assign(p, datos);
     // Si cambia el área del proyecto, sus tareas la heredan
     if (cambioArea) TAREAS.forEach(t => { if (t.proyecto === p.id) t.area = datos.area; });
-    toast('Proyecto actualizado: ' + nombre, E(p.estado).color);
+    const antes = p.seccion;
+    coherencia();
+    toast(p.seccion !== antes
+      ? `${nombre} pasó a ${nombreGrupo(p.seccion)}`
+      : 'Proyecto actualizado: ' + nombre, E(p.estado).color);
   } else {
     const id = 'p-' + (++uid);
     PROYECTOS.push({ id, ...datos, nTareas:0 });
@@ -3864,7 +4175,7 @@ function asignarProyecto(proyId, personaId){
 
 function renderProyectos(){
   const sueltas = TAREAS.filter(t => !t.proyecto || !PR(t.proyecto));
-  const secciones = [...new Set(PROYECTOS.map(p => p.seccion))];
+  const secciones = GRUPOS.map(g => g.id).filter(id => PROYECTOS.some(p => p.seccion === id));
 
   const tarjeta = (p, i) => {
     const ts = tareasDe(p.id, 'proyecto');
@@ -3886,14 +4197,24 @@ function renderProyectos(){
         </div>
 
         <div class="mt-4 flex items-center gap-2">
-          <span class="item-s">${r ? `${fecha(r.inicio)} — ${fecha(r.fin)}` : 'Sin fechas'}</span>
+          <span class="item-s">${p.inicio && p.fin
+            ? `${fecha(p.inicio)} — ${fecha(p.fin)} · ${Math.round((dt(p.fin) - dt(p.inicio)) / 864e5) + 1} días`
+            : r ? `${fecha(r.inicio)} — ${fecha(r.fin)}` : 'Sin fechas'}</span>
           ${p.entrega ? `<span class="item-s ml-auto" style="color:var(--acento)">Entrega ${fecha(p.entrega)}</span>` : ''}
         </div>
+        ${ts.length && abiertas === 0 && p.estado !== 'completado'
+          ? `<p class="nota mt-3" style="color:var(--est-completado)">Todas sus tareas están cerradas. ¿Lo marcas como completado?</p>` : ''}
+        ${p.entrega && p.inicio && p.entrega < p.inicio
+          ? `<p class="nota mt-3" style="color:var(--est-proceso)">La entrega es anterior al inicio.</p>` : ''}
         ${p.nota ? `<p class="nota mt-3">${esc(p.nota)}</p>` : ''}
       </div>
 
       <div class="mt-4 flex items-center gap-2 border-t border-line pt-4">
-        <span class="flex -space-x-2">${duenios(ts).map(id => avatar(id, 26)).join('') || `<span class="item-s">Sin equipo</span>`}</span>
+        <span class="flex -space-x-2">
+          ${[...new Set([...colaboradores(p).map(c => c.persona), ...duenios(ts)])].slice(0, 5)
+            .map(id => avatar(id, 26)).join('') || `<span class="item-s">Sin equipo</span>`}
+        </span>
+        <button data-equipoproy="${p.id}" class="btn-suave !py-1.5 !px-3 !text-[12px]">Equipo</button>
         <span class="ml-auto flex gap-2">
           <button data-asignarproy="${p.id}" class="btn-suave !py-2 !px-3.5 !text-[12.5px]">Reasignar</button>
           <button data-editarproy="${p.id}" aria-label="Editar ${esc(p.nombre)}"
@@ -3921,7 +4242,7 @@ function renderProyectos(){
     </div>
     ${bloqueSueltas}
     ${secciones.map(sec => `<div class="mb-8">
-      <h2 class="seccion mb-3">${esc(sec)}</h2>
+      <h2 class="seccion mb-3">${esc(nombreGrupo(sec))}</h2>
       <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
         ${PROYECTOS.filter(p => p.seccion === sec).map(tarjeta).join('')}
       </div></div>`).join('')}
@@ -3945,7 +4266,7 @@ function renderEquipo(){
     ${PERSONAS.map((p, i) => {
       const mias = tareasDe(p.id, 'responsable');
       const abiertas = mias.filter(t => t.estado !== 'completado');
-      const excede = abiertas.length > p.capacidad;
+      const tope = Math.max(1, ...PERSONAS.map(z => tareasDe(z.id, 'responsable').filter(t => t.estado !== 'completado').length));
       return `<div class="rise tarjeta p-5" style="animation-delay:${i*50}ms">
         <div class="flex items-center gap-3">
           ${avatar(p.id, 34)}
@@ -3955,8 +4276,8 @@ function renderEquipo(){
           </div>
           <div class="ml-auto flex items-center gap-2">
             <div class="text-right">
-              <div class="cifra text-[20px] leading-none" style="color:${excede ? 'var(--alerta)' : p.color}">${abiertas.length}</div>
-              <div class="tape text-dim mt-1">de ${p.capacidad}</div>
+              <div class="cifra text-[20px] leading-none" style="color:${p.color}">${abiertas.length}</div>
+              <div class="meta mt-1">${abiertas.length === 1 ? 'tarea' : 'tareas'}</div>
             </div>
             ${esSistema(p.id) ? '' : `<button data-editarp="${p.id}" title="Editar a ${esc(p.nombre)}"
               class="grid h-7 w-7 shrink-0 place-items-center rounded-[4px] border border-line text-dim hover:text-ink hover:border-dim transition">
@@ -3967,10 +4288,10 @@ function renderEquipo(){
         <div class="mt-3 flex h-[6px] gap-[2px] overflow-hidden rounded-full bg-panel2">
           ${ESTADOS.filter(e => e.id !== 'completado').map(e => {
             const n = mias.filter(t => t.estado === e.id).length;
-            return n ? `<div style="width:${Math.min(100, n/p.capacidad*100)}%;background:${e.color}" title="${e.nombre}: ${n}"></div>` : '';
+            return n ? `<div style="width:${n/tope*100}%;background:${e.relleno}" title="${e.nombre}: ${n}"></div>` : '';
           }).join('')}
         </div>
-        ${excede ? `<div class="nota mt-2" style="color:var(--alerta)">Sobre capacidad, hay que redistribuir</div>` : ''}
+
 
         ${esSistema(p.id) ? '' : `
         <div class="mt-3 border-t border-line pt-3">
@@ -4002,7 +4323,7 @@ function renderEquipo(){
         </div>
       </div>`;
     }).join('')}
-  </div>`;
+  </div>` + bloqueAreas();
 }
 
 /* Una pantalla vacía es una invitación a hacer algo, no un cartel de
@@ -4038,8 +4359,9 @@ function renderRailDetalle(){
         ${gente.map(x => {
           const d = dispHoy(x);
           const ab = TAREAS.filter(y => y.responsable === x.id && y.estado !== 'completado').length;
-          const carga = Math.min(100, Math.round(ab / x.capacidad * 100));
-          const excede = ab > x.capacidad;
+          const tope = Math.max(1, ...PERSONAS.filter(z => !esSistema(z.id))
+            .map(z => TAREAS.filter(y => y.responsable === z.id && y.estado !== 'completado').length));
+          const carga = Math.round(ab / tope * 100);
           return `<button data-persona="${x.id}" data-soltar="${x.id}"
             class="zona-drop item w-full ${state.persona === x.id ? 'sel' : ''}"
             title="${esc(x.nombre)} · ${esc(textoAusencia(x))}. Suelta una tarea aquí para asignársela.">
@@ -4048,10 +4370,10 @@ function renderRailDetalle(){
               <span class="item-t block truncate">${esc(x.nombre)}</span>
               <span class="item-s block truncate">${d.disponible ? esc(x.rol || '') : esc(textoAusencia(x))}</span>
               <span class="mt-2 block h-[4px] w-full overflow-hidden rounded-full" style="background:var(--sup-alta)">
-                <span class="block h-full rounded-full" style="width:${carga}%;background:${excede ? 'var(--g-alerta)' : x.color}"></span>
+                <span class="block h-full rounded-full" style="width:${carga}%;background:${x.color}"></span>
               </span>
             </span>
-            <span class="item-v shrink-0" style="${excede ? 'color:var(--alerta)' : ''}">${ab}</span>
+            <span class="item-v shrink-0">${ab}</span>
           </button>`;
         }).join('')}
       </div>
@@ -4121,6 +4443,31 @@ function renderRailDetalle(){
     </div>
 
     <div class="mt-6">
+      <div class="mb-3 flex items-baseline gap-2">
+        <h3 class="seccion">Equipo de la tarea</h3>
+        <button data-addcolab="${t.id}" class="btn-suave ml-auto !py-1.5 !px-3 !text-[12px]">Agregar</button>
+      </div>
+      <div class="space-y-2">
+        ${implicados(t).map((c, i) => `
+          <div class="item !py-2.5">
+            ${avatar(c.persona, 30)}
+            <span class="min-w-0 flex-1">
+              <span class="item-t block truncate">${esc(P(c.persona).nombre)}</span>
+              ${i === 0
+                ? `<span class="item-s block">Responsable</span>`
+                : `<select data-rolcolab="${c.persona}" aria-label="Rol de ${esc(P(c.persona).nombre)}"
+                     class="tapeselect mt-1 rounded-full border border-line bg-transparent px-2 py-[3px] text-[11.5px] text-mute">
+                     ${ROLES.map(r => `<option value="${r}" ${r === c.rol ? 'selected' : ''}>${r}</option>`).join('')}
+                   </select>`}
+            </span>
+            ${i > 0 ? `<button data-delcolab="${c.persona}" aria-label="Quitar a ${esc(P(c.persona).nombre)}"
+              class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-bar-red">&times;</button>` : ''}
+          </div>`).join('')}
+      </div>
+      ${colaboradores(t).length ? '' : `<p class="nota mt-2">Solo ${esc(P(t.responsable).nombre)}. Agrega a quien apoye, revise o apruebe.</p>`}
+    </div>
+
+    <div class="mt-6">
       <div class="flex items-baseline justify-between mb-3">
         <h3 class="seccion">Avance</h3>
         <span class="meta">${pct(t.progreso)}%</span>
@@ -4184,6 +4531,19 @@ function renderRailDetalle(){
   const btnDup = box.querySelector('[data-duplicar]');
   if (btnDup) btnDup.onclick = () => duplicarTarea(t.id);
 
+  const btnAdd = box.querySelector('[data-addcolab]');
+  if (btnAdd) btnAdd.onclick = () => menuColaborador(t, btnAdd);
+  box.querySelectorAll('[data-delcolab]').forEach(b => b.onclick = () => {
+    const nombre = P(b.dataset.delcolab).nombre;
+    quitarColaborador(t, b.dataset.delcolab);
+    toast(nombre + ' fuera de la tarea', 'var(--alerta)');
+    renderAll();
+  });
+  box.querySelectorAll('[data-rolcolab]').forEach(sel => sel.onchange = () => {
+    const c = colaboradores(t).find(x => x.persona === sel.dataset.rolcolab);
+    if (c){ c.rol = sel.value; toast(P(c.persona).nombre + ': ' + c.rol, P(c.persona).color); renderAll(); }
+  });
+
   box.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
     t.progreso = +b.dataset.prog;
     if (t.progreso === 1 && t.estado !== 'completado') t.estado = 'completado';
@@ -4240,6 +4600,8 @@ function abrirModal(iso, tipo = 'tarea'){
   $('#evDate').value = iso || HOY;
   $('#evEnd').value  = iso || HOY;
   $('#evTitle').value = '';
+  $('#evHora').value = '';
+  $('#evLugar').value = '';
   $('#evError').textContent = '';
   $('#evProyecto').innerHTML =
     `<option value="">Ninguno — tarea suelta</option>` +
@@ -4264,12 +4626,25 @@ function pintarTipo(){
     b.style.borderColor = on ? 'color-mix(in srgb, var(--acento) 45%, transparent)' : 'var(--borde)';
     b.style.color       = on ? 'var(--cyan)' : 'var(--texto-2)';
   });
-  const esTarea = state.tipoEvento === 'tarea';
+  const tipo = state.tipoEvento;
+  const esTarea = tipo === 'tarea', esEvento = tipo === 'evento';
   $('#taskFields').classList.toggle('hidden', !esTarea);
+  $('#eventoFields').classList.toggle('hidden', !esEvento);
   $('#fieldEnd').classList.toggle('invisible', !esTarea);
-  $('#evTitulo').textContent = esTarea ? 'Nueva tarea' : 'Nuevo hito';
-  $('#evSubmit').textContent = esTarea ? 'Crear tarea' : 'Crear hito';
-  $('#evTitle').placeholder = esTarea ? 'Animar títulos del capítulo 3' : 'Entrega mezcla final';
+
+  const titulos = { tarea:'Nueva tarea', hito:'Nuevo hito', evento:'Nuevo evento' };
+  const botones = { tarea:'Crear tarea', hito:'Crear hito', evento:'Crear evento' };
+  const ayudas = {
+    tarea:'Trabajo que alguien tiene que sacar adelante.',
+    hito:'Fecha fija alrededor de la cual se organiza todo: una entrega, un lanzamiento.',
+    evento:'Algo que pasa ese día a una hora: una grabación, una reunión, un consejo.'
+  };
+  const ejemplos = { tarea:'Animar títulos del capítulo 3', hito:'Entrega mezcla final', evento:'Grabación en planta Tocancipá' };
+
+  $('#evTitulo').textContent = titulos[tipo];
+  $('#evSubmit').textContent = botones[tipo];
+  $('#evAyuda').textContent  = ayudas[tipo];
+  $('#evTitle').placeholder  = ejemplos[tipo];
 }
 
 function guardarEvento(){
@@ -4278,9 +4653,15 @@ function guardarEvento(){
   if (!titulo){ $('#evError').textContent = 'Ponle nombre al evento.'; return; }
   if (!inicio){ $('#evError').textContent = 'Elige una fecha.'; return; }
 
-  if (state.tipoEvento === 'hito'){
-    HITOS.push({ id:'h' + (++uid), titulo, fecha:inicio, fijo:false });
-    toast('Hito agregado el ' + fecha(inicio), 'var(--acento)');
+  if (state.tipoEvento === 'hito' || state.tipoEvento === 'evento'){
+    const esEv = state.tipoEvento === 'evento';
+    HITOS.push({
+      id:'h' + (++uid), titulo, fecha:inicio, fijo:false,
+      tipo: esEv ? 'evento' : 'hito',
+      hora:  esEv ? ($('#evHora').value || null) : null,
+      lugar: esEv ? ($('#evLugar').value.trim() || null) : null
+    });
+    toast((esEv ? 'Evento' : 'Hito') + ' agregado el ' + fecha(inicio), 'var(--acento)');
   } else {
     const fin = $('#evEnd').value || inicio;
     const proyecto = $('#evProyecto').value || null;
@@ -4288,7 +4669,8 @@ function guardarEvento(){
       id:'t' + (++uid), codigo:'T-' + String(TAREAS.length + 1).padStart(3,'0'),
       titulo, proyecto, area:(PR(proyecto) || {}).area || 'GENERAL',
       responsable:$('#evOwner').value, progreso:0, estado:$('#evStatus').value,
-      notas:null, inicio, fin: fin < inicio ? inicio : fin, comentarios:[]
+      notas:null, inicio, fin: fin < inicio ? inicio : fin, comentarios:[],
+      equipo: proyecto ? colaboradores(PR(proyecto)).map(c => ({ ...c })) : []
     };
     TAREAS.push(t);
     state.seleccion = t.id;
@@ -4309,7 +4691,7 @@ function guardarEvento(){
    ═══════════════════════════════════════════════════ */
 
 function exportarCSV(){
-  const cabecera = ['Código','Tarea','Proyecto','Área','Responsable','Estado',
+  const cabecera = ['Código','Tarea','Proyecto','Área','Responsable','Equipo','Estado',
                     'Prioridad','Avance %','Inicio','Fin','Notas','Comentarios'];
 
   // Comillas dobles escapadas y BOM al inicio: así Excel en español
@@ -4318,7 +4700,9 @@ function exportarCSV(){
 
   const filas = TAREAS.map(t => [
     t.codigo, t.titulo, nombreProy(t.proyecto), t.area,
-    P(t.responsable).nombre, E(t.estado).nombre, PRI(t.prioridad).nombre,
+    P(t.responsable).nombre,
+    colaboradores(t).map(c => `${P(c.persona).nombre} (${c.rol})`).join(', '),
+    E(t.estado).nombre, PRI(t.prioridad).nombre,
     pct(t.progreso), t.inicio || '', t.fin || '', t.notas || '',
     t.comentarios.map(c => `${P(c.por).nombre}: ${c.texto}`).join(' | ')
   ].map(celda).join(';'));
@@ -4561,6 +4945,8 @@ document.querySelectorAll('#proyModal [data-cerrarpr]').forEach(b => b.onclick =
 $('#prGuardar').onclick = guardarProyecto;
 $('#prBorrar').onclick  = borrarProyecto;
 $('#prNombre').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarProyecto(); });
+$('#prInicio').addEventListener('change', pintarDuracion);
+$('#prFin').addEventListener('change', pintarDuracion);
 
 $('#pGuardar').onclick = guardarPersona;
 $('#pBorrar').onclick  = borrarPersona;
@@ -4617,7 +5003,7 @@ $('#search').addEventListener('input', ev => {
 
 const API_BASE = '';
 const STORE_KEY = 'slate.comms.v1';
-const SEMILLA = JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS, personas:PERSONAS });
+const SEMILLA = JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS, personas:PERSONAS, areas:AREAS });
 
 const Persist = {
   driver:'memory', base:'', version:0, ultimo:null, listo:false, timer:null,
@@ -4656,7 +5042,7 @@ const Persist = {
     return null;
   },
 
-  foto(){ return JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS, personas:PERSONAS }); },
+  foto(){ return JSON.stringify({ tareas:TAREAS, proyectos:PROYECTOS, hitos:HITOS, personas:PERSONAS, areas:AREAS }); },
 
   schedule(){
     if (!this.listo) return;
@@ -4678,6 +5064,7 @@ const Persist = {
           const f = await r.json();
           TAREAS = f.tareas; PROYECTOS = f.proyectos; HITOS = f.hitos;
           if (Array.isArray(f.personas)) PERSONAS = f.personas;
+          if (Array.isArray(f.areas)) AREAS = f.areas;
           this.version = f.version;
           this.ultimo = this.foto(); renderAll();
           toast('Tablero actualizado por un compañero', 'var(--est-proceso)');
@@ -4697,6 +5084,7 @@ const Persist = {
   async reiniciar(){
     const s = JSON.parse(SEMILLA);
     TAREAS = s.tareas; PROYECTOS = s.proyectos; HITOS = s.hitos; PERSONAS = s.personas;
+    if (Array.isArray(s.areas)) AREAS = s.areas;
     state.seleccion = null; this.ultimo = null;
     try {
       if (this.driver === 'api')         await fetch(this.base + '/api/state/reset', { method:'POST' });
@@ -4723,6 +5111,7 @@ const Persist = {
       if (d.version === this.version) return;
       TAREAS = d.tareas; PROYECTOS = d.proyectos; HITOS = d.hitos;
       if (Array.isArray(d.personas)) PERSONAS = d.personas;
+      if (Array.isArray(d.areas)) AREAS = d.areas;
       this.version = d.version;
       this.ultimo = this.foto(); renderAll();
       toast('Cambios de un compañero', 'var(--acento)');
@@ -4745,6 +5134,7 @@ iniciarTema();
     if (Array.isArray(g.proyectos)) PROYECTOS = g.proyectos;
     if (Array.isArray(g.hitos)) HITOS = g.hitos;
     if (Array.isArray(g.personas) && g.personas.length) PERSONAS = g.personas;
+    if (Array.isArray(g.areas) && g.areas.length) AREAS = g.areas;
   }
   const guardado = cargarYo();
   state.yo = guardado || null;

@@ -12,7 +12,8 @@
    "notas": null,
    "inicio": "2026-08-03",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t2",
@@ -26,7 +27,8 @@
    "notas": null,
    "inicio": "2026-08-14",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t3",
@@ -40,7 +42,8 @@
    "notas": null,
    "inicio": "2026-08-05",
    "fin": "2026-08-05",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t4",
@@ -54,7 +57,8 @@
    "notas": null,
    "inicio": "2026-08-19",
    "fin": "2026-08-19",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t5",
@@ -68,7 +72,8 @@
    "notas": null,
    "inicio": "2026-09-01",
    "fin": "2026-09-01",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t6",
@@ -82,7 +87,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t7",
@@ -96,7 +102,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t8",
@@ -110,7 +117,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t9",
@@ -124,7 +132,8 @@
    "notas": null,
    "inicio": "2026-08-04",
    "fin": "2026-08-04",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t10",
@@ -138,7 +147,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t11",
@@ -152,7 +162,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t12",
@@ -166,7 +177,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t13",
@@ -180,7 +192,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t14",
@@ -194,7 +207,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-21",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t15",
@@ -208,7 +222,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-22",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t16",
@@ -222,7 +237,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-17",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t17",
@@ -236,7 +252,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-22",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t18",
@@ -250,7 +267,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-24",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t19",
@@ -264,7 +282,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-23",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t20",
@@ -278,7 +297,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-24",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t21",
@@ -292,7 +312,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-24",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t22",
@@ -306,7 +327,8 @@
    "notas": null,
    "inicio": "2026-07-30",
    "fin": "2026-07-30",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t23",
@@ -320,7 +342,8 @@
    "notas": null,
    "inicio": "2026-07-10",
    "fin": "2026-07-23",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t24",
@@ -334,7 +357,8 @@
    "notas": null,
    "inicio": "2026-07-30",
    "fin": "2026-07-30",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t25",
@@ -348,7 +372,8 @@
    "notas": null,
    "inicio": "2026-07-30",
    "fin": "2026-08-03",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t26",
@@ -362,7 +387,8 @@
    "notas": null,
    "inicio": "2026-07-30",
    "fin": "2026-08-03",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t27",
@@ -376,7 +402,8 @@
    "notas": null,
    "inicio": "2026-07-30",
    "fin": "2026-08-03",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t28",
@@ -390,7 +417,8 @@
    "notas": null,
    "inicio": "2026-07-30",
    "fin": "2026-08-03",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t29",
@@ -404,7 +432,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t30",
@@ -418,7 +447,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t31",
@@ -432,7 +462,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t32",
@@ -446,7 +477,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t33",
@@ -460,7 +492,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t34",
@@ -474,7 +507,8 @@
    "notas": null,
    "inicio": "2026-07-28",
    "fin": "2026-08-03",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t35",
@@ -488,7 +522,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t36",
@@ -502,7 +537,8 @@
    "notas": null,
    "inicio": "2026-08-05",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t37",
@@ -516,7 +552,8 @@
    "notas": null,
    "inicio": "2026-08-05",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t38",
@@ -530,7 +567,8 @@
    "notas": null,
    "inicio": "2026-08-10",
    "fin": "2026-08-18",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t39",
@@ -544,7 +582,8 @@
    "notas": null,
    "inicio": "2026-08-05",
    "fin": "2026-08-05",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t40",
@@ -558,7 +597,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t41",
@@ -572,7 +612,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t42",
@@ -586,7 +627,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t43",
@@ -600,7 +642,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t44",
@@ -614,7 +657,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t45",
@@ -628,7 +672,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t46",
@@ -642,7 +687,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t47",
@@ -656,7 +702,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t48",
@@ -670,7 +717,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t49",
@@ -684,7 +732,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t50",
@@ -698,7 +747,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t51",
@@ -712,7 +762,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t52",
@@ -726,7 +777,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t53",
@@ -740,7 +792,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t54",
@@ -754,7 +807,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t55",
@@ -768,7 +822,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t56",
@@ -782,7 +837,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t57",
@@ -796,7 +852,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t58",
@@ -810,7 +867,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t59",
@@ -824,7 +882,8 @@
    "notas": null,
    "inicio": "2026-07-01",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t60",
@@ -838,7 +897,8 @@
    "notas": null,
    "inicio": "2026-07-01",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t61",
@@ -852,7 +912,8 @@
    "notas": null,
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t62",
@@ -866,7 +927,8 @@
    "notas": null,
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t63",
@@ -880,7 +942,8 @@
    "notas": null,
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t64",
@@ -894,7 +957,8 @@
    "notas": null,
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t65",
@@ -908,7 +972,8 @@
    "notas": null,
    "inicio": "2026-07-27",
    "fin": "2026-07-27",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t66",
@@ -922,7 +987,8 @@
    "notas": null,
    "inicio": "2026-07-28",
    "fin": "2026-07-28",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t67",
@@ -936,7 +1002,8 @@
    "notas": null,
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t68",
@@ -950,7 +1017,8 @@
    "notas": null,
    "inicio": "2026-08-18",
    "fin": "2026-08-18",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t69",
@@ -964,7 +1032,8 @@
    "notas": null,
    "inicio": "2026-08-04",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t70",
@@ -978,7 +1047,8 @@
    "notas": null,
    "inicio": "2026-07-31",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t71",
@@ -992,7 +1062,8 @@
    "notas": null,
    "inicio": "2026-08-18",
    "fin": "2026-08-18",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t72",
@@ -1006,7 +1077,8 @@
    "notas": null,
    "inicio": "2026-08-03",
    "fin": "2026-08-05",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t73",
@@ -1020,7 +1092,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t74",
@@ -1034,7 +1107,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t75",
@@ -1048,7 +1122,8 @@
    "notas": null,
    "inicio": "2026-08-14",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t76",
@@ -1062,7 +1137,8 @@
    "notas": null,
    "inicio": "2026-08-14",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t77",
@@ -1076,7 +1152,8 @@
    "notas": "Cápsulas/pantallas",
    "inicio": "2026-08-14",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t78",
@@ -1090,7 +1167,8 @@
    "notas": null,
    "inicio": "2026-08-14",
    "fin": "2026-08-14",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t79",
@@ -1104,7 +1182,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t80",
@@ -1118,7 +1197,8 @@
    "notas": null,
    "inicio": "2026-10-08",
    "fin": "2026-10-08",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t81",
@@ -1132,7 +1212,8 @@
    "notas": null,
    "inicio": "2026-10-15",
    "fin": "2026-10-15",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t82",
@@ -1146,7 +1227,8 @@
    "notas": null,
    "inicio": "2026-07-01",
    "fin": "2026-08-01",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t83",
@@ -1160,7 +1242,8 @@
    "notas": null,
    "inicio": "2026-08-15",
    "fin": "2026-08-30",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t84",
@@ -1174,7 +1257,8 @@
    "notas": null,
    "inicio": "2026-08-10",
    "fin": "2026-08-11",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t85",
@@ -1188,7 +1272,8 @@
    "notas": null,
    "inicio": "2026-08-21",
    "fin": "2026-08-21",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t86",
@@ -1202,7 +1287,8 @@
    "notas": null,
    "inicio": "2026-08-21",
    "fin": "2026-08-21",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t87",
@@ -1216,7 +1302,8 @@
    "notas": null,
    "inicio": "2026-08-21",
    "fin": "2026-08-21",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t88",
@@ -1230,7 +1317,8 @@
    "notas": null,
    "inicio": "2026-08-18",
    "fin": "2026-08-18",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t89",
@@ -1244,7 +1332,8 @@
    "notas": null,
    "inicio": "2026-08-18",
    "fin": "2026-08-18",
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t90",
@@ -1258,7 +1347,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t91",
@@ -1272,7 +1362,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t92",
@@ -1286,7 +1377,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t93",
@@ -1300,7 +1392,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t94",
@@ -1314,7 +1407,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   },
   {
    "id": "t95",
@@ -1328,7 +1422,8 @@
    "notas": null,
    "inicio": null,
    "fin": null,
-   "comentarios": []
+   "comentarios": [],
+   "equipo": []
   }
  ],
  "proyectos": [
@@ -1340,7 +1435,10 @@
    "estado": "pendiente",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-smartdriking",
@@ -1350,7 +1448,10 @@
    "estado": "proceso",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-codigo-16-9",
@@ -1360,7 +1461,10 @@
    "estado": "proceso",
    "entrega": null,
    "nota": null,
-   "nTareas": 6
+   "nTareas": 6,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-malto-y-malta",
@@ -1370,7 +1474,10 @@
    "estado": "revision",
    "entrega": "2026-08-20",
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-duenos-duenas",
@@ -1380,7 +1487,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 19
+   "nTareas": 19,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-tech-fest",
@@ -1390,7 +1500,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 10
+   "nTareas": 10,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-charla-con-el-mancom",
@@ -1400,7 +1513,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-practicantes",
@@ -1410,7 +1526,10 @@
    "estado": "revision",
    "entrega": "2026-08-20",
    "nota": null,
-   "nTareas": 19
+   "nTareas": 19,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-cuadros",
@@ -1420,7 +1539,10 @@
    "estado": "proceso",
    "entrega": null,
    "nota": null,
-   "nTareas": 2
+   "nTareas": 2,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-cheers-to-bars",
@@ -1430,7 +1552,10 @@
    "estado": "proceso",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-ppt-talent",
@@ -1440,7 +1565,10 @@
    "estado": "proceso",
    "entrega": null,
    "nota": null,
-   "nTareas": 2
+   "nTareas": 2,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-legal",
@@ -1450,7 +1578,10 @@
    "estado": "revision",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-change-management",
@@ -1460,7 +1591,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 7
+   "nTareas": 7,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-fairplay",
@@ -1470,7 +1604,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-leyendas",
@@ -1480,7 +1617,10 @@
    "estado": "proceso",
    "entrega": "2026-10-15",
    "nota": null,
-   "nTareas": 9
+   "nTareas": 9,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-album",
@@ -1490,7 +1630,10 @@
    "estado": "proceso",
    "entrega": null,
    "nota": null,
-   "nTareas": 2
+   "nTareas": 2,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-declaracion-de-renta",
@@ -1500,7 +1643,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 1
+   "nTareas": 1,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-plataforma-regalos",
@@ -1510,7 +1656,10 @@
    "estado": "completado",
    "entrega": null,
    "nota": null,
-   "nTareas": 3
+   "nTareas": 3,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-esonova",
@@ -1520,7 +1669,10 @@
    "estado": "pendiente",
    "entrega": null,
    "nota": null,
-   "nTareas": 2
+   "nTareas": 2,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-capsulas-cerveceras",
@@ -1530,7 +1682,10 @@
    "estado": "pendiente",
    "entrega": null,
    "nota": null,
-   "nTareas": 6
+   "nTareas": 6,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   },
   {
    "id": "p-subele-el-volumen",
@@ -1540,7 +1695,10 @@
    "estado": "pendiente",
    "entrega": null,
    "nota": null,
-   "nTareas": 0
+   "nTareas": 0,
+   "equipo": [],
+   "inicio": null,
+   "fin": null
   }
  ],
  "hitos": [
@@ -1548,55 +1706,82 @@
    "id": "h1",
    "titulo": "Entrega Malto y Malta",
    "fecha": "2026-08-20",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h2",
    "titulo": "Entrega Practicantes 2027",
    "fecha": "2026-08-20",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h3",
    "titulo": "Entrega Misión Cultura 2.0",
    "fecha": "2026-08-20",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h4",
    "titulo": "Entrega Un Paso Adelante",
    "fecha": "2026-08-20",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h5",
    "titulo": "Entrega Video Sala UB",
    "fecha": "2026-08-20",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h6",
    "titulo": "Newsletter Finanzas",
    "fecha": "2026-08-21",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h7",
    "titulo": "Evento Leyendas",
    "fecha": "2026-10-15",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h8",
    "titulo": "Inicio ventana Engagement",
    "fecha": "2026-10-26",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   },
   {
    "id": "h9",
    "titulo": "Cierre ventana Engagement",
    "fecha": "2026-11-13",
-   "fijo": true
+   "fijo": true,
+   "tipo": "hito",
+   "hora": null,
+   "lugar": null
   }
  ],
  "version": 1,
@@ -1689,5 +1874,14 @@
    "disp": "oficina",
    "dispHasta": null
   }
+ ],
+ "areas": [
+  "BIENESTAR",
+  "CDI",
+  "CORPO",
+  "LEGAL",
+  "MKT",
+  "TALENT",
+  "TECH"
  ]
 }

@@ -38,15 +38,17 @@ const LOCK_ID = 728461;
    convierta a Date y se corran por zona horaria. */
 
 const COLS_TAREA = `id, codigo, titulo, proyecto, area, responsable, estado,
-  progreso::float8 AS progreso, notas, prioridad,
+  progreso::float8 AS progreso, notas, prioridad, equipo,
   to_char(inicio,'YYYY-MM-DD') AS inicio,
   to_char(fin,'YYYY-MM-DD')    AS fin,
   comentarios`;
 
-const COLS_PROYECTO = `id, nombre, seccion, area, estado,
-  to_char(entrega,'YYYY-MM-DD') AS entrega, nota`;
+const COLS_PROYECTO = `id, nombre, seccion, area, estado, equipo,
+  to_char(entrega,'YYYY-MM-DD') AS entrega,
+  to_char(inicio,'YYYY-MM-DD')  AS inicio,
+  to_char(fin,'YYYY-MM-DD')     AS fin, nota`;
 
-const COLS_HITO = `id, titulo, to_char(fecha,'YYYY-MM-DD') AS fecha, fijo`;
+const COLS_HITO = `id, titulo, to_char(fecha,'YYYY-MM-DD') AS fecha, fijo, tipo, hora, lugar`;
 
 const COLS_PERSONA = `id, nombre, iniciales, rol, color, capacidad, disp,
   to_char(disp_hasta,'YYYY-MM-DD') AS "dispHasta"`;
@@ -89,7 +91,7 @@ async function init() {
 
 /* Reemplaza el contenido completo. El orden importa por la FK:
    proyectos entra antes que tareas y sale después. */
-async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], personas = [] }) {
+async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], personas = [], areas = [] }) {
   await client.query('DELETE FROM tareas');
   await client.query('DELETE FROM hitos');
   if (proyectos.length) await client.query('DELETE FROM proyectos');
@@ -110,24 +112,31 @@ async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], p
 
   for (const p of proyectos) {
     await client.query(
-      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, nota)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [p.id, p.nombre, p.seccion, p.area, p.estado || 'pendiente', p.entrega || null, p.nota || null]);
+      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, inicio, fin, nota, equipo)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [p.id, p.nombre, p.seccion, p.area, p.estado || 'pendiente', p.entrega || null,
+       p.inicio || null, p.fin || null, p.nota || null, JSON.stringify(p.equipo || [])]);
   }
   for (const t of tareas) {
     await client.query(
       `INSERT INTO tareas (id, codigo, titulo, proyecto, area, responsable, estado,
-                           progreso, notas, prioridad, inicio, fin, comentarios)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+                           progreso, notas, prioridad, inicio, fin, comentarios, equipo)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
       [t.id, t.codigo, t.titulo, t.proyecto || null, t.area || 'SIN ÁREA',
        t.responsable || 'u-sin', t.estado || 'pendiente', t.progreso || 0,
        t.notas || null, t.prioridad || 'media', t.inicio || null, t.fin || null,
-       JSON.stringify(t.comentarios || [])]);
+       JSON.stringify(t.comentarios || []), JSON.stringify(t.equipo || [])]);
+  }
+  if (areas.length) {
+    await client.query('DELETE FROM areas');
+    for (let i = 0; i < areas.length; i++)
+      await client.query('INSERT INTO areas (nombre, orden) VALUES ($1,$2)', [areas[i], i]);
   }
   for (const h of hitos) {
     await client.query(
-      `INSERT INTO hitos (id, titulo, fecha, fijo) VALUES ($1,$2,$3,$4)`,
-      [h.id, h.titulo, h.fecha, !!h.fijo]);
+      `INSERT INTO hitos (id, titulo, fecha, fijo, tipo, hora, lugar)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [h.id, h.titulo, h.fecha, !!h.fijo, h.tipo || 'hito', h.hora || null, h.lugar || null]);
   }
 }
 
@@ -144,12 +153,13 @@ module.exports = {
   init,
 
   async getState() {
-    const [board, tareas, proyectos, hitos, personas] = await Promise.all([
+    const [board, tareas, proyectos, hitos, personas, areas] = await Promise.all([
       q('SELECT version, updated_at FROM board WHERE id = 1'),
       q(`SELECT ${COLS_TAREA} FROM tareas ORDER BY fin NULLS LAST, codigo`),
       q(`SELECT ${COLS_PROYECTO} FROM proyectos ORDER BY nombre`),
       q(`SELECT ${COLS_HITO} FROM hitos ORDER BY fecha`),
-      q(`SELECT ${COLS_PERSONA} FROM personas ORDER BY orden, nombre`)
+      q(`SELECT ${COLS_PERSONA} FROM personas ORDER BY orden, nombre`),
+      q('SELECT nombre FROM areas ORDER BY orden, nombre')
     ]);
     return {
       version: board.rows[0]?.version ?? 0,
@@ -157,18 +167,19 @@ module.exports = {
       tareas: tareas.rows,
       proyectos: proyectos.rows,
       hitos: hitos.rows,
-      personas: personas.rows
+      personas: personas.rows,
+      areas: areas.rows.map(r => r.nombre)
     };
   },
 
-  async setState({ tareas, proyectos, hitos, personas }) {
+  async setState({ tareas, proyectos, hitos, personas, areas }) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await escribirTodo(client, { tareas, proyectos, hitos, personas });
+      await escribirTodo(client, { tareas, proyectos, hitos, personas, areas });
       const v = await subirVersion(client);
       await client.query('COMMIT');
-      return { version: v.version, updatedAt: v.updated_at, tareas, proyectos, hitos, personas };
+      return { version: v.version, updatedAt: v.updated_at, tareas, proyectos, hitos, personas, areas };
     } catch (e) {
       await client.query('ROLLBACK');
       throw e;
@@ -206,12 +217,12 @@ module.exports = {
 
   async updateTarea(id, patch) {
     const permitidos = ['titulo','proyecto','area','responsable','estado',
-                        'progreso','notas','prioridad','inicio','fin','comentarios'];
+                        'progreso','notas','prioridad','inicio','fin','comentarios','equipo'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return module.exports.getTarea(id);
 
     const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');
-    const vals = claves.map(k => k === 'comentarios' ? JSON.stringify(patch[k]) : patch[k]);
+    const vals = claves.map(k => ['comentarios','equipo'].includes(k) ? JSON.stringify(patch[k]) : patch[k]);
 
     const { rows } = await q(
       `UPDATE tareas SET ${sets} WHERE id = $1 RETURNING ${COLS_TAREA}`, [id, ...vals]);
@@ -238,10 +249,10 @@ module.exports = {
 
   async createHito(f) {
     const { rows } = await q(
-      `INSERT INTO hitos (id, titulo, fecha, fijo)
-       VALUES (COALESCE($1, 'h' || nextval('hito_seq')), $2, $3, $4)
+      `INSERT INTO hitos (id, titulo, fecha, fijo, tipo, hora, lugar)
+       VALUES (COALESCE($1, 'h' || nextval('hito_seq')), $2,$3,$4,$5,$6,$7)
        RETURNING ${COLS_HITO}`,
-      [f.id || null, f.titulo, f.fecha, !!f.fijo]);
+      [f.id || null, f.titulo, f.fecha, !!f.fijo, f.tipo || 'hito', f.hora || null, f.lugar || null]);
     await subirVersion();
     return rows[0];
   },
@@ -254,23 +265,24 @@ module.exports = {
 
   async createProyecto(f) {
     const { rows } = await q(
-      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, nota)
-       VALUES (COALESCE($1, 'p-' || nextval('proyecto_seq')), $2, $3, $4, $5, $6, $7)
+      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, inicio, fin, nota, equipo)
+       VALUES (COALESCE($1, 'p-' || nextval('proyecto_seq')), $2,$3,$4,$5,$6,$7,$8,$9,$10)
        RETURNING ${COLS_PROYECTO}`,
       [f.id || null, f.nombre, f.seccion || 'PROYECTOS', f.area || null,
-       f.estado || 'pendiente', f.entrega || null, f.nota || null]);
+       f.estado || 'pendiente', f.entrega || null, f.inicio || null, f.fin || null,
+       f.nota || null, JSON.stringify(f.equipo || [])]);
     await subirVersion();
     return rows[0];
   },
 
   async updateProyecto(id, patch) {
-    const permitidos = ['nombre','seccion','area','estado','entrega','nota'];
+    const permitidos = ['nombre','seccion','area','estado','entrega','inicio','fin','nota','equipo'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return null;
     const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');
     const { rows } = await q(
       `UPDATE proyectos SET ${sets} WHERE id = $1 RETURNING ${COLS_PROYECTO}`,
-      [id, ...claves.map(k => patch[k])]);
+      [id, ...claves.map(k => k === 'equipo' ? JSON.stringify(patch[k]) : patch[k])]);
     if (!rows[0]) return null;
     await subirVersion();
     return rows[0];

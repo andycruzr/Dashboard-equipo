@@ -32,8 +32,16 @@ CREATE TABLE IF NOT EXISTS proyectos (
   estado  text NOT NULL DEFAULT 'pendiente'
           CHECK (estado IN ('pendiente','proceso','revision','completado')),
   entrega date,
-  nota    text
+  inicio  date,
+  fin     date,
+  nota    text,
+  equipo  jsonb NOT NULL DEFAULT '[]'
 );
+
+-- Migración para bases creadas antes de la duración y el equipo
+ALTER TABLE proyectos ADD COLUMN IF NOT EXISTS inicio date;
+ALTER TABLE proyectos ADD COLUMN IF NOT EXISTS fin    date;
+ALTER TABLE proyectos ADD COLUMN IF NOT EXISTS equipo jsonb NOT NULL DEFAULT '[]';
 
 -- ── Tareas ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tareas (
@@ -53,8 +61,11 @@ CREATE TABLE IF NOT EXISTS tareas (
   inicio      date,
   fin         date,
   comentarios jsonb NOT NULL DEFAULT '[]',
+  equipo      jsonb NOT NULL DEFAULT '[]',
   creada_en   timestamptz NOT NULL DEFAULT now()
 );
+
+ALTER TABLE tareas ADD COLUMN IF NOT EXISTS equipo jsonb NOT NULL DEFAULT '[]';
 
 -- Migración para bases creadas antes de que existiera la prioridad.
 -- Patrón para agregar columnas más adelante: ADD COLUMN IF NOT EXISTS,
@@ -91,8 +102,49 @@ CREATE TABLE IF NOT EXISTS hitos (
   id     text PRIMARY KEY,
   titulo text NOT NULL,
   fecha  date NOT NULL,
-  fijo   boolean NOT NULL DEFAULT false
+  fijo   boolean NOT NULL DEFAULT false,
+  tipo   text NOT NULL DEFAULT 'hito',
+  hora   text,
+  lugar  text
 );
+
+-- Migración: los hitos anteriores siguen siendo hitos
+ALTER TABLE hitos ADD COLUMN IF NOT EXISTS tipo  text NOT NULL DEFAULT 'hito';
+ALTER TABLE hitos ADD COLUMN IF NOT EXISTS hora  text;
+ALTER TABLE hitos ADD COLUMN IF NOT EXISTS lugar text;
+
+-- Las áreas se administran desde la app
+CREATE TABLE IF NOT EXISTS areas (
+  nombre text PRIMARY KEY,
+  orden  int NOT NULL DEFAULT 0
+);
+
+-- Al crear la tabla por primera vez sobre una base que ya tiene
+-- datos, se rescatan las áreas que ya estén en uso. Así nadie pierde
+-- sus áreas al actualizar.
+INSERT INTO areas (nombre)
+SELECT DISTINCT area FROM tareas WHERE area IS NOT NULL
+ UNION
+SELECT DISTINCT area FROM proyectos WHERE area IS NOT NULL
+ -- Solo la primera vez: si ya hay áreas, el equipo las administra y
+ -- una que borraron a propósito no debe reaparecer en cada arranque.
+ WHERE NOT EXISTS (SELECT 1 FROM areas)
+ON CONFLICT DO NOTHING;
+
+-- Coherencia: un proyecto que ya arrancó no puede seguir en
+-- "No empezados". Se corrige también del lado del servidor, para
+-- que la API devuelva datos consistentes aunque nadie abra la web.
+UPDATE proyectos SET seccion = 'PROYECTOS'
+ WHERE seccion = 'PROYECTOS NO EMPEZADOS'
+   AND (estado <> 'pendiente'
+        OR id IN (SELECT DISTINCT proyecto FROM tareas WHERE proyecto IS NOT NULL AND estado <> 'pendiente'));
+
+-- Una tarea completada está al 100%
+UPDATE tareas SET progreso = 1 WHERE estado = 'completado' AND progreso <> 1;
+
+-- Fin nunca antes que inicio
+UPDATE tareas    SET fin = inicio WHERE inicio IS NOT NULL AND fin IS NOT NULL AND fin < inicio;
+UPDATE proyectos SET fin = inicio WHERE inicio IS NOT NULL AND fin IS NOT NULL AND fin < inicio;
 
 CREATE INDEX IF NOT EXISTS hitos_fecha_idx ON hitos (fecha);
 

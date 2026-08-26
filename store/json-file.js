@@ -74,11 +74,12 @@ module.exports = {
     return readFile();
   },
 
-  async setState({ tareas, proyectos, hitos, personas }) {
+  async setState({ tareas, proyectos, hitos, personas, areas }) {
     return commit(s => {
       s.tareas = tareas;
       if (proyectos) s.proyectos = proyectos;
       if (personas)  s.personas  = personas;
+      if (areas)     s.areas     = areas;
       s.hitos = hitos;
       return s;
     });
@@ -88,7 +89,7 @@ module.exports = {
     const seed = JSON.parse(await fs.readFile(SEED, 'utf8'));
     return commit(s => {
       s.tareas = seed.tareas; s.proyectos = seed.proyectos;
-      s.hitos = seed.hitos; s.personas = seed.personas;
+      s.hitos = seed.hitos; s.personas = seed.personas; s.areas = seed.areas;
       return s;
     });
   },
