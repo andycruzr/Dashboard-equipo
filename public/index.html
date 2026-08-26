@@ -439,6 +439,11 @@ tailwind.config = {
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 3v9M6.5 8.5 10 12l3.5-3.5M4 14.5v1.5a1 1 0 001 1h10a1 1 0 001-1v-1.5"/></svg>
         Exportar a Excel</button>
+      <button id="importar"
+        class="flex w-full items-center gap-2.5 rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-mute transition hover:bg-panel2 hover:text-ink">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 12.5v-9M6.5 7 10 3.5 13.5 7M4 14.5v1.5a1 1 0 001 1h10a1 1 0 001-1v-1.5"/></svg>
+        Importar desde CSV</button>
       <button id="resetBoard"
         class="w-full rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-dim transition hover:text-bar-red">
         Restaurar datos del Excel</button>
@@ -486,6 +491,16 @@ tailwind.config = {
         </button>
       </div>
     </header>
+
+    <div id="avisoLocal" class="hidden items-center gap-3 px-5 sm:px-7 py-3 border-b"
+         style="border-color:color-mix(in srgb, var(--alerta) 35%, transparent);background:color-mix(in srgb, var(--alerta) 12%, transparent)">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+           stroke-linecap="round" class="shrink-0" style="color:var(--alerta)">
+        <path d="M10 6.5v4M10 13.6v.1M10 2.5 1.8 16.5h16.4z"/></svg>
+      <p class="text-[13px] leading-snug" style="color:var(--alerta)">
+        <strong id="avisoTitulo"></strong> <span id="avisoTexto"></span>
+      </p>
+    </div>
 
     <div id="filterBar" class="hidden flex-wrap items-center gap-2 px-4 sm:px-6 py-2.5 border-b border-line bg-panel/40"></div>
 
@@ -732,73 +747,98 @@ tailwind.config = {
 </div>
 
 <script>
-/* ═══ DATOS — generados desde GANTT_COMMS.xlsx ═══ */
+/* ═══ DATOS — reconstruidos desde tu exportación CSV del 23 ago ═══
+   Son tus datos reales, no el Excel original. Si alguien pulsa
+   "Restaurar", el tablero vuelve AQUÍ, no al Excel de partida. ═══ */
 
-let AREAS = ["BIENESTAR", "CDI", "CORPO", "LEGAL", "MKT", "TALENT", "TECH"];
+let AREAS = [
+ "BIENESTAR",
+ "CDI",
+ "CORPO",
+ "GENERAL",
+ "LEGAL",
+ "MKT",
+ "TALENT",
+ "TECH"
+];
 
 let PERSONAS = [
  {
-  "id": "u-andres",
-  "nombre": "Andrés",
-  "clave": "ANDRÉS",
-  "iniciales": "A",
-  "rol": "Dirección creativa",
-  "color": "#2A9083",
-  "capacidad": 8
- },
- {
-  "id": "u-juli",
-  "nombre": "Juli",
-  "clave": "JULI",
-  "iniciales": "J",
-  "rol": "Diseño gráfico",
-  "color": "#8A6E12",
-  "capacidad": 8
- },
- {
-  "id": "u-isa",
-  "nombre": "Isa",
-  "clave": "ISA",
-  "iniciales": "I",
-  "rol": "Contenido y redes",
-  "color": "#A85C9B",
-  "capacidad": 8
- },
- {
-  "id": "u-vale-he",
-  "nombre": "Vale H.",
-  "clave": "VALE HE",
-  "iniciales": "VH",
-  "rol": "Motion y animación",
-  "color": "#3E7FD1",
-  "capacidad": 8
- },
- {
-  "id": "u-nico",
-  "nombre": "Nico",
-  "clave": "NICO",
-  "iniciales": "N",
-  "rol": "Diseño y presentaciones",
-  "color": "#2F9B57",
-  "capacidad": 8
- },
- {
-  "id": "u-clau",
-  "nombre": "Clau",
-  "clave": "CLAU",
-  "iniciales": "C",
+  "id": "u-claudia-suarez",
+  "nombre": "Claudia Suarez",
+  "clave": null,
+  "iniciales": "CS",
   "rol": "Comunicación interna",
-  "color": "#CE5F52",
-  "capacidad": 8
+  "color": "#2A9083",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
  },
  {
-  "id": "u-vale-hu",
-  "nombre": "Vale Hu.",
-  "clave": "VALE HU",
-  "iniciales": "VH",
-  "rol": "Coordinación",
+  "id": "u-andres-cruz",
+  "nombre": "Andrés Cruz",
+  "clave": null,
+  "iniciales": "AC",
+  "rol": "Dirección creativa",
+  "color": "#8A6E12",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
+ },
+ {
+  "id": "u-valeria",
+  "nombre": "Valeria",
+  "clave": null,
+  "iniciales": "VA",
+  "rol": "Motion y animación",
+  "color": "#A85C9B",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
+ },
+ {
+  "id": "u-julian-peralta",
+  "nombre": "Julian Peralta",
+  "clave": null,
+  "iniciales": "JP",
+  "rol": "Diseño gráfico",
+  "color": "#3E7FD1",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
+ },
+ {
+  "id": "u-isabela-oliveros",
+  "nombre": "Isabela Oliveros",
+  "clave": null,
+  "iniciales": "IO",
+  "rol": "Contenido y redes",
+  "color": "#2F9B57",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
+ },
+ {
+  "id": "u-nicolas-adan",
+  "nombre": "Nicolas Adan",
+  "clave": null,
+  "iniciales": "NA",
+  "rol": "Diseño y presentaciones",
+  "color": "#CE5F52",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
+ },
+ {
+  "id": "u-david-rodriguez",
+  "nombre": "David Rodriguez",
+  "clave": null,
+  "iniciales": "DR",
+  "rol": "",
   "color": "#C07A2E",
-  "capacidad": 8
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
  },
  {
   "id": "u-sin",
@@ -807,220 +847,300 @@ let PERSONAS = [
   "iniciales": "—",
   "rol": "Pendiente de asignación",
   "color": "#7D8592",
-  "capacidad": 8
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
  }
 ];
 
 let PROYECTOS = [
  {
   "id": "p-newsletter",
-  "nombre": "NEWSLETTER",
+  "nombre": "Newsletter",
+  "seccion": "ALWAYS ON",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-smartdriking",
+  "nombre": "Smartdriking",
   "seccion": "ALWAYS ON",
   "area": "CORPO",
   "estado": "pendiente",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 1
- },
- {
-  "id": "p-smartdriking",
-  "nombre": "SMARTDRIKING",
-  "seccion": "ALWAYS ON",
-  "area": "CORPO",
-  "estado": "proceso",
-  "entrega": null,
-  "nota": null,
-  "nTareas": 1
+  "equipo": []
  },
  {
   "id": "p-codigo-16-9",
-  "nombre": "CÓDIGO #16-9",
+  "nombre": "Código #16-9",
   "seccion": "ALWAYS ON",
   "area": "CORPO",
   "estado": "proceso",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 6
+  "equipo": []
  },
  {
   "id": "p-malto-y-malta",
-  "nombre": "MALTO Y MALTA",
+  "nombre": "Malto y malta",
   "seccion": "ALWAYS ON",
   "area": "CDI",
-  "estado": "revision",
-  "entrega": "2026-08-20",
+  "estado": "proceso",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 1
+  "equipo": []
  },
  {
   "id": "p-duenos-duenas",
-  "nombre": "DUEÑOS & DUEÑAS",
+  "nombre": "Dueños & dueñas",
   "seccion": "PROYECTOS",
   "area": "TALENT",
   "estado": "completado",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 19
+  "equipo": []
  },
  {
   "id": "p-tech-fest",
-  "nombre": "TECH FEST",
+  "nombre": "Tech fest",
   "seccion": "PROYECTOS",
   "area": "TECH",
   "estado": "completado",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 10
+  "equipo": []
  },
  {
   "id": "p-charla-con-el-mancom",
-  "nombre": "CHARLA CON EL MANCOM",
+  "nombre": "Charla con el mancom",
   "seccion": "PROYECTOS",
   "area": "CORPO",
   "estado": "completado",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 1
+  "equipo": []
  },
  {
   "id": "p-practicantes",
-  "nombre": "PRACTICANTES",
+  "nombre": "Practicantes",
   "seccion": "PROYECTOS",
   "area": "TALENT",
-  "estado": "revision",
-  "entrega": "2026-08-20",
+  "estado": "proceso",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 19
+  "equipo": []
  },
  {
   "id": "p-cuadros",
-  "nombre": "CUADROS",
+  "nombre": "Cuadros",
   "seccion": "PROYECTOS",
   "area": "CORPO",
   "estado": "proceso",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 2
+  "equipo": []
  },
  {
   "id": "p-cheers-to-bars",
-  "nombre": "CHEERS TO BARS",
+  "nombre": "Cheers to bars",
   "seccion": "PROYECTOS",
   "area": "CORPO",
-  "estado": "proceso",
+  "estado": "completado",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 1
+  "equipo": []
  },
  {
   "id": "p-ppt-talent",
-  "nombre": "PPT TALENT",
-  "seccion": "PROYECTOS",
-  "area": "TALENT",
-  "estado": "proceso",
-  "entrega": null,
-  "nota": null,
-  "nTareas": 2
- },
- {
-  "id": "p-legal",
-  "nombre": "LEGAL",
+  "nombre": "PPT talent",
   "seccion": "PROYECTOS",
   "area": "TALENT",
   "estado": "revision",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 1
+  "equipo": []
+ },
+ {
+  "id": "p-legal",
+  "nombre": "Legal",
+  "seccion": "PROYECTOS",
+  "area": "LEGAL",
+  "estado": "completado",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
  },
  {
   "id": "p-change-management",
-  "nombre": "CHANGE MANAGEMENT",
+  "nombre": "Change management",
   "seccion": "PROYECTOS",
   "area": "TALENT",
   "estado": "completado",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 7
+  "equipo": []
  },
  {
   "id": "p-fairplay",
-  "nombre": "FAIRPLAY",
+  "nombre": "Fairplay",
   "seccion": "PROYECTOS",
   "area": "CORPO",
   "estado": "completado",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 1
+  "equipo": []
  },
  {
   "id": "p-leyendas",
-  "nombre": "LEYENDAS",
-  "seccion": "PROYECTOS",
-  "area": "CORPO",
-  "estado": "proceso",
-  "entrega": "2026-10-15",
-  "nota": null,
-  "nTareas": 9
- },
- {
-  "id": "p-album",
-  "nombre": "ÁLBUM",
-  "seccion": "PROYECTOS",
-  "area": "CORPO",
-  "estado": "proceso",
-  "entrega": null,
-  "nota": null,
-  "nTareas": 2
- },
- {
-  "id": "p-declaracion-de-renta",
-  "nombre": "DECLARACIÓN DE RENTA",
-  "seccion": "PROYECTOS NO EMPEZADOS",
-  "area": "CORPO",
-  "estado": "completado",
-  "entrega": null,
-  "nota": null,
-  "nTareas": 1
- },
- {
-  "id": "p-plataforma-regalos",
-  "nombre": "PLATAFORMA REGALOS",
-  "seccion": "PROYECTOS NO EMPEZADOS",
-  "area": "BIENESTAR",
-  "estado": "completado",
-  "entrega": null,
-  "nota": null,
-  "nTareas": 3
- },
- {
-  "id": "p-esonova",
-  "nombre": "ESONOVÁ",
+  "nombre": "Leyendas",
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "CORPO",
   "estado": "pendiente",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 2
+  "equipo": []
+ },
+ {
+  "id": "p-album",
+  "nombre": "Álbum",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-declaracion-de-renta",
+  "nombre": "Declaración de renta",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "completado",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-plataforma-regalos",
+  "nombre": "Plataforma regalos",
+  "seccion": "PROYECTOS",
+  "area": "BIENESTAR",
+  "estado": "completado",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-esonova",
+  "nombre": "Esonová",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
  },
  {
   "id": "p-capsulas-cerveceras",
-  "nombre": "CÁPSULAS CERVECERAS",
+  "nombre": "Cápsulas cerveceras",
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "MKT",
   "estado": "pendiente",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 6
+  "equipo": []
  },
  {
-  "id": "p-subele-el-volumen",
-  "nombre": "SÚBELE EL VOLUMEN",
+  "id": "p-semana-de-la-salud-y-bienestar",
+  "nombre": "Semana de la Salud y Bienestar",
   "seccion": "PROYECTOS NO EMPEZADOS",
-  "area": "SIN ÁREA",
+  "area": "BIENESTAR",
   "estado": "pendiente",
   "entrega": null,
+  "inicio": null,
+  "fin": null,
   "nota": null,
-  "nTareas": 0
+  "equipo": []
+ },
+ {
+  "id": "p-mes-de-compliance",
+  "nombre": "Mes de Compliance",
+  "seccion": "PROYECTOS",
+  "area": "CORPO",
+  "estado": "proceso",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-fin-de-ano",
+  "nombre": "Fin de año",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-pantallas-tekus",
+  "nombre": "Pantallas Tekus",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "CORPO",
+  "estado": "pendiente",
+  "entrega": null,
+  "inicio": null,
+  "fin": null,
+  "nota": null,
+  "equipo": []
  }
 ];
 
@@ -1028,1391 +1148,1788 @@ let TAREAS = [
  {
   "id": "t1",
   "codigo": "T-001",
-  "titulo": "ESTRATEGIA",
+  "titulo": "Estrategia",
   "proyecto": "p-newsletter",
   "area": "CORPO",
-  "responsable": "u-isa",
-  "progreso": 0.0,
-  "estado": "pendiente",
+  "responsable": "u-claudia-suarez",
+  "progreso": 0.75,
+  "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-03",
-  "fin": "2026-08-06",
-  "comentarios": []
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t2",
   "codigo": "T-002",
-  "titulo": "GLOBAR BEER RESPONSIBLE DAY",
+  "titulo": "Globar beer responsible day",
   "proyecto": "p-smartdriking",
   "area": "CORPO",
-  "responsable": "u-isa",
+  "responsable": "u-claudia-suarez",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-14",
-  "fin": "2026-08-14",
-  "comentarios": []
+  "inicio": "2026-08-25",
+  "fin": "2026-10-02",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t3",
   "codigo": "T-003",
-  "titulo": "CAP 3",
+  "titulo": "Cap 3",
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.8,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-05",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t4",
   "codigo": "T-004",
-  "titulo": "CAP 4",
+  "titulo": "Cap 4",
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
-  "estado": "pendiente",
+  "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-19",
-  "fin": "2026-08-19",
-  "comentarios": []
+  "inicio": "2026-08-25",
+  "fin": "2026-08-31",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t5",
   "codigo": "T-005",
-  "titulo": "CAP 5",
+  "titulo": "Cap 5",
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-09-01",
   "fin": "2026-09-01",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t6",
   "codigo": "T-006",
-  "titulo": "ACTIVACIÓN 127",
+  "titulo": "Activación 127",
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t7",
   "codigo": "T-007",
-  "titulo": "ACTIVACIÓN TOCANCIPÁ",
+  "titulo": "Activación tocancipá",
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t8",
   "codigo": "T-008",
-  "titulo": "ACTIVACIÓN BOYACÁ",
+  "titulo": "Activación boyacá",
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t9",
   "codigo": "T-009",
-  "titulo": "CAP 7",
+  "titulo": "Cap 7",
   "proyecto": "p-malto-y-malta",
   "area": "CDI",
-  "responsable": "u-vale-he",
-  "progreso": 0.0,
-  "estado": "revision",
+  "responsable": "u-valeria",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-04",
-  "fin": "2026-08-04",
-  "comentarios": []
+  "inicio": "2026-08-12",
+  "fin": "2026-08-12",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t10",
   "codigo": "T-010",
-  "titulo": "INVITACIÓN SAVE THE DATE",
+  "titulo": "Invitación save the date",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t11",
   "codigo": "T-011",
-  "titulo": "LÁMINAS ANDRE Y SERGIO",
+  "titulo": "Láminas andre y sergio",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t12",
   "codigo": "T-012",
-  "titulo": "LOOP PANTALLAS FRASES",
+  "titulo": "Loop pantallas frases",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-vale-he",
+  "responsable": "u-valeria",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t13",
   "codigo": "T-013",
-  "titulo": "BACKING NOMBRES",
+  "titulo": "Backing nombres",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t14",
   "codigo": "T-014",
-  "titulo": "AVISO NOMINADOS",
+  "titulo": "Aviso nominados",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-isa",
+  "responsable": "u-isabela-oliveros",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-21",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t15",
   "codigo": "T-015",
-  "titulo": "VIDEO APERTURA",
+  "titulo": "Video apertura",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-22",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t16",
   "codigo": "T-016",
-  "titulo": "FONDO HOST",
+  "titulo": "Fondo host",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-vale-he",
+  "responsable": "u-valeria",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-17",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t17",
   "codigo": "T-017",
-  "titulo": "VIDEO EX DUEÑOS",
+  "titulo": "Video ex dueños",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-22",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t18",
   "codigo": "T-018",
-  "titulo": "PALABRAS SERGIO",
+  "titulo": "Palabras sergio",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-clau",
+  "responsable": "u-claudia-suarez",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-24",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t19",
   "codigo": "T-019",
-  "titulo": "CORTINILLAS CATEGORÍAS Y NOMBRES",
+  "titulo": "Cortinillas categorías y nombres",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-vale-he",
+  "responsable": "u-valeria",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-23",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t20",
   "codigo": "T-020",
-  "titulo": "ANIMACIÓN PERSONAS",
+  "titulo": "Animación personas",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-24",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t21",
   "codigo": "T-021",
-  "titulo": "VIDEO CIERRE",
+  "titulo": "Video cierre",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-24",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t22",
   "codigo": "T-022",
-  "titulo": "CUBRIMIENTO 30 DE JULIO",
+  "titulo": "Cubrimiento 30 de julio",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-07-30",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t23",
   "codigo": "T-023",
-  "titulo": "CAJAS DE LUZ",
+  "titulo": "Cajas de luz",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-23",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t24",
   "codigo": "T-024",
-  "titulo": "POST LK VP",
+  "titulo": "Post lk vp",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-clau",
+  "responsable": "u-claudia-suarez",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-07-30",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t25",
   "codigo": "T-025",
-  "titulo": "TIKTOK RECAP",
+  "titulo": "Tiktok recap",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-isa",
+  "responsable": "u-isabela-oliveros",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t26",
   "codigo": "T-026",
-  "titulo": "TIKTOK QUÉ ES D&D",
+  "titulo": "Tiktok qué es d&d",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-isa",
+  "responsable": "u-isabela-oliveros",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t27",
   "codigo": "T-027",
-  "titulo": "RECAP IG D&D",
+  "titulo": "Recap ig d&d",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t28",
   "codigo": "T-028",
-  "titulo": "CARRUSEL DUEÑOS",
+  "titulo": "Carrusel dueños",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t29",
   "codigo": "T-029",
-  "titulo": "PIEZA EXPECTATIVA PANTALLAS",
+  "titulo": "Pieza expectativa pantallas",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t30",
   "codigo": "T-030",
-  "titulo": "PIEZA EXPECTATIVA ASCENSORES",
+  "titulo": "Pieza expectativa ascensores",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t31",
   "codigo": "T-031",
-  "titulo": "VIDEO AI",
+  "titulo": "Video AI",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t32",
   "codigo": "T-032",
-  "titulo": "CITACIÓN TOCANCIPÁ",
+  "titulo": "Citación tocancipá",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t33",
   "codigo": "T-033",
-  "titulo": "CITACIÓN VALLE",
+  "titulo": "Citación valle",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t34",
   "codigo": "T-034",
-  "titulo": "VIDEO ESCAPE ROOM",
+  "titulo": "Video escape room",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-28",
   "fin": "2026-08-03",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t35",
   "codigo": "T-035",
-  "titulo": "NEWSLETTER TECH FEST",
+  "titulo": "Newsletter tech fest",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-isa",
+  "responsable": "u-isabela-oliveros",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t36",
   "codigo": "T-036",
-  "titulo": "CUBRIMIENTO",
+  "titulo": "Cubrimiento",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-06",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t37",
   "codigo": "T-037",
-  "titulo": "POST FOTOS LK",
+  "titulo": "Post fotos lk",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-06",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t38",
   "codigo": "T-038",
-  "titulo": "RECAP TECHFEST",
+  "titulo": "Recap techfest",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-andres",
-  "progreso": 0.0,
+  "responsable": "u-andres-cruz",
+  "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-18",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t39",
   "codigo": "T-039",
-  "titulo": "PPT CHARLA CON EL MANCOM",
+  "titulo": "PPT charla con el mancom",
   "proyecto": "p-charla-con-el-mancom",
   "area": "CORPO",
-  "responsable": "u-nico",
+  "responsable": "u-nicolas-adan",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-05",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t40",
   "codigo": "T-040",
-  "titulo": "AJUSTES HERO + KV",
+  "titulo": "Ajustes hero + kv",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
-  "progreso": 0.0,
+  "responsable": "u-nicolas-adan",
+  "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t41",
   "codigo": "T-041",
-  "titulo": "PROPUESTA DIGITAL",
+  "titulo": "Propuesta digital",
   "proyecto": "p-practicantes",
   "area": "TALENT",
   "responsable": "u-sin",
   "progreso": 0.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t42",
   "codigo": "T-042",
-  "titulo": "1:1 CONVOCATORIA",
+  "titulo": "1:1 Convocatoria",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-nicolas-adan",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t43",
   "codigo": "T-043",
-  "titulo": "CARRUSEL REQUISITOS",
+  "titulo": "Carrusel requisitos",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t44",
   "codigo": "T-044",
-  "titulo": "CARRUSEL ÁREAS",
+  "titulo": "Carrusel áreas",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
-  "progreso": 0.0,
+  "responsable": "u-nicolas-adan",
+  "progreso": 0.75,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
+  "inicio": "2026-08-25",
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t45",
   "codigo": "T-045",
-  "titulo": "1:1 CIUDADES",
+  "titulo": "1:1 Ciudades",
   "proyecto": "p-practicantes",
   "area": "TALENT",
   "responsable": "u-sin",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t46",
   "codigo": "T-046",
-  "titulo": "REEL CONVOCATORIA MANUELA",
+  "titulo": "Reel convocatoria manuela",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
-  "progreso": 0.0,
-  "estado": "proceso",
+  "responsable": "u-andres-cruz",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-21",
+  "fin": "2026-08-24",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t47",
   "codigo": "T-047",
-  "titulo": "CARRESUEL TESTIMONIOS",
+  "titulo": "Carresuel testimonios",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.0,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t48",
-  "codigo": "T-048",
-  "titulo": "1:1 CONVOCATORIA",
+  "codigo": "T-049",
+  "titulo": "Reel tendencia",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t49",
-  "codigo": "T-049",
-  "titulo": "REEL TENDENCIA",
+  "codigo": "T-050",
+  "titulo": "Cuenta regresiva 1",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.0,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t50",
-  "codigo": "T-050",
-  "titulo": "CUENTA REGRESIVA 1",
+  "codigo": "T-051",
+  "titulo": "Reel tendencia",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t51",
-  "codigo": "T-051",
-  "titulo": "REEL TENDENCIA",
+  "codigo": "T-052",
+  "titulo": "Cuenta regresiva 2",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.0,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t52",
-  "codigo": "T-052",
-  "titulo": "CUENTA REGRESIVA 2",
+  "codigo": "T-053",
+  "titulo": "Último aviso",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.0,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t53",
-  "codigo": "T-053",
-  "titulo": "ÚLTIMO AVISO",
+  "codigo": "T-055",
+  "titulo": "Producción hero",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
-  "progreso": 0.0,
-  "estado": "proceso",
+  "responsable": "u-andres-cruz",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-10",
+  "fin": "2026-08-14",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t54",
-  "codigo": "T-054",
-  "titulo": "REEL TENDENCIA",
+  "codigo": "T-056",
+  "titulo": "Edición hero",
   "proyecto": "p-practicantes",
   "area": "TALENT",
-  "responsable": "u-sin",
-  "progreso": 0.0,
-  "estado": "proceso",
+  "responsable": "u-andres-cruz",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-10",
+  "fin": "2026-08-14",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t55",
-  "codigo": "T-055",
-  "titulo": "PRODUCCIÓN HERO",
+  "codigo": "T-057",
+  "titulo": "Entrega hero",
   "proyecto": "p-practicantes",
   "area": "TALENT",
   "responsable": "u-sin",
-  "progreso": 0.0,
-  "estado": "proceso",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-10",
+  "fin": "2026-08-14",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t56",
-  "codigo": "T-056",
-  "titulo": "EDICIÓN HERO",
+  "codigo": "T-058",
+  "titulo": "Comunicado oficial",
   "proyecto": "p-practicantes",
   "area": "TALENT",
   "responsable": "u-sin",
-  "progreso": 0.0,
-  "estado": "proceso",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t57",
-  "codigo": "T-057",
-  "titulo": "ENTREGA HERO",
-  "proyecto": "p-practicantes",
-  "area": "TALENT",
-  "responsable": "u-sin",
-  "progreso": 0.0,
+  "codigo": "T-059",
+  "titulo": "Cuadros samira",
+  "proyecto": "p-cuadros",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.75,
   "estado": "proceso",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t58",
-  "codigo": "T-058",
-  "titulo": "COMUNICADO OFICIAL",
-  "proyecto": "p-practicantes",
-  "area": "TALENT",
-  "responsable": "u-sin",
+  "codigo": "T-060",
+  "titulo": "Cuadros seguridad",
+  "proyecto": "p-cuadros",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-25",
+  "fin": "2026-08-25",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t59",
-  "codigo": "T-059",
-  "titulo": "CUADROS SAMIRA",
-  "proyecto": "p-cuadros",
-  "area": "CORPO",
-  "responsable": "u-sin",
-  "progreso": 0.9,
-  "estado": "proceso",
-  "notas": null,
-  "inicio": "2026-07-01",
-  "fin": "2026-08-06",
-  "comentarios": []
- },
- {
-  "id": "t60",
-  "codigo": "T-060",
-  "titulo": "CUADROS SEGURIDAD",
-  "proyecto": "p-cuadros",
-  "area": "CORPO",
-  "responsable": "u-sin",
-  "progreso": 0.9,
-  "estado": "proceso",
-  "notas": null,
-  "inicio": "2026-07-01",
-  "fin": "2026-08-06",
-  "comentarios": []
- },
- {
-  "id": "t61",
   "codigo": "T-061",
-  "titulo": "CHEERS TO BARS",
+  "titulo": "Cheers to bars",
   "proyecto": "p-cheers-to-bars",
   "area": "CORPO",
   "responsable": "u-sin",
-  "progreso": 0.0,
-  "estado": "pendiente",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t60",
+  "codigo": "T-062",
+  "titulo": "Video tech",
+  "proyecto": "p-ppt-talent",
+  "area": "TALENT",
+  "responsable": "u-nicolas-adan",
+  "progreso": 0.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t61",
+  "codigo": "T-063",
+  "titulo": "Calendario vacantes",
+  "proyecto": "p-ppt-talent",
+  "area": "TALENT",
+  "responsable": "u-nicolas-adan",
+  "progreso": 0.0,
+  "estado": "revision",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t62",
-  "codigo": "T-062",
-  "titulo": "VIDEO TECH",
-  "proyecto": "p-ppt-talent",
-  "area": "TALENT",
-  "responsable": "u-nico",
-  "progreso": 0.0,
+  "codigo": "T-064",
+  "titulo": "Animación legal bees",
+  "proyecto": "p-legal",
+  "area": "LEGAL",
+  "responsable": "u-valeria",
+  "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t63",
-  "codigo": "T-063",
-  "titulo": "CALENDARIO VACANTES",
-  "proyecto": "p-ppt-talent",
-  "area": "TALENT",
-  "responsable": "u-nico",
-  "progreso": 0.0,
-  "estado": "revision",
-  "notas": null,
-  "inicio": "2026-08-06",
-  "fin": "2026-08-06",
-  "comentarios": []
- },
- {
-  "id": "t64",
-  "codigo": "T-064",
-  "titulo": "ANIMACIÓN LEGAL BEES",
-  "proyecto": "p-legal",
-  "area": "LEGAL",
-  "responsable": "u-vale-he",
-  "progreso": 0.0,
-  "estado": "revision",
-  "notas": null,
-  "inicio": "2026-08-06",
-  "fin": "2026-08-06",
-  "comentarios": []
- },
- {
-  "id": "t65",
   "codigo": "T-065",
-  "titulo": "INVITACIÓN FOCUS GROUP",
+  "titulo": "Invitación focus group",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-27",
   "fin": "2026-07-27",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t66",
+  "id": "t64",
   "codigo": "T-066",
-  "titulo": "CS- PIEZA EXPECTATIVA",
+  "titulo": "Cs- pieza expectativa",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-28",
   "fin": "2026-07-28",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t67",
+  "id": "t65",
   "codigo": "T-067",
-  "titulo": "CS- FORMATO TO GO",
+  "titulo": "Cs- formato to go",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t68",
+  "id": "t66",
   "codigo": "T-068",
-  "titulo": "CS- LANZAMIENTO",
+  "titulo": "Cs- lanzamiento",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-18",
   "fin": "2026-08-18",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t69",
+  "id": "t67",
   "codigo": "T-069",
-  "titulo": "CF- EXPECTATIVA",
+  "titulo": "Cf- expectativa",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-04",
   "fin": "2026-08-14",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t70",
+  "id": "t68",
   "codigo": "T-070",
-  "titulo": "CF- BENEFICIOS",
+  "titulo": "Cf- beneficios",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-31",
   "fin": "2026-08-14",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t71",
+  "id": "t69",
   "codigo": "T-071",
-  "titulo": "CF- LANZAMIENTO",
+  "titulo": "Cf- lanzamiento",
   "proyecto": "p-change-management",
   "area": "TALENT",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-18",
   "fin": "2026-08-18",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t72",
+  "id": "t70",
   "codigo": "T-072",
-  "titulo": "PIEZA PANTALLAS",
+  "titulo": "Pieza pantallas",
   "proyecto": "p-fairplay",
   "area": "CORPO",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-03",
   "fin": "2026-08-05",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t71",
+  "codigo": "T-073",
+  "titulo": "Toolkit evento",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t72",
+  "codigo": "T-074",
+  "titulo": "Video manifiesto",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-10-02",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t73",
-  "codigo": "T-073",
-  "titulo": "TOOLKIT EVENTO",
+  "codigo": "T-075",
+  "titulo": "Save the date",
   "proyecto": "p-leyendas",
   "area": "CORPO",
-  "responsable": "u-andres",
-  "progreso": 1.0,
-  "estado": "revision",
+  "responsable": "u-nicolas-adan",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-25",
+  "fin": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t74",
-  "codigo": "T-074",
-  "titulo": "VIDEO MANIFIESTO",
+  "codigo": "T-079",
+  "titulo": "Fotos leyendas",
   "proyecto": "p-leyendas",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-08-25",
+  "fin": "2026-10-02",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t75",
-  "codigo": "T-075",
-  "titulo": "SAVE THE DATE",
+  "codigo": "T-080",
+  "titulo": "Videos familiares",
   "proyecto": "p-leyendas",
   "area": "CORPO",
-  "responsable": "u-juli",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-14",
-  "fin": "2026-08-14",
-  "comentarios": []
+  "inicio": "2026-08-31",
+  "fin": "2026-10-02",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t76",
-  "codigo": "T-076",
-  "titulo": "FECHAS DE PLANTAS",
-  "proyecto": "p-leyendas",
-  "area": "CORPO",
-  "responsable": "u-vale-hu",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": "2026-08-14",
-  "fin": "2026-08-14",
-  "comentarios": []
- },
- {
-  "id": "t77",
-  "codigo": "T-077",
-  "titulo": "PARRILLA REDES",
-  "proyecto": "p-leyendas",
-  "area": "CORPO",
-  "responsable": "u-isa",
-  "progreso": 1.0,
-  "estado": "revision",
-  "notas": "Cápsulas/pantallas",
-  "inicio": "2026-08-14",
-  "fin": "2026-08-14",
-  "comentarios": []
- },
- {
-  "id": "t78",
-  "codigo": "T-078",
-  "titulo": "REVISAR ARCHIVOS LEYENDAS",
-  "proyecto": "p-leyendas",
-  "area": "CORPO",
-  "responsable": "u-isa",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": "2026-08-14",
-  "fin": "2026-08-14",
-  "comentarios": []
- },
- {
-  "id": "t79",
-  "codigo": "T-079",
-  "titulo": "FOTOS LEYENDAS",
-  "proyecto": "p-leyendas",
-  "area": "CORPO",
-  "responsable": "u-andres",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
- },
- {
-  "id": "t80",
-  "codigo": "T-080",
-  "titulo": "VIDEOS FAMILIARES",
-  "proyecto": "p-leyendas",
-  "area": "CORPO",
-  "responsable": "u-andres",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": "2026-10-08",
-  "fin": "2026-10-08",
-  "comentarios": []
- },
- {
-  "id": "t81",
   "codigo": "T-081",
-  "titulo": "CUBRIMIENTO",
+  "titulo": "Cubrimiento",
   "proyecto": "p-leyendas",
   "area": "CORPO",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-10-15",
   "fin": "2026-10-15",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t82",
+  "id": "t77",
   "codigo": "T-082",
-  "titulo": "DISEÑO ÁLBUM",
+  "titulo": "Diseño álbum",
   "proyecto": "p-album",
   "area": "CORPO",
-  "responsable": "u-nico",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.2,
-  "estado": "proceso",
+  "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-01",
   "fin": "2026-08-01",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t83",
+  "id": "t78",
   "codigo": "T-083",
-  "titulo": "ACTIVIDADES MONAS",
+  "titulo": "Actividades monas",
   "proyecto": "p-album",
   "area": "CORPO",
-  "responsable": "u-nico",
+  "responsable": "u-nicolas-adan",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-15",
   "fin": "2026-08-30",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
  },
  {
-  "id": "t84",
+  "id": "t79",
   "codigo": "T-084",
-  "titulo": "DECLARACIÓN DE RENTA",
+  "titulo": "Declaración de renta",
   "proyecto": "p-declaracion-de-renta",
   "area": "CORPO",
-  "responsable": "u-juli",
+  "responsable": "u-julian-peralta",
   "progreso": 1.0,
   "estado": "completado",
+  "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-11",
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t80",
+  "codigo": "T-085",
+  "titulo": "Imagen navidad portada 1",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t81",
+  "codigo": "T-086",
+  "titulo": "Imagen navidad portada 2",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t82",
+  "codigo": "T-087",
+  "titulo": "Imagen donación",
+  "proyecto": "p-plataforma-regalos",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t83",
+  "codigo": "T-088",
+  "titulo": "Cápsulas pantallas",
+  "proyecto": "p-esonova",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-09-30",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t84",
+  "codigo": "T-089",
+  "titulo": "Hackeo de espacios",
+  "proyecto": "p-esonova",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t85",
-  "codigo": "T-085",
-  "titulo": "IMAGEN NAVIDAD PORTADA 1",
-  "proyecto": "p-plataforma-regalos",
-  "area": "BIENESTAR",
-  "responsable": "u-juli",
-  "progreso": 1.0,
-  "estado": "completado",
+  "codigo": "T-090",
+  "titulo": "Grabación contenido",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-21",
-  "fin": "2026-08-21",
-  "comentarios": []
+  "inicio": null,
+  "fin": null,
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t86",
-  "codigo": "T-086",
-  "titulo": "IMAGEN NAVIDAD PORTADA 2",
-  "proyecto": "p-plataforma-regalos",
-  "area": "BIENESTAR",
-  "responsable": "u-juli",
-  "progreso": 1.0,
-  "estado": "completado",
+  "codigo": "T-091",
+  "titulo": "Sistema de dispensado",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-21",
-  "fin": "2026-08-21",
-  "comentarios": []
+  "inicio": null,
+  "fin": null,
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t87",
-  "codigo": "T-087",
-  "titulo": "IMAGEN DONACIÓN",
-  "proyecto": "p-plataforma-regalos",
-  "area": "BIENESTAR",
-  "responsable": "u-juli",
-  "progreso": 1.0,
-  "estado": "completado",
+  "codigo": "T-092",
+  "titulo": "Estilos de cerveza",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-21",
-  "fin": "2026-08-21",
-  "comentarios": []
+  "inicio": null,
+  "fin": null,
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t88",
-  "codigo": "T-088",
-  "titulo": "CÁPSULAS PANTALLAS",
-  "proyecto": "p-esonova",
-  "area": "CORPO",
-  "responsable": "u-andres",
+  "codigo": "T-093",
+  "titulo": "Cristalería",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": "2026-08-18",
-  "fin": "2026-08-18",
-  "comentarios": []
+  "inicio": null,
+  "fin": null,
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t89",
-  "codigo": "T-089",
-  "titulo": "HACKEO DE ESPACIOS",
-  "proyecto": "p-esonova",
-  "area": "CORPO",
-  "responsable": "u-juli",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": "2026-08-18",
-  "fin": "2026-08-18",
-  "comentarios": []
- },
- {
-  "id": "t90",
-  "codigo": "T-090",
-  "titulo": "GRABACIÓN CONTENIDO",
-  "proyecto": "p-capsulas-cerveceras",
-  "area": "MKT",
-  "responsable": "u-andres",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
- },
- {
-  "id": "t91",
-  "codigo": "T-091",
-  "titulo": "SISTEMA DE DISPENSADO",
-  "proyecto": "p-capsulas-cerveceras",
-  "area": "MKT",
-  "responsable": "u-andres",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
- },
- {
-  "id": "t92",
-  "codigo": "T-092",
-  "titulo": "ESTILOS DE CERVEZA",
-  "proyecto": "p-capsulas-cerveceras",
-  "area": "MKT",
-  "responsable": "u-andres",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
- },
- {
-  "id": "t93",
-  "codigo": "T-093",
-  "titulo": "CRISTALERÍA",
-  "proyecto": "p-capsulas-cerveceras",
-  "area": "MKT",
-  "responsable": "u-andres",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
- },
- {
-  "id": "t94",
   "codigo": "T-094",
   "titulo": "Conservación y servicio de la cerveza",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
-  "responsable": "u-andres",
+  "responsable": "u-andres-cruz",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
-  "comentarios": []
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t90",
+  "codigo": "T-095",
+  "titulo": "Maridaje",
+  "proyecto": "p-capsulas-cerveceras",
+  "area": "MKT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": null,
+  "fin": null,
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t91",
+  "codigo": "T-096",
+  "titulo": "Capitulo 8",
+  "proyecto": "p-malto-y-malta",
+  "area": "CDI",
+  "responsable": "u-valeria",
+  "progreso": 0.25,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-09-15",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t92",
+  "codigo": "T-097",
+  "titulo": "Capitulo 9",
+  "proyecto": "p-malto-y-malta",
+  "area": "CDI",
+  "responsable": "u-valeria",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-09-15",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t93",
+  "codigo": "T-098",
+  "titulo": "Capitulo 10",
+  "proyecto": "p-malto-y-malta",
+  "area": "CDI",
+  "responsable": "u-valeria",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-09-15",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t94",
+  "codigo": "T-094",
+  "titulo": "Save the date",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-11",
+  "fin": "2026-09-11",
+  "comentarios": [],
+  "equipo": []
  },
  {
   "id": "t95",
   "codigo": "T-095",
-  "titulo": "MARIDAJE",
-  "proyecto": "p-capsulas-cerveceras",
-  "area": "MKT",
-  "responsable": "u-andres",
+  "titulo": "Kv",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
   "progreso": 0.0,
   "estado": "pendiente",
+  "prioridad": "media",
   "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": []
+  "inicio": "2026-09-04",
+  "fin": "2026-09-04",
+  "comentarios": [
+   {
+    "por": "u-andres-cruz",
+    "texto": "Visual general y diseño del carnet",
+    "cuando": "importado"
+   }
+  ],
+  "equipo": []
+ },
+ {
+  "id": "t96",
+  "codigo": "T-096",
+  "titulo": "Pieza general cronograma",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-21",
+  "fin": "2026-09-21",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t97",
+  "codigo": "T-097",
+  "titulo": "Pieza día 1",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-22",
+  "fin": "2026-09-22",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t98",
+  "codigo": "T-098",
+  "titulo": "Pieza día 2",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-23",
+  "fin": "2026-09-23",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t99",
+  "codigo": "T-099",
+  "titulo": "Pieza día 3",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-24",
+  "fin": "2026-09-24",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t100",
+  "codigo": "T-100",
+  "titulo": "Pieza día 4",
+  "proyecto": "p-semana-de-la-salud-y-bienestar",
+  "area": "BIENESTAR",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-25",
+  "fin": "2026-09-25",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t101",
+  "codigo": "T-101",
+  "titulo": "Save the date",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t102",
+  "codigo": "T-102",
+  "titulo": "Capsula Inicio",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-01",
+  "fin": "2026-09-01",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t103",
+  "codigo": "T-103",
+  "titulo": "Pieza Push 1",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-04",
+  "fin": "2026-09-04",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t104",
+  "codigo": "T-104",
+  "titulo": "Pieza Push 2",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-11",
+  "fin": "2026-09-11",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t105",
+  "codigo": "T-105",
+  "titulo": "Pieza push 3",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-18",
+  "fin": "2026-09-18",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t106",
+  "codigo": "T-106",
+  "titulo": "Cápsula Mitad",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-11",
+  "fin": "2026-09-11",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t107",
+  "codigo": "T-107",
+  "titulo": "Cápsula final",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-21",
+  "fin": "2026-09-21",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t108",
+  "codigo": "T-108",
+  "titulo": "Amor y amistad",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-18",
+  "fin": "2026-09-18",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t109",
+  "codigo": "T-109",
+  "titulo": "Halloween",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-10-31",
+  "fin": "2026-10-31",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t110",
+  "codigo": "T-110",
+  "titulo": "Bajada concepto",
+  "proyecto": "p-fin-de-ano",
+  "area": "CORPO",
+  "responsable": "u-david-rodriguez",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t111",
+  "codigo": "T-111",
+  "titulo": "Instalación  127",
+  "proyecto": "p-pantallas-tekus",
+  "area": "CORPO",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-25",
+  "fin": "2026-09-04",
+  "comentarios": [],
+  "equipo": []
  }
 ];
 
-let HITOS = [
- {
-  "id": "h1",
-  "titulo": "Entrega Malto y Malta",
-  "fecha": "2026-08-20",
-  "fijo": true
- },
- {
-  "id": "h2",
-  "titulo": "Entrega Practicantes 2027",
-  "fecha": "2026-08-20",
-  "fijo": true
- },
- {
-  "id": "h3",
-  "titulo": "Entrega Misión Cultura 2.0",
-  "fecha": "2026-08-20",
-  "fijo": true
- },
- {
-  "id": "h4",
-  "titulo": "Entrega Un Paso Adelante",
-  "fecha": "2026-08-20",
-  "fijo": true
- },
- {
-  "id": "h5",
-  "titulo": "Entrega Video Sala UB",
-  "fecha": "2026-08-20",
-  "fijo": true
- },
- {
-  "id": "h6",
-  "titulo": "Newsletter Finanzas",
-  "fecha": "2026-08-21",
-  "fijo": true
- },
- {
-  "id": "h7",
-  "titulo": "Evento Leyendas",
-  "fecha": "2026-10-15",
-  "fijo": true
- },
- {
-  "id": "h8",
-  "titulo": "Inicio ventana Engagement",
-  "fecha": "2026-10-26",
-  "fijo": true
- },
- {
-  "id": "h9",
-  "titulo": "Cierre ventana Engagement",
-  "fecha": "2026-11-13",
-  "fijo": true
- }
-];
+let HITOS = [];
 
 /* ═══════════════════════════════════════════════════
    ESTADOS
@@ -4717,6 +5234,139 @@ function exportarCSV(){
   toast(`${TAREAS.length} tareas exportadas`, 'var(--acento)');
 }
 
+/* ── Importar ────────────────────────────────────────────────────
+   La contraparte de exportar. Sube el CSV que descargaste y el
+   tablero vuelve a como estaba. Existe porque un respaldo que no se
+   puede restaurar no es un respaldo.                              */
+
+function separarCSV(linea, sep){
+  const campos = []; let campo = '', dentro = false;
+  for (let i = 0; i < linea.length; i++){
+    const c = linea[i];
+    if (c === '"'){
+      if (dentro && linea[i+1] === '"'){ campo += '"'; i++; }
+      else dentro = !dentro;
+    } else if (c === sep && !dentro){ campos.push(campo); campo = ''; }
+    else campo += c;
+  }
+  campos.push(campo);
+  return campos;
+}
+
+function importarCSV(texto){
+  const limpio = texto.replace(/^\uFEFF/, '');
+  const lineas = limpio.split(/\r?\n/).filter(l => l.trim());
+  if (lineas.length < 2) return { error: 'El archivo está vacío.' };
+
+  const sep = (lineas[0].match(/;/g) || []).length >= (lineas[0].match(/,/g) || []).length ? ';' : ',';
+  const cab = separarCSV(lineas[0], sep).map(x => x.trim().toLowerCase());
+  const col = n => cab.findIndex(c => c.startsWith(n));
+  const iTit = col('tarea');
+  if (iTit === -1) return { error: 'No encuentro la columna "Tarea". ¿Es un CSV exportado de este tablero?' };
+
+  const idx = { cod:col('código') !== -1 ? col('código') : col('codigo'), tit:iTit,
+                proy:col('proyecto'), area:col('área') !== -1 ? col('área') : col('area'),
+                resp:col('responsable'), equipo:col('equipo'), est:col('estado'),
+                pri:col('prioridad'), av:col('avance'), ini:col('inicio'), fin:col('fin'),
+                notas:col('notas'), com:col('comentarios') };
+
+  const estados = {}; ESTADOS.forEach(e => estados[e.nombre.toLowerCase()] = e.id);
+  const prios = {}; PRIORIDADES.forEach(x => prios[x.nombre.toLowerCase()] = x.id);
+
+  const nPersonas = [...PERSONAS], nProyectos = [...PROYECTOS], nAreas = [...AREAS], nTareas = [];
+  const idPersona = nombre => {
+    const n = (nombre || '').trim();
+    if (!n || n.toLowerCase() === 'sin asignar') return 'u-sin';
+    const y = nPersonas.find(p => p.nombre.toLowerCase() === n.toLowerCase());
+    if (y) return y.id;
+    const id = 'u-' + (++uid);
+    nPersonas.splice(Math.max(0, nPersonas.findIndex(p => p.id === 'u-sin')), 0,
+      { id, nombre:n, clave:null, iniciales:iniciales(n), rol:'', color:colorLibre(),
+        capacidad:8, disp:'oficina', dispHasta:null });
+    return id;
+  };
+  const idProyecto = nombre => {
+    const n = (nombre || '').trim();
+    if (!n || n.toLowerCase() === 'suelta' || n.toLowerCase() === 'sin proyecto') return null;
+    const y = nProyectos.find(p => p.nombre.toLowerCase() === n.toLowerCase());
+    if (y) return y.id;
+    const id = 'p-' + (++uid);
+    nProyectos.push({ id, nombre:n, seccion:'PROYECTOS', area:'GENERAL', estado:'pendiente',
+                      entrega:null, inicio:null, fin:null, nota:null, equipo:[] });
+    return id;
+  };
+
+  lineas.slice(1).forEach((linea, i) => {
+    const c = separarCSV(linea, sep).map(x => x.trim());
+    const titulo = (c[idx.tit] || '').trim();
+    if (!titulo) return;
+    const area = (idx.area !== -1 ? c[idx.area] : '') || 'GENERAL';
+    if (!nAreas.includes(area)) nAreas.push(area);
+
+    const comentarios = [];
+    const bruto = idx.com !== -1 ? (c[idx.com] || '') : '';
+    bruto.split(' | ').filter(Boolean).forEach(parte => {
+      const corte = parte.indexOf(': ');
+      comentarios.push(corte > 0
+        ? { por: idPersona(parte.slice(0, corte)), texto: parte.slice(corte + 2), cuando: 'importado' }
+        : { por:'u-sin', texto: parte, cuando: 'importado' });
+    });
+
+    const equipo = [];
+    if (idx.equipo !== -1) (c[idx.equipo] || '').split(', ').filter(Boolean).forEach(e => {
+      const m = e.match(/^(.*)\s*\((.+)\)$/);
+      if (m) equipo.push({ persona: idPersona(m[1]), rol: m[2] });
+    });
+
+    const pid = idProyecto(idx.proy !== -1 ? c[idx.proy] : '');
+    nTareas.push({
+      id: 't' + (++uid),
+      codigo: (idx.cod !== -1 ? c[idx.cod] : '') || 'T-' + String(i + 1).padStart(3, '0'),
+      titulo, proyecto: pid, area,
+      responsable: idPersona(idx.resp !== -1 ? c[idx.resp] : ''),
+      progreso: Math.min(1, Math.max(0, (parseFloat(idx.av !== -1 ? c[idx.av] : '0') || 0) / 100)),
+      estado: estados[(idx.est !== -1 ? c[idx.est] : '').toLowerCase()] || 'pendiente',
+      prioridad: prios[(idx.pri !== -1 ? c[idx.pri] : '').toLowerCase()] || 'media',
+      notas: (idx.notas !== -1 ? c[idx.notas] : '') || null,
+      inicio: (idx.ini !== -1 ? c[idx.ini] : '') || null,
+      fin: (idx.fin !== -1 ? c[idx.fin] : '') || null,
+      comentarios, equipo
+    });
+  });
+
+  if (!nTareas.length) return { error: 'No encontré ninguna tarea en el archivo.' };
+  return { tareas:nTareas, proyectos:nProyectos, personas:nPersonas, areas:nAreas };
+}
+
+function pedirCSV(){
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.csv,text/csv';
+  inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return;
+    const lector = new FileReader();
+    lector.onload = () => {
+      const r = importarCSV(String(lector.result));
+      if (r.error) return toast(r.error, 'var(--alerta)');
+
+      const nuevas = r.tareas.length;
+      const nuevasP = r.personas.length - PERSONAS.length;
+      if (!confirm(`Importar ${nuevas} tareas desde el archivo.\n\n` +
+          `Reemplaza las ${TAREAS.length} tareas que hay ahora.` +
+          (nuevasP > 0 ? `\nSe agregan ${nuevasP} personas nuevas al equipo.` : '') +
+          `\n\nLos hitos y eventos del calendario no vienen en el CSV y se conservan como están.`)) return;
+
+      recordar('importar CSV');
+      TAREAS = r.tareas; PROYECTOS = r.proyectos; PERSONAS = r.personas; AREAS = r.areas;
+      state.seleccion = null;
+      normalizar();
+      renderAll();
+      toast(`${nuevas} tareas importadas`, 'var(--acento)', true);
+    };
+    lector.readAsText(f, 'utf-8');
+  };
+  inp.click();
+}
+
 /* Duplicar: la mitad del tráfico son piezas que se repiten por
    capítulo o por mes, y volver a escribir todo es tiempo perdido. */
 function duplicarTarea(id){
@@ -4955,6 +5605,7 @@ $('#pNombre').addEventListener('keydown', ev => { if (ev.key === 'Enter') guarda
 $('#pRol').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarPersona(); });
 
 $('#exportar').onclick = exportarCSV;
+$('#importar').onclick = pedirCSV;
 $('#toastUndo').onclick = () => { $('#toast').classList.add('hidden'); deshacer(); };
 $('#temaBtn').onclick = alternarTema;
 $('#yoChip').onclick = abrirIdentidad;
@@ -5095,12 +5746,39 @@ const Persist = {
     toast('Datos restaurados desde el Excel', 'var(--alerta)');
   },
 
+  /* El fallo que costó los datos: el tablero guardaba en el navegador
+     y se veía igual que si guardara en la base. Ahora lo dice a gritos,
+     porque es la diferencia entre que el equipo vea tu trabajo o no. */
+  avisar(){
+    const caja = document.getElementById('avisoLocal');
+    if (!caja) return;
+    const problema = this.driver !== 'api';
+    caja.classList.toggle('hidden', !problema);
+    caja.classList.toggle('flex', problema);
+    if (!problema) return;
+
+    const mensajes = {
+      local:  ['Estos cambios NO se están guardando en el servidor.',
+               'Solo quedan en este navegador: nadie más los ve y se pierden al limpiar el historial. Revisa que el servidor esté arriba.'],
+      claude: ['Estás en una vista de prueba.',
+               'Los cambios quedan en este navegador, no en el tablero del equipo.'],
+      memory: ['Nada se está guardando.',
+               'Al recargar la página se pierde todo lo que hagas. Exporta a Excel antes de cerrar.']
+    };
+    const [t, d] = mensajes[this.driver] || mensajes.memory;
+    document.getElementById('avisoTitulo').textContent = t;
+    document.getElementById('avisoTexto').textContent = d;
+  },
+
   estado(tipo, texto){
     const c = { ok:'var(--est-completado)', pending:'var(--est-proceso)', error:'var(--alerta)', memory:'var(--texto-2)' };
     const dot = document.getElementById('syncDot'), lbl = document.getElementById('syncText');
     if (!dot) return;
     dot.style.background = c[tipo] || 'var(--texto-2)';
-    lbl.textContent = texto + (this.driver === 'memory' ? '' : ' · ' + this.driver);
+    const donde = { api:'servidor', local:'solo este navegador',
+                    claude:'solo este navegador', memory:'sin guardar' }[this.driver] || this.driver;
+    lbl.textContent = texto + ' · ' + donde;
+    this.avisar();
   },
 
   suscribir(){
@@ -5150,6 +5828,7 @@ iniciarTema();
   Persist.listo = true;
   Persist.estado(Persist.driver === 'memory' ? 'memory' : 'ok',
                  Persist.driver === 'memory' ? 'Sin guardar' : 'Al día');
+  Persist.avisar();
   Persist.suscribir();
 })();
 
