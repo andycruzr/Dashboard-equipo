@@ -188,6 +188,7 @@ app.post('/api/tareas', wrap(async (req, res) => {
     progreso: req.body.progreso || 0,
     prioridad: req.body.prioridad || 'media',
     equipo: req.body.equipo || [],
+    entrega: req.body.entrega,
     notas: req.body.notas || null,
     comentarios: []
   });
@@ -262,7 +263,8 @@ app.post('/api/proyectos', wrap(async (req, res) => {
   const p = await store.createProyecto({
     nombre, seccion: req.body.seccion, area: req.body.area,
     estado: req.body.estado, entrega: req.body.entrega, nota: req.body.nota,
-    inicio: req.body.inicio, fin: req.body.fin, equipo: req.body.equipo
+    inicio: req.body.inicio, fin: req.body.fin, equipo: req.body.equipo,
+    responsable: req.body.responsable
   });
   broadcast(await store.getState());
   res.status(201).json(p);

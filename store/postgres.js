@@ -39,11 +39,12 @@ const LOCK_ID = 728461;
 
 const COLS_TAREA = `id, codigo, titulo, proyecto, area, responsable, estado,
   progreso::float8 AS progreso, notas, prioridad, equipo,
+  to_char(entrega,'YYYY-MM-DD') AS entrega,
   to_char(inicio,'YYYY-MM-DD') AS inicio,
   to_char(fin,'YYYY-MM-DD')    AS fin,
   comentarios`;
 
-const COLS_PROYECTO = `id, nombre, seccion, area, estado, equipo,
+const COLS_PROYECTO = `id, nombre, seccion, area, estado, equipo, responsable,
   to_char(entrega,'YYYY-MM-DD') AS entrega,
   to_char(inicio,'YYYY-MM-DD')  AS inicio,
   to_char(fin,'YYYY-MM-DD')     AS fin, nota`;
@@ -112,20 +113,21 @@ async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], p
 
   for (const p of proyectos) {
     await client.query(
-      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, inicio, fin, nota, equipo)
+      `INSERT INTO proyectos (id, nombre, seccion, area, estado, inicio, fin, nota, equipo, responsable)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [p.id, p.nombre, p.seccion, p.area, p.estado || 'pendiente', p.entrega || null,
-       p.inicio || null, p.fin || null, p.nota || null, JSON.stringify(p.equipo || [])]);
+      [p.id, p.nombre, p.seccion, p.area, p.estado || 'pendiente',
+       p.inicio || null, p.fin || null, p.nota || null,
+       JSON.stringify(p.equipo || []), p.responsable || 'u-sin']);
   }
   for (const t of tareas) {
     await client.query(
       `INSERT INTO tareas (id, codigo, titulo, proyecto, area, responsable, estado,
-                           progreso, notas, prioridad, inicio, fin, comentarios, equipo)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+                           progreso, notas, prioridad, inicio, fin, comentarios, equipo, entrega)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
       [t.id, t.codigo, t.titulo, t.proyecto || null, t.area || 'SIN ÁREA',
        t.responsable || 'u-sin', t.estado || 'pendiente', t.progreso || 0,
        t.notas || null, t.prioridad || 'media', t.inicio || null, t.fin || null,
-       JSON.stringify(t.comentarios || []), JSON.stringify(t.equipo || [])]);
+       JSON.stringify(t.comentarios || []), JSON.stringify(t.equipo || []), t.entrega || null]);
   }
   if (areas.length) {
     await client.query('DELETE FROM areas');
@@ -217,7 +219,7 @@ module.exports = {
 
   async updateTarea(id, patch) {
     const permitidos = ['titulo','proyecto','area','responsable','estado',
-                        'progreso','notas','prioridad','inicio','fin','comentarios','equipo'];
+                        'progreso','notas','prioridad','inicio','fin','comentarios','equipo','entrega'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return module.exports.getTarea(id);
 
@@ -276,7 +278,7 @@ module.exports = {
   },
 
   async updateProyecto(id, patch) {
-    const permitidos = ['nombre','seccion','area','estado','entrega','inicio','fin','nota','equipo'];
+    const permitidos = ['nombre','seccion','area','estado','inicio','fin','nota','equipo','responsable'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return null;
     const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');

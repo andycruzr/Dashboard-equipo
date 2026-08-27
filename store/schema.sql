@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS proyectos (
   area    text,
   estado  text NOT NULL DEFAULT 'pendiente'
           CHECK (estado IN ('pendiente','proceso','revision','completado')),
+  responsable text NOT NULL DEFAULT 'u-sin',
   entrega date,
   inicio  date,
   fin     date,
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS tareas (
               CHECK (estado IN ('pendiente','proceso','revision','completado')),
   progreso    numeric(3,2) NOT NULL DEFAULT 0
               CHECK (progreso >= 0 AND progreso <= 1),
+  entrega     date,
   notas       text,
   prioridad   text NOT NULL DEFAULT 'media'
               CHECK (prioridad IN ('alta','media','baja')),
@@ -66,6 +68,11 @@ CREATE TABLE IF NOT EXISTS tareas (
 );
 
 ALTER TABLE tareas ADD COLUMN IF NOT EXISTS equipo jsonb NOT NULL DEFAULT '[]';
+ALTER TABLE tareas ADD COLUMN IF NOT EXISTS entrega date;
+-- La entrega arranca igual al fin para lo que ya existía
+UPDATE tareas SET entrega = fin WHERE entrega IS NULL AND fin IS NOT NULL;
+
+ALTER TABLE proyectos ADD COLUMN IF NOT EXISTS responsable text NOT NULL DEFAULT 'u-sin';
 
 -- Migración para bases creadas antes de que existiera la prioridad.
 -- Patrón para agregar columnas más adelante: ADD COLUMN IF NOT EXISTS,

@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="theme-color" content="#0E0F12" />
 <title>Tráfico Comms Internas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,19 +63,20 @@ tailwind.config = {
     --texto-2:    #A9AFB9;
     --texto-3:    #7E8693;
 
-    --acento:     #6E9BFF;   /* azul: el color de acción */
-    --acento-suave:#1B2436;  /* fondo de los botones de acción */
-    --acento-tinta:#0A0B0C;
+    --acento:     #FF7A6B;   /* rojo coral: el color de la marca */
+    --acento-suave:#2A1815;  /* fondo tenue de los elementos activos */
+    --acento-tinta:#0A0B0C;  /* texto que va ENCIMA del acento */
 
     --est-pendiente:  #8AA9E6;
     --est-proceso:    #E8CE72;
     --est-revision:   #CE8FC2;
     --est-completado: #74D08B;
-    --alerta:         #F08A7E;
+    /* Lo vencido va en NARANJA, no en rojo: el rojo ya es la marca y
+       dos rojos distintos no se distinguen de un vistazo. */
+    --alerta:         #FFA05C;
 
-    /* Rellenos: en oscuro coinciden con los de texto */
     --g-pendiente: #6E9BFF; --g-proceso: #F2C94C;
-    --g-revision:  #C77DDB; --g-completado: #43C97F; --g-alerta: #FF6B5A;
+    --g-revision:  #C77DDB; --g-completado: #43C97F; --g-alerta: #FF9142;
 
     --vidrio:      color-mix(in srgb, #151719 72%, transparent);
     --vidrio-alto: color-mix(in srgb, #191C1F 82%, transparent);
@@ -96,25 +98,25 @@ tailwind.config = {
     --linea:      #EDEFF2;
     --borde:      #E1E4E9;
 
-    --texto:      #14161A;
-    --texto-2:    #5A6270;
-    --texto-3:    #69707C;
+    --texto:      #111318;
+    --texto-2:    #535A66;
+    --texto-3:    #616874;
 
-    --acento:     #2456D6;
-    --acento-suave:#EBF0FE;
+    --acento:     #B4232E;
+    --acento-suave:#FCEDEE;
     --acento-tinta:#FFFFFF;
 
     /* Más oscuros que en el tema oscuro: sobre blanco necesitan
        bajar luminosidad para no perder contraste. */
-    --est-pendiente:  #3F63B8;
-    --est-proceso:    #775C0A;
-    --est-revision:   #9B4B8D;
-    --est-completado: #1F6B39;
-    --alerta:         #C2402F;
+    --est-pendiente:  #2C5AA8;
+    --est-proceso:    #8A5A00;
+    --est-revision:   #8A3B7D;
+    --est-completado: #15703F;
+    --alerta:         #9A3A05;
 
     /* Rellenos vivos también sobre blanco: son gráficos, no texto */
     --g-pendiente: #3B6DF5; --g-proceso: #F2B705;
-    --g-revision:  #B45BD1; --g-completado: #17B26A; --g-alerta: #F0472F;
+    --g-revision:  #B45BD1; --g-completado: #17B26A; --g-alerta: #E86A16;
 
     --vidrio:      color-mix(in srgb, #FFFFFF 68%, transparent);
     --vidrio-alto: color-mix(in srgb, #FFFFFF 82%, transparent);
@@ -159,6 +161,78 @@ tailwind.config = {
     opacity:.55;
   }
   body > *{ position:relative; z-index:1; }
+
+  /* ── Retícula del resumen ────────────────────────────────────────
+     Widgets de distinto tamaño según su peso, no todos iguales: la
+     cifra grande manda, el gráfico acompaña y las listas rellenan.
+     En móvil todo cae a una columna en orden de importancia.     */
+  .rejilla{ display:grid; gap:12px; grid-template-columns:repeat(4, minmax(0,1fr)); }
+  @media (max-width:1180px){ .rejilla{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width:640px){ .rejilla{ grid-template-columns:1fr; } }
+  .w2{ grid-column:span 2; } .w3{ grid-column:span 3; } .w4{ grid-column:span 4; }
+  @media (max-width:1180px){ .w3, .w4{ grid-column:span 2; } }
+  @media (max-width:640px){ .w2, .w3, .w4{ grid-column:span 1; } }
+
+  /* La primera métrica va rellena: ancla la mirada al entrar */
+  /* Tarjeta rellena de acento. El texto NO usa --acento-tinta: ese
+     token es casi negro en tema oscuro y aquí el fondo ya es el
+     acento, así que se elige el extremo que contrasta con él. */
+  .caja.metrica-viva{ background:var(--acento); border-color:transparent;
+                      box-shadow:var(--sombra-alta); --sobre-acento:#FFFFFF; }
+  [data-tema="claro"] .metrica-viva{ --sobre-acento:#FFFFFF; }
+  [data-tema="oscuro"] .metrica-viva{ --sobre-acento:#0A0B0C; }
+  .metrica-viva, .metrica-viva *{ color:var(--sobre-acento) !important; }
+  .metrica-viva .item-s{ opacity:.78; }
+  .metrica-viva svg{ opacity:.7; }
+
+  /* Tarjeta oscura de cierre: el contrapeso visual de la rejilla */
+  /* Contrapeso visual de la rejilla: siempre oscura, en los dos
+     temas. Sus colores no dependen de las variables porque el
+     fondo tampoco. */
+  .caja.destacada{ background:linear-gradient(145deg, #191C21 0%, #262B32 100%);
+                   border-color:rgba(255,255,255,.08); box-shadow:var(--sombra-alta); }
+  .destacada, .destacada h2, .destacada .cifra, .destacada p{ color:#F4F5F7 !important; }
+  .destacada .item-s{ color:rgba(244,245,247,.62) !important; }
+
+  /* Pestañas del segundo nivel. Estaban sin estilo y salían los
+     nombres pegados uno a otro. */
+  .segmento{ display:inline-flex; padding:4px; gap:3px; max-width:100%; overflow-x:auto;
+             background:var(--sup-alta); border:1px solid var(--linea); border-radius:999px; }
+  .segmento button{ border-radius:999px; padding:8px 18px; font-size:13px; font-weight:500;
+                    white-space:nowrap; color:var(--texto-3);
+                    transition:background .16s ease, color .16s ease; }
+  .segmento button:hover{ color:var(--texto); }
+  .segmento button[aria-selected="true"], .segmento button[aria-pressed="true"]{
+    background:var(--acento); color:var(--acento-tinta); font-weight:600; }
+
+  .widget-cab{ display:flex; align-items:baseline; gap:8px; margin-bottom:14px; }
+  .widget-cab h2{ font-size:14.5px; font-weight:600; letter-spacing:-.012em; }
+  .widget-cab .accion-mini{ margin-left:auto; font-size:12px; color:var(--texto-3); transition:color .15s ease; }
+  .widget-cab .accion-mini:hover{ color:var(--texto); }
+
+  /* ── Densidad ────────────────────────────────────────────────────
+     Compacta reduce el aire pero NO el tamaño del texto ni el de los
+     controles: caben más filas sin volverse ilegible ni difícil de
+     tocar. Solo se recorta el espacio muerto.                     */
+  :root{ --esp-1:10px; --esp-2:14px; --esp-3:20px; --fila-alto:12px; }
+  [data-densidad="compacta"]{ --esp-1:6px; --esp-2:9px; --esp-3:13px; --fila-alto:8px; }
+
+  [data-densidad="compacta"] .caja{ padding:var(--esp-3) !important; }
+  [data-densidad="compacta"] .item{ padding-top:var(--fila-alto); padding-bottom:var(--fila-alto); }
+  [data-densidad="compacta"] .card{ padding-top:var(--esp-1); padding-bottom:var(--esp-1); }
+  [data-densidad="compacta"] .g-row{ height:27px; }
+  [data-densidad="compacta"] .g-row.g-group{ height:32px; }
+  [data-densidad="compacta"] main{ padding:var(--esp-3) !important; }
+  [data-densidad="compacta"] section > div:first-child{ padding-top:var(--esp-2); padding-bottom:var(--esp-2); }
+  [data-densidad="compacta"] .titulo{ font-size:18px; }
+  [data-densidad="compacta"] .heroe{ font-size:clamp(26px, 4vw, 34px); }
+  [data-densidad="compacta"] .space-y-2 > * + *{ margin-top:6px; }
+
+  /* En táctil nunca se compacta por debajo del objetivo mínimo */
+  @media (pointer:coarse){
+    [data-densidad="compacta"] .item{ min-height:52px; }
+    [data-densidad="compacta"] .g-row{ height:36px; }
+  }
 
   /* ── Componentes ─────────────────────────────────────────────── */
 
@@ -319,26 +393,72 @@ tailwind.config = {
   .rise{ animation:rise .5s cubic-bezier(.2,.7,.3,1) backwards; }
   @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
 
-  /* ── Gantt ── */
-  .g-wrap{ display:grid; grid-template-columns:236px minmax(0,1fr); }
+  /* ── Cronograma ────────────────────────────────────────────────
+     Cuadrícula de verdad: cada día es una casilla, cada semana lleva
+     una línea marcada y cada mes una más gruesa. Así se ve de dónde
+     a dónde va cada barra sin tener que contar píxeles.          */
+  .g-wrap{ display:grid; grid-template-columns:250px minmax(0,1fr); }
   @media (max-width:640px){ .g-wrap{ grid-template-columns:150px minmax(0,1fr); } }
-  .g-labels{ border-right:1px solid var(--linea); background:var(--sup); }
+  .g-labels{ border-right:2px solid var(--borde); background:var(--sup); }
   .g-scroll{ overflow-x:auto; overflow-y:hidden; }
-  .g-row{ height:32px; display:flex; align-items:center; border-bottom:1px solid var(--linea); }
-  .g-row.g-group{ height:38px; background:var(--sup-alta); }
+
+  /* Cabecera de tres pisos */
+  .g-cabecera{ height:64px; border-bottom:2px solid var(--borde); background:var(--sup-alta); }
+  .g-pisoMes{ position:relative; height:24px; border-bottom:1px solid var(--linea); }
+  .g-pisoSem{ position:relative; height:20px; border-bottom:1px solid var(--linea); }
+  .g-pisoDia{ position:relative; height:20px; }
+
+  .g-mes{ position:absolute; top:0; height:24px; display:flex; align-items:center;
+          padding-left:10px; border-left:2px solid var(--borde);
+          font-size:12.5px; font-weight:700; letter-spacing:-.01em;
+          text-transform:capitalize; color:var(--texto); }
+  .g-sem{ position:absolute; top:0; height:20px; display:flex; align-items:center;
+          justify-content:center; border-left:1px solid var(--borde);
+          font-size:10.5px; font-weight:500; color:var(--texto-2); overflow:hidden; }
+  .g-dia{ position:absolute; top:0; height:20px; display:flex; align-items:center;
+          justify-content:center; gap:3px; border-left:1px solid var(--linea); }
+  .g-dia.finde{ background:color-mix(in srgb, var(--texto-3) 10%, transparent); }
+  .g-diaLetra{ font-size:8.5px; color:var(--texto-3); }
+  .g-diaNum{ font-size:10.5px; font-weight:600; color:var(--texto-2);
+             font-variant-numeric:tabular-nums; }
+
+  /* Líneas de la cuadrícula, de menor a mayor peso */
+  .g-diaLinea{ position:absolute; top:0; bottom:0; width:1px; background:var(--linea); opacity:.45; }
+  .g-semLinea{ position:absolute; top:0; bottom:0; width:1px; background:var(--borde); }
+  .g-mesLinea{ position:absolute; top:0; bottom:0; width:2px; background:var(--borde); }
+  .g-finde{ position:absolute; top:0; bottom:0; background:color-mix(in srgb, var(--texto-3) 7%, transparent); }
+  .g-hito{ position:absolute; top:0; bottom:0; width:0;
+           border-left:1px dashed color-mix(in srgb, var(--acento) 45%, transparent); }
+  .g-hitoMarca{ position:absolute; bottom:4px; width:9px; height:9px; rotate:45deg;
+                background:var(--acento); z-index:3; }
+
+  /* Hoy: banda con etiqueta, la referencia que más se busca */
+  .g-today{ position:absolute; top:0; bottom:0; z-index:0;
+            background:color-mix(in srgb, var(--acento) 15%, transparent);
+            border-left:2px solid var(--acento); border-right:2px solid var(--acento); }
+  .g-cabHoy{ position:absolute; bottom:3px; z-index:4; border-radius:999px; padding:2px 9px;
+             font-size:10px; font-weight:700; letter-spacing:.04em;
+             background:var(--acento); color:var(--acento-tinta); white-space:nowrap; }
+
+  .g-row{ height:34px; display:flex; align-items:center; border-bottom:1px solid var(--linea); }
+  .g-row:nth-child(even){ background:color-mix(in srgb, var(--sup-alta) 45%, transparent); }
+  .g-row.g-group{ height:40px; background:var(--sup-alta); border-bottom:1px solid var(--borde); }
   .g-row:hover{ background:var(--sup-hover); }
-  .g-row.sel{ background:var(--sup-hover); }
-  .g-bar{ position:absolute; height:14px; border-radius:999px; top:50%; transform:translateY(-50%);
-          cursor:pointer; transition:filter .15s ease, box-shadow .15s ease; }
-  .g-bar:hover{ filter:brightness(1.22); box-shadow:0 0 0 1px rgba(255,255,255,.25); }
-  .g-bar.grp{ height:18px; border-radius:999px; }
-  .g-fill{ position:absolute; inset:0; border-radius:999px;
-           background:color-mix(in srgb, var(--fondo) 45%, transparent); }
-  .g-fill span{ display:block; height:100%; border-radius:999px; background:transparent; }
-  .g-today{ position:absolute; top:0; bottom:0; width:1px; background:var(--cyan); opacity:.55; }
-  .g-hito{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed rgba(95,211,208,.4); }
-  .g-weekend{ position:absolute; top:0; bottom:0; background:rgba(255,255,255,.022); }
-  .g-monthline{ position:absolute; top:0; bottom:0; width:1px; background:var(--linea); }
+  .g-row.sel{ background:color-mix(in srgb, var(--acento) 10%, transparent); }
+
+  .g-bar{ position:absolute; z-index:2; height:16px; border-radius:5px; top:50%;
+          transform:translateY(-50%); cursor:pointer;
+          transition:filter .15s ease, box-shadow .15s ease; }
+  .g-bar:hover{ filter:brightness(1.15); box-shadow:0 0 0 2px color-mix(in srgb, var(--texto) 22%, transparent); }
+  .g-bar.grp{ height:20px; border-radius:6px; }
+  .g-fill{ position:absolute; inset:0; border-radius:5px;
+           background:color-mix(in srgb, var(--fondo) 42%, transparent); }
+  .g-fill span{ display:block; height:100%; border-radius:5px 0 0 5px; background:transparent; }
+
+  /* Fechas del proyecto al lado de su barra */
+  .g-rango{ position:absolute; top:50%; transform:translate(-100%, -50%); margin-left:-10px;
+            font-size:10.5px; color:var(--texto-3); white-space:nowrap;
+            font-variant-numeric:tabular-nums; }
 
   select.tapeselect{ -webkit-appearance:none; appearance:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'><path d='M0 0h8L4 5z' fill='%238E939E'/></svg>");
@@ -387,6 +507,33 @@ tailwind.config = {
   /* Navegación inferior en móvil: la mano llega abajo, no arriba. */
   .navmovil{ padding-bottom:env(safe-area-inset-bottom); }
 
+  /* ── iPad y táctiles ─────────────────────────────────────────────
+     En iOS, 100vh cuenta la barra del navegador y deja contenido
+     debajo del borde; dvh mide lo que de verdad se ve.            */
+  @supports (height: 100dvh){ .alto-real{ height:100dvh; } }
+
+  /* Sin retardo de 300ms ni zoom al doble toque en los controles */
+  button, select, [role="button"], a, .item, .fila, .card{ touch-action:manipulation; }
+
+  /* Safari en iOS hace zoom si el texto de un campo baja de 16px */
+  @supports (-webkit-touch-callout: none){
+    input, select, textarea{ font-size:16px !important; }
+    .campo{ font-size:16px !important; }
+  }
+
+  /* Respeta el notch y los bordes redondeados del iPad */
+  body{ padding-left:env(safe-area-inset-left); padding-right:env(safe-area-inset-right); }
+
+  /* Desplazamiento con inercia en las zonas que scrollean */
+  .scroll-x, .g-scroll, .overflow-y-auto{ -webkit-overflow-scrolling:touch; }
+
+  /* El arrastre HTML5 no existe en Safari de iPad: allí se usan los
+     menús de asignación, que hacen lo mismo con un toque. */
+  @media (hover: none){
+    .zona-drop::after{ content:''; }
+    [draggable="true"]{ -webkit-user-drag:none; }
+  }
+
   ::-webkit-scrollbar{ width:9px; height:9px; }
   ::-webkit-scrollbar-track{ background:transparent; }
   ::-webkit-scrollbar-thumb{ background:var(--borde); border-radius:99px; }
@@ -406,7 +553,7 @@ tailwind.config = {
 
   <div id="scrim" class="fixed inset-0 z-40 bg-black/60 hidden lg:hidden"></div>
   <aside id="sidebar"
-    class="vidrio fixed lg:sticky top-0 z-50 h-screen w-[236px] shrink-0 border-r border-line
+    class="vidrio alto-real fixed lg:sticky top-0 z-50 h-screen w-[236px] shrink-0 border-r border-line
            flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300">
 
     <div class="px-5 h-[64px] flex items-center gap-3 border-b border-line">
@@ -478,6 +625,11 @@ tailwind.config = {
                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg>
           <span id="temaTexto" class="hidden text-[12.5px] font-medium sm:inline"></span>
         </button>
+        <button id="aparienciaBtn" aria-label="Apariencia: tema, color y densidad" title="Apariencia"
+          class="vidrio grid h-[40px] w-[40px] place-items-center rounded-full border border-line text-mute transition hover:text-ink">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 000 14"/><circle cx="13" cy="7.5" r=".8" fill="currentColor"/><circle cx="14" cy="11" r=".8" fill="currentColor"/></svg>
+        </button>
         <button id="nuevaTarea" title="Nueva tarea (N)" aria-label="Crear nueva tarea"
           class="accion flex items-center gap-1.5 rounded-[9px] border px-3 py-2.5 transition"
           style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
@@ -504,7 +656,7 @@ tailwind.config = {
 
     <div id="filterBar" class="hidden flex-wrap items-center gap-2 px-4 sm:px-6 py-2.5 border-b border-line bg-panel/40"></div>
 
-    <div class="flex-1 xl:grid xl:grid-cols-[minmax(0,1fr)_336px]">
+    <div id="cuerpo" class="flex-1 xl:grid xl:grid-cols-[minmax(0,1fr)_336px]">
       <section class="min-w-0 border-b xl:border-b-0 xl:border-r border-line">
         <div class="vidrio px-5 sm:px-7 py-4 border-b border-line">
           <div id="slate" class="flex h-[8px] w-full gap-[3px] overflow-hidden rounded-full" role="img"></div>
@@ -513,7 +665,13 @@ tailwind.config = {
         <main id="viewBody" class="p-5 sm:p-7 pb-24 lg:pb-8" tabindex="-1"></main>
       </section>
 
-      <aside class="min-w-0">
+      <aside id="rail" class="relative min-w-0 border-l-2" style="border-color:var(--acento)">
+        <button id="railToggle" aria-label="Ocultar el panel de edición" aria-expanded="true"
+          class="absolute -left-3 top-5 z-20 grid h-7 w-7 place-items-center rounded-full border shadow-[var(--sombra)] transition"
+          style="background:var(--acento);border-color:var(--acento);color:var(--acento-tinta)">
+          <svg id="railIcono" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
+        </button>
         <div id="railDetail" class="p-5 pb-24 lg:pb-6"></div>
       </aside>
     </div>
@@ -523,9 +681,39 @@ tailwind.config = {
 <nav id="navMovil" aria-label="Secciones"
   class="navmovil vidrio fixed bottom-0 left-0 right-0 z-40 flex border-t border-line lg:hidden"></nav>
 
+<div id="aparienciaModal" class="fixed inset-0 z-[78] hidden" role="dialog" aria-modal="true" aria-labelledby="apTitulo">
+  <div class="absolute inset-0 z-0 bg-black/75" data-cerrarap></div>
+  <div class="modal-in vidrio-alto relative z-10 mx-auto mt-[9vh] w-[min(400px,92vw)] overflow-hidden rounded-[24px] border border-line">
+    <div class="flex items-center gap-3 border-b border-line px-6 py-5">
+      <h2 id="apTitulo" class="text-[17px] font-semibold tracking-tight">Apariencia</h2>
+      <button data-cerrarap class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="space-y-6 px-6 py-5">
+      <div>
+        <span class="etiqueta">Tema</span>
+        <div id="apTema" class="grid grid-cols-3 gap-2"></div>
+      </div>
+      <div>
+        <span class="etiqueta">Color de acento</span>
+        <div id="apColores" class="flex flex-wrap gap-2.5"></div>
+        <p class="nota mt-2.5">Tiñe botones, enlaces y el día de hoy.</p>
+      </div>
+      <div>
+        <span class="etiqueta">Densidad</span>
+        <div id="apDensidad" class="grid grid-cols-2 gap-2"></div>
+        <p class="nota mt-2.5">Compacta muestra más filas sin desplazarte, útil en pantallas grandes.</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 border-t border-line px-6 py-4">
+      <span class="nota">Solo cambia cómo lo ves tú</span>
+      <button data-cerrarap class="btn-principal ml-auto">Listo</button>
+    </div>
+  </div>
+</div>
+
 <div id="proyModal" class="fixed inset-0 z-[77] hidden" role="dialog" aria-modal="true" aria-labelledby="prTitulo">
-  <div class="absolute inset-0 bg-black/75" data-cerrarpr></div>
-  <div class="modal-in vidrio-alto relative mx-auto mt-[8vh] w-[min(440px,92vw)] overflow-hidden rounded-[24px] border border-line">
+  <div class="absolute inset-0 z-0 bg-black/75" data-cerrarpr></div>
+  <div class="modal-in vidrio-alto relative z-10 mx-auto mt-[8vh] w-[min(440px,92vw)] overflow-hidden rounded-[24px] border border-line">
     <div class="flex items-center gap-3 border-b border-line px-6 py-5">
       <h2 id="prTitulo" class="text-[17px] font-semibold tracking-tight">Nuevo proyecto</h2>
       <button data-cerrarpr class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
@@ -560,8 +748,8 @@ tailwind.config = {
           <select id="prEstado" class="campo tapeselect"></select>
         </label>
         <label class="block">
-          <span class="etiqueta">Fecha de entrega</span>
-          <input id="prEntrega" type="date" class="campo" />
+          <span class="etiqueta">Encargado</span>
+          <select id="prResp" class="campo tapeselect"></select>
         </label>
       </div>
       <label class="block">
@@ -581,8 +769,8 @@ tailwind.config = {
 </div>
 
 <div id="personaModal" class="fixed inset-0 z-[76] hidden" role="dialog" aria-modal="true" aria-labelledby="pTitulo">
-  <div class="absolute inset-0 bg-black/75" data-cerrarp></div>
-  <div class="modal-in relative mx-auto mt-[9vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
+  <div class="absolute inset-0 z-0 bg-black/75" data-cerrarp></div>
+  <div class="modal-in relative z-10 mx-auto mt-[9vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="flex items-center gap-3 border-b border-line px-5 py-4">
       <span id="pAvatar"></span>
       <h2 id="pTitulo" class="subtitulo">Nueva persona</h2>
@@ -624,7 +812,7 @@ tailwind.config = {
 
 <div id="identModal" class="fixed inset-0 z-[75] hidden" role="dialog" aria-modal="true" aria-labelledby="identTitulo">
   <div class="absolute inset-0 bg-black/80"></div>
-  <div class="modal-in relative mx-auto mt-[10vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
+  <div class="modal-in relative z-10 mx-auto mt-[10vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="border-b border-line px-5 py-5">
       <div class="flex h-[18px] w-[62px] overflow-hidden rounded-[2px] mb-4">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
@@ -645,8 +833,8 @@ tailwind.config = {
 </div>
 
 <div id="eventModal" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="evTitulo">
-  <div class="absolute inset-0 bg-black/70" data-close></div>
-  <div class="modal-in relative mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
+  <div class="absolute inset-0 z-0 bg-black/70" data-close></div>
+  <div class="modal-in relative z-10 mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="flex items-center gap-3 border-b border-line px-5 py-4">
       <div class="flex h-[18px] w-[18px] overflow-hidden rounded-[2px]">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
@@ -758,6 +946,7 @@ let AREAS = [
  "GENERAL",
  "LEGAL",
  "MKT",
+ "OSC ZONA",
  "TALENT",
  "TECH"
 ];
@@ -765,7 +954,7 @@ let AREAS = [
 let PERSONAS = [
  {
   "id": "u-claudia-suarez",
-  "nombre": "Claudia Suarez",
+  "nombre": "Claudia Suárez",
   "clave": null,
   "iniciales": "CS",
   "rol": "Comunicación interna",
@@ -798,7 +987,7 @@ let PERSONAS = [
  },
  {
   "id": "u-julian-peralta",
-  "nombre": "Julian Peralta",
+  "nombre": "Julián Peralta",
   "clave": null,
   "iniciales": "JP",
   "rol": "Diseño gráfico",
@@ -808,8 +997,8 @@ let PERSONAS = [
   "dispHasta": null
  },
  {
-  "id": "u-isabela-oliveros",
-  "nombre": "Isabela Oliveros",
+  "id": "u-isabella-oliveros",
+  "nombre": "Isabella Oliveros",
   "clave": null,
   "iniciales": "IO",
   "rol": "Contenido y redes",
@@ -820,7 +1009,7 @@ let PERSONAS = [
  },
  {
   "id": "u-nicolas-adan",
-  "nombre": "Nicolas Adan",
+  "nombre": "Nicolás Adán",
   "clave": null,
   "iniciales": "NA",
   "rol": "Diseño y presentaciones",
@@ -831,11 +1020,22 @@ let PERSONAS = [
  },
  {
   "id": "u-david-rodriguez",
-  "nombre": "David Rodriguez",
+  "nombre": "David Rodríguez",
   "clave": null,
   "iniciales": "DR",
-  "rol": "",
+  "rol": "Contenido",
   "color": "#C07A2E",
+  "capacidad": 8,
+  "disp": "oficina",
+  "dispHasta": null
+ },
+ {
+  "id": "u-valentina-huertas",
+  "nombre": "Valentina Huertas",
+  "clave": null,
+  "iniciales": "VH",
+  "rol": "Coordinación",
+  "color": "#6C7BC4",
   "capacidad": 8,
   "disp": "oficina",
   "dispHasta": null
@@ -860,21 +1060,9 @@ let PROYECTOS = [
   "seccion": "ALWAYS ON",
   "area": "CORPO",
   "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
-  "nota": null,
-  "equipo": []
- },
- {
-  "id": "p-smartdriking",
-  "nombre": "Smartdriking",
-  "seccion": "ALWAYS ON",
-  "area": "CORPO",
-  "estado": "pendiente",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-claudia-suarez",
+  "inicio": "2026-08-26",
+  "fin": "2026-09-04",
   "nota": null,
   "equipo": []
  },
@@ -884,9 +1072,9 @@ let PROYECTOS = [
   "seccion": "ALWAYS ON",
   "area": "CORPO",
   "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-08-05",
+  "fin": "2026-10-02",
   "nota": null,
   "equipo": []
  },
@@ -896,45 +1084,45 @@ let PROYECTOS = [
   "seccion": "ALWAYS ON",
   "area": "CDI",
   "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-valeria",
+  "inicio": "2026-08-12",
+  "fin": "2026-09-15",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-duenos-duenas",
   "nombre": "Dueños & dueñas",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "TALENT",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-07-10",
+  "fin": "2026-08-03",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-tech-fest",
   "nombre": "Tech fest",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "TECH",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-07-28",
+  "fin": "2026-08-18",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-charla-con-el-mancom",
   "nombre": "Charla con el mancom",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "CORPO",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-nicolas-adan",
+  "inicio": "2026-08-05",
+  "fin": "2026-08-05",
   "nota": null,
   "equipo": []
  },
@@ -944,9 +1132,9 @@ let PROYECTOS = [
   "seccion": "PROYECTOS",
   "area": "TALENT",
   "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-nicolas-adan",
+  "inicio": "2026-08-10",
+  "fin": "2026-08-25",
   "nota": null,
   "equipo": []
  },
@@ -955,22 +1143,22 @@ let PROYECTOS = [
   "nombre": "Cuadros",
   "seccion": "PROYECTOS",
   "area": "CORPO",
-  "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "estado": "revision",
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-08-25",
+  "fin": "2026-08-26",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-cheers-to-bars",
   "nombre": "Cheers to bars",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "CORPO",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-sin",
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
   "nota": null,
   "equipo": []
  },
@@ -980,57 +1168,57 @@ let PROYECTOS = [
   "seccion": "PROYECTOS",
   "area": "TALENT",
   "estado": "revision",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-nicolas-adan",
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-legal",
   "nombre": "Legal",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "LEGAL",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-valeria",
+  "inicio": "2026-08-06",
+  "fin": "2026-08-06",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-change-management",
   "nombre": "Change management",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "TALENT",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-07-27",
+  "fin": "2026-08-18",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-fairplay",
   "nombre": "Fairplay",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "CORPO",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-08-03",
+  "fin": "2026-08-05",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-leyendas",
   "nombre": "Leyendas",
-  "seccion": "PROYECTOS NO EMPEZADOS",
+  "seccion": "PROYECTOS",
   "area": "CORPO",
-  "estado": "pendiente",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "estado": "revision",
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-08-25",
+  "fin": "2026-10-15",
   "nota": null,
   "equipo": []
  },
@@ -1040,33 +1228,33 @@ let PROYECTOS = [
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "CORPO",
   "estado": "pendiente",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-nicolas-adan",
+  "inicio": "2026-07-01",
+  "fin": "2026-08-30",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-declaracion-de-renta",
   "nombre": "Declaración de renta",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "CORPO",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-08-10",
+  "fin": "2026-08-11",
   "nota": null,
   "equipo": []
  },
  {
   "id": "p-plataforma-regalos",
   "nombre": "Plataforma regalos",
-  "seccion": "PROYECTOS",
+  "seccion": "PROYECTOS COMPLETADOS",
   "area": "BIENESTAR",
   "estado": "completado",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-08-21",
+  "fin": "2026-08-21",
   "nota": null,
   "equipo": []
  },
@@ -1076,9 +1264,9 @@ let PROYECTOS = [
   "seccion": "PROYECTOS",
   "area": "CORPO",
   "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-08-25",
+  "fin": "2026-09-30",
   "nota": null,
   "equipo": []
  },
@@ -1088,7 +1276,7 @@ let PROYECTOS = [
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "MKT",
   "estado": "pendiente",
-  "entrega": null,
+  "responsable": "u-andres-cruz",
   "inicio": null,
   "fin": null,
   "nota": null,
@@ -1100,9 +1288,9 @@ let PROYECTOS = [
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "BIENESTAR",
   "estado": "pendiente",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-09-04",
+  "fin": "2026-09-25",
   "nota": null,
   "equipo": []
  },
@@ -1111,10 +1299,10 @@ let PROYECTOS = [
   "nombre": "Mes de Compliance",
   "seccion": "PROYECTOS",
   "area": "CORPO",
-  "estado": "proceso",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "estado": "revision",
+  "responsable": "u-julian-peralta",
+  "inicio": "2026-08-26",
+  "fin": "2026-09-21",
   "nota": null,
   "equipo": []
  },
@@ -1124,9 +1312,9 @@ let PROYECTOS = [
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "CORPO",
   "estado": "pendiente",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-david-rodriguez",
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
   "nota": null,
   "equipo": []
  },
@@ -1136,9 +1324,45 @@ let PROYECTOS = [
   "seccion": "PROYECTOS NO EMPEZADOS",
   "area": "CORPO",
   "estado": "pendiente",
-  "entrega": null,
-  "inicio": null,
-  "fin": null,
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-08-25",
+  "fin": "2026-09-04",
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-los-10-principios",
+  "nombre": "Los 10 Principios",
+  "seccion": "PROYECTOS NO EMPEZADOS",
+  "area": "TALENT",
+  "estado": "pendiente",
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-08-26",
+  "fin": "2026-09-04",
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-fiesta-de-fin-de-ano",
+  "nombre": "Fiesta de fin de año",
+  "seccion": "PROYECTOS",
+  "area": "BIENESTAR",
+  "estado": "proceso",
+  "responsable": "u-andres-cruz",
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "nota": null,
+  "equipo": []
+ },
+ {
+  "id": "p-osc-zona",
+  "nombre": "Osc zona",
+  "seccion": "PROYECTOS",
+  "area": "OSC ZONA",
+  "estado": "proceso",
+  "responsable": "u-valentina-huertas",
+  "inicio": "2026-08-23",
+  "fin": "2026-08-29",
   "nota": null,
   "equipo": []
  }
@@ -1152,20 +1376,21 @@ let TAREAS = [
   "proyecto": "p-newsletter",
   "area": "CORPO",
   "responsable": "u-claudia-suarez",
-  "progreso": 0.75,
-  "estado": "proceso",
+  "progreso": 1.0,
+  "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-26",
   "fin": "2026-08-26",
+  "entrega": "2026-08-26",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t2",
   "codigo": "T-002",
-  "titulo": "Globar beer responsible day",
-  "proyecto": "p-smartdriking",
+  "titulo": "Globar Beer Responsible Day (revisar propuesta agencia)",
+  "proyecto": "p-codigo-16-9",
   "area": "CORPO",
   "responsable": "u-claudia-suarez",
   "progreso": 0.0,
@@ -1174,6 +1399,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-10-02",
+  "entrega": "2026-10-02",
   "comentarios": [],
   "equipo": []
  },
@@ -1184,12 +1410,13 @@ let TAREAS = [
   "proyecto": "p-codigo-16-9",
   "area": "CORPO",
   "responsable": "u-andres-cruz",
-  "progreso": 0.8,
+  "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-05",
+  "entrega": "2026-08-05",
   "comentarios": [],
   "equipo": []
  },
@@ -1206,6 +1433,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-08-31",
+  "entrega": "2026-08-31",
   "comentarios": [],
   "equipo": []
  },
@@ -1222,6 +1450,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-01",
   "fin": "2026-09-01",
+  "entrega": "2026-09-01",
   "comentarios": [],
   "equipo": []
  },
@@ -1238,6 +1467,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1254,6 +1484,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1270,6 +1501,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1286,6 +1518,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-12",
   "fin": "2026-08-12",
+  "entrega": "2026-08-12",
   "comentarios": [],
   "equipo": []
  },
@@ -1302,6 +1535,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
+  "entrega": "2026-07-14",
   "comentarios": [],
   "equipo": []
  },
@@ -1318,6 +1552,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
+  "entrega": "2026-07-14",
   "comentarios": [],
   "equipo": []
  },
@@ -1334,6 +1569,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
+  "entrega": "2026-07-14",
   "comentarios": [],
   "equipo": []
  },
@@ -1350,6 +1586,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-14",
+  "entrega": "2026-07-14",
   "comentarios": [],
   "equipo": []
  },
@@ -1359,13 +1596,14 @@ let TAREAS = [
   "titulo": "Aviso nominados",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-isabela-oliveros",
+  "responsable": "u-isabella-oliveros",
   "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-21",
+  "entrega": "2026-07-21",
   "comentarios": [],
   "equipo": []
  },
@@ -1382,6 +1620,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-22",
+  "entrega": "2026-07-22",
   "comentarios": [],
   "equipo": []
  },
@@ -1398,6 +1637,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-17",
+  "entrega": "2026-07-17",
   "comentarios": [],
   "equipo": []
  },
@@ -1414,6 +1654,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-22",
+  "entrega": "2026-07-22",
   "comentarios": [],
   "equipo": []
  },
@@ -1430,6 +1671,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-24",
+  "entrega": "2026-07-24",
   "comentarios": [],
   "equipo": []
  },
@@ -1446,6 +1688,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-23",
+  "entrega": "2026-07-23",
   "comentarios": [],
   "equipo": []
  },
@@ -1462,6 +1705,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-24",
+  "entrega": "2026-07-24",
   "comentarios": [],
   "equipo": []
  },
@@ -1478,6 +1722,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-24",
+  "entrega": "2026-07-24",
   "comentarios": [],
   "equipo": []
  },
@@ -1494,6 +1739,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-07-30",
+  "entrega": "2026-07-30",
   "comentarios": [],
   "equipo": []
  },
@@ -1510,6 +1756,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-10",
   "fin": "2026-07-23",
+  "entrega": "2026-07-23",
   "comentarios": [],
   "equipo": []
  },
@@ -1526,6 +1773,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-07-30",
+  "entrega": "2026-07-30",
   "comentarios": [],
   "equipo": []
  },
@@ -1535,13 +1783,14 @@ let TAREAS = [
   "titulo": "Tiktok recap",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-isabela-oliveros",
+  "responsable": "u-isabella-oliveros",
   "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
+  "entrega": "2026-08-03",
   "comentarios": [],
   "equipo": []
  },
@@ -1551,13 +1800,14 @@ let TAREAS = [
   "titulo": "Tiktok qué es d&d",
   "proyecto": "p-duenos-duenas",
   "area": "TALENT",
-  "responsable": "u-isabela-oliveros",
+  "responsable": "u-isabella-oliveros",
   "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
+  "entrega": "2026-08-03",
   "comentarios": [],
   "equipo": []
  },
@@ -1574,6 +1824,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
+  "entrega": "2026-08-03",
   "comentarios": [],
   "equipo": []
  },
@@ -1590,6 +1841,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-30",
   "fin": "2026-08-03",
+  "entrega": "2026-08-03",
   "comentarios": [],
   "equipo": []
  },
@@ -1606,6 +1858,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1622,6 +1875,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1638,6 +1892,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1654,6 +1909,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1670,6 +1926,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1686,6 +1943,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-28",
   "fin": "2026-08-03",
+  "entrega": "2026-08-03",
   "comentarios": [],
   "equipo": []
  },
@@ -1695,13 +1953,14 @@ let TAREAS = [
   "titulo": "Newsletter tech fest",
   "proyecto": "p-tech-fest",
   "area": "TECH",
-  "responsable": "u-isabela-oliveros",
+  "responsable": "u-isabella-oliveros",
   "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1712,12 +1971,13 @@ let TAREAS = [
   "proyecto": "p-tech-fest",
   "area": "TECH",
   "responsable": "u-andres-cruz",
-  "progreso": 0.0,
+  "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
@@ -1728,12 +1988,13 @@ let TAREAS = [
   "proyecto": "p-tech-fest",
   "area": "TECH",
   "responsable": "u-andres-cruz",
-  "progreso": 0.0,
+  "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
@@ -1750,6 +2011,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-18",
+  "entrega": "2026-08-18",
   "comentarios": [],
   "equipo": []
  },
@@ -1766,6 +2028,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-05",
   "fin": "2026-08-05",
+  "entrega": "2026-08-05",
   "comentarios": [],
   "equipo": []
  },
@@ -1782,6 +2045,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1792,12 +2056,13 @@ let TAREAS = [
   "proyecto": "p-practicantes",
   "area": "TALENT",
   "responsable": "u-sin",
-  "progreso": 0.0,
+  "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1814,6 +2079,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1824,12 +2090,13 @@ let TAREAS = [
   "proyecto": "p-practicantes",
   "area": "TALENT",
   "responsable": "u-nicolas-adan",
-  "progreso": 0.0,
+  "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1846,6 +2113,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1862,6 +2130,7 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
@@ -1878,6 +2147,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-21",
   "fin": "2026-08-24",
+  "entrega": "2026-08-24",
   "comentarios": [],
   "equipo": []
  },
@@ -1894,12 +2164,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t48",
-  "codigo": "T-049",
+  "codigo": "T-048",
   "titulo": "Reel tendencia",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -1910,12 +2181,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t49",
-  "codigo": "T-050",
+  "codigo": "T-049",
   "titulo": "Cuenta regresiva 1",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -1926,12 +2198,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t50",
-  "codigo": "T-051",
+  "codigo": "T-050",
   "titulo": "Reel tendencia",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -1942,12 +2215,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t51",
-  "codigo": "T-052",
+  "codigo": "T-051",
   "titulo": "Cuenta regresiva 2",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -1958,12 +2232,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t52",
-  "codigo": "T-053",
+  "codigo": "T-052",
   "titulo": "Último aviso",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -1974,12 +2249,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t53",
-  "codigo": "T-055",
+  "codigo": "T-053",
   "titulo": "Producción hero",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -1990,12 +2266,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-14",
+  "entrega": "2026-08-14",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t54",
-  "codigo": "T-056",
+  "codigo": "T-054",
   "titulo": "Edición hero",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -2006,12 +2283,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-14",
+  "entrega": "2026-08-14",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t55",
-  "codigo": "T-057",
+  "codigo": "T-055",
   "titulo": "Entrega hero",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -2022,12 +2300,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-14",
+  "entrega": "2026-08-14",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t56",
-  "codigo": "T-058",
+  "codigo": "T-056",
   "titulo": "Comunicado oficial",
   "proyecto": "p-practicantes",
   "area": "TALENT",
@@ -2038,28 +2317,30 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t57",
-  "codigo": "T-059",
+  "codigo": "T-057",
   "titulo": "Cuadros samira",
   "proyecto": "p-cuadros",
   "area": "CORPO",
   "responsable": "u-julian-peralta",
   "progreso": 0.75,
-  "estado": "proceso",
+  "estado": "revision",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-26",
   "fin": "2026-08-26",
+  "entrega": "2026-08-26",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t58",
-  "codigo": "T-060",
+  "codigo": "T-058",
   "titulo": "Cuadros seguridad",
   "proyecto": "p-cuadros",
   "area": "CORPO",
@@ -2070,12 +2351,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-08-25",
+  "entrega": "2026-08-25",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t59",
-  "codigo": "T-061",
+  "codigo": "T-059",
   "titulo": "Cheers to bars",
   "proyecto": "p-cheers-to-bars",
   "area": "CORPO",
@@ -2086,28 +2368,30 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t60",
-  "codigo": "T-062",
+  "codigo": "T-060",
   "titulo": "Video tech",
   "proyecto": "p-ppt-talent",
   "area": "TALENT",
   "responsable": "u-nicolas-adan",
-  "progreso": 0.0,
+  "progreso": 1.0,
   "estado": "completado",
   "prioridad": "media",
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t61",
-  "codigo": "T-063",
+  "codigo": "T-061",
   "titulo": "Calendario vacantes",
   "proyecto": "p-ppt-talent",
   "area": "TALENT",
@@ -2118,12 +2402,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t62",
-  "codigo": "T-064",
+  "codigo": "T-062",
   "titulo": "Animación legal bees",
   "proyecto": "p-legal",
   "area": "LEGAL",
@@ -2134,12 +2419,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t63",
-  "codigo": "T-065",
+  "codigo": "T-063",
   "titulo": "Invitación focus group",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2150,12 +2436,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-27",
   "fin": "2026-07-27",
+  "entrega": "2026-07-27",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t64",
-  "codigo": "T-066",
+  "codigo": "T-064",
   "titulo": "Cs- pieza expectativa",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2166,12 +2453,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-28",
   "fin": "2026-07-28",
+  "entrega": "2026-07-28",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t65",
-  "codigo": "T-067",
+  "codigo": "T-065",
   "titulo": "Cs- formato to go",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2182,12 +2470,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-06",
   "fin": "2026-08-06",
+  "entrega": "2026-08-06",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t66",
-  "codigo": "T-068",
+  "codigo": "T-066",
   "titulo": "Cs- lanzamiento",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2198,12 +2487,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-18",
   "fin": "2026-08-18",
+  "entrega": "2026-08-18",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t67",
-  "codigo": "T-069",
+  "codigo": "T-067",
   "titulo": "Cf- expectativa",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2214,12 +2504,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-04",
   "fin": "2026-08-14",
+  "entrega": "2026-08-14",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t68",
-  "codigo": "T-070",
+  "codigo": "T-068",
   "titulo": "Cf- beneficios",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2230,12 +2521,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-31",
   "fin": "2026-08-14",
+  "entrega": "2026-08-14",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t69",
-  "codigo": "T-071",
+  "codigo": "T-069",
   "titulo": "Cf- lanzamiento",
   "proyecto": "p-change-management",
   "area": "TALENT",
@@ -2246,12 +2538,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-18",
   "fin": "2026-08-18",
+  "entrega": "2026-08-18",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t70",
-  "codigo": "T-072",
+  "codigo": "T-070",
   "titulo": "Pieza pantallas",
   "proyecto": "p-fairplay",
   "area": "CORPO",
@@ -2262,28 +2555,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-03",
   "fin": "2026-08-05",
+  "entrega": "2026-08-05",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t71",
-  "codigo": "T-073",
-  "titulo": "Toolkit evento",
-  "proyecto": "p-leyendas",
-  "area": "CORPO",
-  "responsable": "u-andres-cruz",
-  "progreso": 1.0,
-  "estado": "completado",
-  "prioridad": "media",
-  "notas": null,
-  "inicio": null,
-  "fin": null,
-  "comentarios": [],
-  "equipo": []
- },
- {
-  "id": "t72",
-  "codigo": "T-074",
+  "codigo": "T-071",
   "titulo": "Video manifiesto",
   "proyecto": "p-leyendas",
   "area": "CORPO",
@@ -2294,12 +2572,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-10-02",
+  "entrega": "2026-10-02",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t73",
-  "codigo": "T-075",
+  "id": "t72",
+  "codigo": "T-072",
   "titulo": "Save the date",
   "proyecto": "p-leyendas",
   "area": "CORPO",
@@ -2310,12 +2589,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-08-28",
+  "entrega": "2026-08-28",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t74",
-  "codigo": "T-079",
+  "id": "t73",
+  "codigo": "T-073",
   "titulo": "Fotos leyendas",
   "proyecto": "p-leyendas",
   "area": "CORPO",
@@ -2326,12 +2606,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-10-02",
+  "entrega": "2026-10-02",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t75",
-  "codigo": "T-080",
+  "id": "t74",
+  "codigo": "T-074",
   "titulo": "Videos familiares",
   "proyecto": "p-leyendas",
   "area": "CORPO",
@@ -2342,12 +2623,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-31",
   "fin": "2026-10-02",
+  "entrega": "2026-10-02",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t76",
-  "codigo": "T-081",
+  "id": "t75",
+  "codigo": "T-075",
   "titulo": "Cubrimiento",
   "proyecto": "p-leyendas",
   "area": "CORPO",
@@ -2358,12 +2640,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-10-15",
   "fin": "2026-10-15",
+  "entrega": "2026-10-15",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t77",
-  "codigo": "T-082",
+  "id": "t76",
+  "codigo": "T-076",
   "titulo": "Diseño álbum",
   "proyecto": "p-album",
   "area": "CORPO",
@@ -2374,12 +2657,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-07-01",
   "fin": "2026-08-01",
+  "entrega": "2026-08-01",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t78",
-  "codigo": "T-083",
+  "id": "t77",
+  "codigo": "T-077",
   "titulo": "Actividades monas",
   "proyecto": "p-album",
   "area": "CORPO",
@@ -2390,12 +2674,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-15",
   "fin": "2026-08-30",
+  "entrega": "2026-08-30",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t79",
-  "codigo": "T-084",
+  "id": "t78",
+  "codigo": "T-078",
   "titulo": "Declaración de renta",
   "proyecto": "p-declaracion-de-renta",
   "area": "CORPO",
@@ -2406,12 +2691,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-10",
   "fin": "2026-08-11",
+  "entrega": "2026-08-11",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t80",
-  "codigo": "T-085",
+  "id": "t79",
+  "codigo": "T-079",
   "titulo": "Imagen navidad portada 1",
   "proyecto": "p-plataforma-regalos",
   "area": "BIENESTAR",
@@ -2422,12 +2708,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-21",
   "fin": "2026-08-21",
+  "entrega": "2026-08-21",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t81",
-  "codigo": "T-086",
+  "id": "t80",
+  "codigo": "T-080",
   "titulo": "Imagen navidad portada 2",
   "proyecto": "p-plataforma-regalos",
   "area": "BIENESTAR",
@@ -2438,12 +2725,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-21",
   "fin": "2026-08-21",
+  "entrega": "2026-08-21",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t82",
-  "codigo": "T-087",
+  "id": "t81",
+  "codigo": "T-081",
   "titulo": "Imagen donación",
   "proyecto": "p-plataforma-regalos",
   "area": "BIENESTAR",
@@ -2454,12 +2742,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-21",
   "fin": "2026-08-21",
+  "entrega": "2026-08-21",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t83",
-  "codigo": "T-088",
+  "id": "t82",
+  "codigo": "T-082",
   "titulo": "Cápsulas pantallas",
   "proyecto": "p-esonova",
   "area": "CORPO",
@@ -2470,12 +2759,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-09-30",
+  "entrega": "2026-09-30",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t84",
-  "codigo": "T-089",
+  "id": "t83",
+  "codigo": "T-083",
   "titulo": "Hackeo de espacios",
   "proyecto": "p-esonova",
   "area": "CORPO",
@@ -2486,12 +2776,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-08-28",
+  "entrega": "2026-08-28",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t85",
-  "codigo": "T-090",
+  "id": "t84",
+  "codigo": "T-084",
   "titulo": "Grabación contenido",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
@@ -2502,12 +2793,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t86",
-  "codigo": "T-091",
+  "id": "t85",
+  "codigo": "T-085",
   "titulo": "Sistema de dispensado",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
@@ -2518,12 +2810,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t87",
-  "codigo": "T-092",
+  "id": "t86",
+  "codigo": "T-086",
   "titulo": "Estilos de cerveza",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
@@ -2534,12 +2827,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t88",
-  "codigo": "T-093",
+  "id": "t87",
+  "codigo": "T-087",
   "titulo": "Cristalería",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
@@ -2550,12 +2844,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t89",
-  "codigo": "T-094",
+  "id": "t88",
+  "codigo": "T-088",
   "titulo": "Conservación y servicio de la cerveza",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
@@ -2566,12 +2861,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t90",
-  "codigo": "T-095",
+  "id": "t89",
+  "codigo": "T-089",
   "titulo": "Maridaje",
   "proyecto": "p-capsulas-cerveceras",
   "area": "MKT",
@@ -2582,12 +2878,13 @@ let TAREAS = [
   "notas": null,
   "inicio": null,
   "fin": null,
+  "entrega": null,
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t91",
-  "codigo": "T-096",
+  "id": "t90",
+  "codigo": "T-090",
   "titulo": "Capitulo 8",
   "proyecto": "p-malto-y-malta",
   "area": "CDI",
@@ -2598,12 +2895,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-09-15",
+  "entrega": "2026-09-15",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t92",
-  "codigo": "T-097",
+  "id": "t91",
+  "codigo": "T-091",
   "titulo": "Capitulo 9",
   "proyecto": "p-malto-y-malta",
   "area": "CDI",
@@ -2614,12 +2912,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-09-15",
+  "entrega": "2026-09-15",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t93",
-  "codigo": "T-098",
+  "id": "t92",
+  "codigo": "T-092",
   "titulo": "Capitulo 10",
   "proyecto": "p-malto-y-malta",
   "area": "CDI",
@@ -2630,12 +2929,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-09-15",
+  "entrega": "2026-09-15",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t94",
-  "codigo": "T-094",
+  "id": "t93",
+  "codigo": "T-093",
   "titulo": "Save the date",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2646,12 +2946,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-11",
   "fin": "2026-09-11",
+  "entrega": "2026-09-11",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t95",
-  "codigo": "T-095",
+  "id": "t94",
+  "codigo": "T-094",
   "titulo": "Kv",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2662,6 +2963,7 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-04",
   "fin": "2026-09-04",
+  "entrega": "2026-09-04",
   "comentarios": [
    {
     "por": "u-andres-cruz",
@@ -2672,8 +2974,8 @@ let TAREAS = [
   "equipo": []
  },
  {
-  "id": "t96",
-  "codigo": "T-096",
+  "id": "t95",
+  "codigo": "T-095",
   "titulo": "Pieza general cronograma",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2684,12 +2986,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-21",
   "fin": "2026-09-21",
+  "entrega": "2026-09-21",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t97",
-  "codigo": "T-097",
+  "id": "t96",
+  "codigo": "T-096",
   "titulo": "Pieza día 1",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2700,12 +3003,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-22",
   "fin": "2026-09-22",
+  "entrega": "2026-09-22",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t98",
-  "codigo": "T-098",
+  "id": "t97",
+  "codigo": "T-097",
   "titulo": "Pieza día 2",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2716,12 +3020,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-23",
   "fin": "2026-09-23",
+  "entrega": "2026-09-23",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t99",
-  "codigo": "T-099",
+  "id": "t98",
+  "codigo": "T-098",
   "titulo": "Pieza día 3",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2732,12 +3037,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-24",
   "fin": "2026-09-24",
+  "entrega": "2026-09-24",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t100",
-  "codigo": "T-100",
+  "id": "t99",
+  "codigo": "T-099",
   "titulo": "Pieza día 4",
   "proyecto": "p-semana-de-la-salud-y-bienestar",
   "area": "BIENESTAR",
@@ -2748,28 +3054,30 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-25",
   "fin": "2026-09-25",
+  "entrega": "2026-09-25",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t100",
+  "codigo": "T-100",
+  "titulo": "Save the date",
+  "proyecto": "p-mes-de-compliance",
+  "area": "CORPO",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "revision",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
   "comentarios": [],
   "equipo": []
  },
  {
   "id": "t101",
   "codigo": "T-101",
-  "titulo": "Save the date",
-  "proyecto": "p-mes-de-compliance",
-  "area": "CORPO",
-  "responsable": "u-julian-peralta",
-  "progreso": 0.0,
-  "estado": "proceso",
-  "prioridad": "media",
-  "notas": null,
-  "inicio": "2026-08-26",
-  "fin": "2026-08-26",
-  "comentarios": [],
-  "equipo": []
- },
- {
-  "id": "t102",
-  "codigo": "T-102",
   "titulo": "Capsula Inicio",
   "proyecto": "p-mes-de-compliance",
   "area": "CORPO",
@@ -2780,12 +3088,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-01",
   "fin": "2026-09-01",
+  "entrega": "2026-09-01",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t103",
-  "codigo": "T-103",
+  "id": "t102",
+  "codigo": "T-102",
   "titulo": "Pieza Push 1",
   "proyecto": "p-mes-de-compliance",
   "area": "CORPO",
@@ -2796,12 +3105,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-04",
   "fin": "2026-09-04",
+  "entrega": "2026-09-04",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t104",
-  "codigo": "T-104",
+  "id": "t103",
+  "codigo": "T-103",
   "titulo": "Pieza Push 2",
   "proyecto": "p-mes-de-compliance",
   "area": "CORPO",
@@ -2812,12 +3122,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-11",
   "fin": "2026-09-11",
+  "entrega": "2026-09-11",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t105",
-  "codigo": "T-105",
+  "id": "t104",
+  "codigo": "T-104",
   "titulo": "Pieza push 3",
   "proyecto": "p-mes-de-compliance",
   "area": "CORPO",
@@ -2828,12 +3139,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-18",
   "fin": "2026-09-18",
+  "entrega": "2026-09-18",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t106",
-  "codigo": "T-106",
+  "id": "t105",
+  "codigo": "T-105",
   "titulo": "Cápsula Mitad",
   "proyecto": "p-mes-de-compliance",
   "area": "CORPO",
@@ -2844,12 +3156,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-11",
   "fin": "2026-09-11",
+  "entrega": "2026-09-11",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t107",
-  "codigo": "T-107",
+  "id": "t106",
+  "codigo": "T-106",
   "titulo": "Cápsula final",
   "proyecto": "p-mes-de-compliance",
   "area": "CORPO",
@@ -2860,44 +3173,13 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-09-21",
   "fin": "2026-09-21",
+  "entrega": "2026-09-21",
   "comentarios": [],
   "equipo": []
  },
  {
-  "id": "t108",
-  "codigo": "T-108",
-  "titulo": "Amor y amistad",
-  "proyecto": null,
-  "area": "GENERAL",
-  "responsable": "u-andres-cruz",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "prioridad": "media",
-  "notas": null,
-  "inicio": "2026-09-18",
-  "fin": "2026-09-18",
-  "comentarios": [],
-  "equipo": []
- },
- {
-  "id": "t109",
-  "codigo": "T-109",
-  "titulo": "Halloween",
-  "proyecto": null,
-  "area": "GENERAL",
-  "responsable": "u-andres-cruz",
-  "progreso": 0.0,
-  "estado": "pendiente",
-  "prioridad": "media",
-  "notas": null,
-  "inicio": "2026-10-31",
-  "fin": "2026-10-31",
-  "comentarios": [],
-  "equipo": []
- },
- {
-  "id": "t110",
-  "codigo": "T-110",
+  "id": "t107",
+  "codigo": "T-107",
   "titulo": "Bajada concepto",
   "proyecto": "p-fin-de-ano",
   "area": "CORPO",
@@ -2908,12 +3190,18 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-26",
   "fin": "2026-08-26",
+  "entrega": "2026-08-26",
   "comentarios": [],
-  "equipo": []
+  "equipo": [
+   {
+    "persona": "u-nicolas-adan",
+    "rol": "Apoya"
+   }
+  ]
  },
  {
-  "id": "t111",
-  "codigo": "T-111",
+  "id": "t108",
+  "codigo": "T-108",
   "titulo": "Instalación  127",
   "proyecto": "p-pantallas-tekus",
   "area": "CORPO",
@@ -2924,6 +3212,486 @@ let TAREAS = [
   "notas": null,
   "inicio": "2026-08-25",
   "fin": "2026-09-04",
+  "entrega": "2026-09-04",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t109",
+  "codigo": "T-109",
+  "titulo": "Animaciones Pantallas",
+  "proyecto": "p-leyendas",
+  "area": "CORPO",
+  "responsable": "u-valeria",
+  "progreso": 0.0,
+  "estado": "revision",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-10-09",
+  "entrega": "2026-10-09",
+  "comentarios": [],
+  "equipo": [
+   {
+    "persona": "u-julian-peralta",
+    "rol": "Apoya"
+   }
+  ]
+ },
+ {
+  "id": "t110",
+  "codigo": "T-110",
+  "titulo": "Capitulo 2",
+  "proyecto": "p-los-10-principios",
+  "area": "TALENT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-09-04",
+  "entrega": "2026-09-04",
+  "comentarios": [],
+  "equipo": [
+   {
+    "persona": "u-nicolas-adan",
+    "rol": "Apoya"
+   }
+  ]
+ },
+ {
+  "id": "t111",
+  "codigo": "T-111",
+  "titulo": "Grabación Tocancipá",
+  "proyecto": "p-los-10-principios",
+  "area": "TALENT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-31",
+  "fin": "2026-08-31",
+  "entrega": "2026-08-31",
+  "comentarios": [],
+  "equipo": [
+   {
+    "persona": "u-nicolas-adan",
+    "rol": "Apoya"
+   }
+  ]
+ },
+ {
+  "id": "t112",
+  "codigo": "T-112",
+  "titulo": "Grabación127",
+  "proyecto": "p-los-10-principios",
+  "area": "TALENT",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-27",
+  "fin": "2026-08-27",
+  "entrega": "2026-08-27",
+  "comentarios": [],
+  "equipo": [
+   {
+    "persona": "u-nicolas-adan",
+    "rol": "Apoya"
+   }
+  ]
+ },
+ {
+  "id": "t113",
+  "codigo": "T-113",
+  "titulo": "Bajada de la estrategia",
+  "proyecto": "p-fiesta-de-fin-de-ano",
+  "area": "BIENESTAR",
+  "responsable": "u-andres-cruz",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t114",
+  "codigo": "T-114",
+  "titulo": "Letreros de Seguridad",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-09-01",
+  "fin": "2026-09-01",
+  "entrega": "2026-09-01",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t115",
+  "codigo": "T-115",
+  "titulo": "Animación el Orgullo de ser Extraordinario",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valeria",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t116",
+  "codigo": "T-116",
+  "titulo": "Táctico Amor y Amistad Legal",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-david-rodriguez",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t117",
+  "codigo": "T-117",
+  "titulo": "Completar Annual Report Global",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-claudia-suarez",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t118",
+  "codigo": "T-118",
+  "titulo": "Revisar los hallazgos de Genome KPI",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-claudia-suarez",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t119",
+  "codigo": "T-119",
+  "titulo": "Escribir nuevos textos de la web + fotos",
+  "proyecto": "p-newsletter",
+  "area": "CORPO",
+  "responsable": "u-claudia-suarez",
+  "progreso": 0.25,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-09-04",
+  "entrega": "2026-09-04",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t120",
+  "codigo": "T-120",
+  "titulo": "Gmts osc zona",
+  "proyecto": "p-osc-zona",
+  "area": "OSC ZONA",
+  "responsable": "u-isabella-oliveros",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-24",
+  "fin": "2026-08-27",
+  "entrega": "2026-08-27",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t121",
+  "codigo": "T-121",
+  "titulo": "F",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-isabella-oliveros",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-23",
+  "entrega": "2026-08-23",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t122",
+  "codigo": "T-122",
+  "titulo": "Un min gerente de logística",
+  "proyecto": "p-osc-zona",
+  "area": "OSC ZONA",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-29",
+  "entrega": "2026-08-29",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t123",
+  "codigo": "T-123",
+  "titulo": "Video datos atlántico",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-27",
+  "entrega": "2026-08-27",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t124",
+  "codigo": "T-124",
+  "titulo": "Visual serie directores",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t125",
+  "codigo": "T-125",
+  "titulo": "Cotización pantallas cds",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t126",
+  "codigo": "T-126",
+  "titulo": "Brandeo pared transporte tocancipá",
+  "proyecto": "p-osc-zona",
+  "area": "OSC ZONA",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t127",
+  "codigo": "T-127",
+  "titulo": "Reconocimiento juan carlos",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t128",
+  "codigo": "T-128",
+  "titulo": "Cartelera transporte tev",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t129",
+  "codigo": "T-129",
+  "titulo": "Plantillas plantas (cumpleaños, aniversarios)",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valentina-huertas",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-09-04",
+  "entrega": "2026-09-04",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t130",
+  "codigo": "T-130",
+  "titulo": "Encuesta Indicadores_MERCO Empresas",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-claudia-suarez",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-09-09",
+  "entrega": "2026-09-09",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t131",
+  "codigo": "T-131",
+  "titulo": "Comunicado Fairplay",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-julian-peralta",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-31",
+  "fin": "2026-09-04",
+  "entrega": "2026-09-04",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t132",
+  "codigo": "T-132",
+  "titulo": "Video GMT",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valeria",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-23",
+  "fin": "2026-08-23",
+  "entrega": "2026-08-23",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t133",
+  "codigo": "T-133",
+  "titulo": "Video BEES ACADEMY",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valeria",
+  "progreso": 0.0,
+  "estado": "pendiente",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-10",
+  "fin": "2026-08-28",
+  "entrega": "2026-08-28",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t134",
+  "codigo": "T-134",
+  "titulo": "Cortinilla lau luque",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valeria",
+  "progreso": 1.0,
+  "estado": "completado",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-24",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
+  "comentarios": [],
+  "equipo": []
+ },
+ {
+  "id": "t135",
+  "codigo": "T-135",
+  "titulo": "Animacion pantallas",
+  "proyecto": null,
+  "area": "GENERAL",
+  "responsable": "u-valeria",
+  "progreso": 0.0,
+  "estado": "proceso",
+  "prioridad": "media",
+  "notas": null,
+  "inicio": "2026-08-26",
+  "fin": "2026-08-26",
+  "entrega": "2026-08-26",
   "comentarios": [],
   "equipo": []
  }
@@ -2959,15 +3727,31 @@ const SUELTAS = 'sin-proyecto';
 const nombreProy = id => { const p = PR(id); return p ? p.nombre : 'Suelta'; };
 const T  = id => TAREAS.find(t => t.id === id);
 
-const HOY = '2026-08-23';
+/* La fecha de hoy se lee del reloj del equipo, no de cuándo se armó
+   el tablero. Antes estaba fija y por eso "vencidas" y el "hoy" del
+   calendario se quedaban congelados en agosto. */
+const hoyISO = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+let HOY = hoyISO();
+
+/* Si alguien deja la pestaña abierta toda la noche, a la mañana
+   siguiente el tablero se pone al día solo. */
+setInterval(() => {
+  const ahora = hoyISO();
+  if (ahora !== HOY){ HOY = ahora; renderAll(); }
+}, 60000);
 let uid = 1000;
 
 /* Prioridad: no venía en el Excel, así que toda tarea entra en 'media'.
    El equipo la sube o baja desde el panel de detalle. */
+/* Tres niveles y no más: con cinco nadie distingue el 3 del 4.
+   `marca` da la forma, para que se lea sin depender del color. */
 const PRIORIDADES = [
-  { id:'alta',  nombre:'Alta',  color:'var(--alerta)', peso:0 },
-  { id:'media', nombre:'Media', color:'var(--texto-2)', peso:1 },
-  { id:'baja',  nombre:'Baja',  color:'var(--texto-3)', peso:2 }
+  { id:'alta',  nombre:'Alta',  corto:'Alta',  color:'var(--alerta)',      relleno:'var(--g-alerta)',   marca:'▲', peso:0 },
+  { id:'media', nombre:'Media', corto:'Media', color:'var(--est-proceso)', relleno:'var(--g-proceso)',  marca:'■', peso:1 },
+  { id:'baja',  nombre:'Baja',  corto:'Baja',  color:'var(--texto-3)',     relleno:'var(--texto-3)',    marca:'▼', peso:2 }
 ];
 const PRI = id => PRIORIDADES.find(x => x.id === id) || PRIORIDADES[1];
 
@@ -2987,9 +3771,10 @@ const esSistema = id => id === 'u-sin';
    guarda; la etiqueta es lo que se lee. Así se puede cambiar el texto
    sin migrar datos. */
 const GRUPOS = [
-  { id:'ALWAYS ON',              nombre:'Always on' },
-  { id:'PROYECTOS',              nombre:'En curso' },
-  { id:'PROYECTOS NO EMPEZADOS', nombre:'No empezados' }
+  { id:'PROYECTOS',              nombre:'En curso',     color:'var(--g-proceso)' },
+  { id:'ALWAYS ON',              nombre:'Always on',    color:'var(--g-pendiente)' },
+  { id:'PROYECTOS NO EMPEZADOS', nombre:'No empezados', color:'var(--texto-3)' },
+  { id:'PROYECTOS COMPLETADOS',  nombre:'Finalizados',  color:'var(--g-completado)' }
 ];
 const nombreGrupo = id => (GRUPOS.find(g => g.id === id) || { nombre:id }).nombre;
 
@@ -3122,11 +3907,25 @@ function coherencia(){
     const hijas = TAREAS.filter(t => t.proyecto === p.id);
     const arrancado = hijas.some(t => t.estado !== 'pendiente');
 
-    // "No empezados" deja de serlo en cuanto arranca, sea porque
-    // alguien cambió su estado o porque una de sus tareas avanzó
-    if (p.seccion === 'PROYECTOS NO EMPEZADOS' && (p.estado !== 'pendiente' || arrancado)){
+    const cerrado = hijas.length > 0 && hijas.every(t => t.estado === 'completado');
+
+    // Terminado se va a Finalizados: no tiene sentido buscarlo entre
+    // lo que está en curso
+    if (cerrado && p.seccion !== 'PROYECTOS COMPLETADOS'){
+      p.seccion = 'PROYECTOS COMPLETADOS';
+      p.estado = 'completado';
+      arreglos.push(p.nombre + ': finalizado');
+    }
+    // Y si le abren una tarea nueva, vuelve a estar en curso
+    if (!cerrado && p.seccion === 'PROYECTOS COMPLETADOS' && hijas.length){
       p.seccion = 'PROYECTOS';
-      arreglos.push(p.nombre + ': pasó a En curso');
+      if (p.estado === 'completado') p.estado = 'proceso';
+      arreglos.push(p.nombre + ': volvió a En curso');
+    }
+    // "No empezados" deja de serlo en cuanto arranca
+    if (p.seccion === 'PROYECTOS NO EMPEZADOS' && (p.estado !== 'pendiente' || arrancado)){
+      p.seccion = cerrado ? 'PROYECTOS COMPLETADOS' : 'PROYECTOS';
+      arreglos.push(p.nombre + ': pasó a ' + nombreGrupo(p.seccion));
     }
     // Al revés: marcarlo pendiente sin nada arrancado lo devuelve
     if (p.estado === 'pendiente' && !arrancado && p.seccion === 'PROYECTOS' && !hijas.length){
@@ -3163,6 +3962,9 @@ function normalizar(){
   AREAS.sort();
 
   HITOS.forEach(h => { if (!h.tipo) h.tipo = 'hito'; });
+  PROYECTOS.forEach(p => {
+    if (!p.responsable || !PERSONAS.some(x => x.id === p.responsable)) p.responsable = 'u-sin';
+  });
 
   // Un colaborador que ya no está en el equipo se retira solo
   const vivos = new Set(PERSONAS.map(x => x.id));
@@ -3178,25 +3980,38 @@ function normalizar(){
 
   TAREAS.forEach(t => {
     if (!t.prioridad) t.prioridad = 'media';
+    // La entrega es la fecha que importa. Si no la pusieron, se hereda
+    // del fin de la tarea, que es lo que se venía usando.
+    if (t.entrega === undefined) t.entrega = t.fin || null;
     if (!Array.isArray(t.comentarios)) t.comentarios = [];
     if (t.progreso == null) t.progreso = 0;
   });
 }
 
+/* Cuatro destinos. Antes eran siete y tres decían casi lo mismo:
+   Resumen, Mi trabajo y Tablero son tres formas de mirar lo mismo,
+   así que viven dentro de Dashboard. Cronograma y Calendario son dos
+   formas de mirar el tiempo, así que viven dentro de Organigrama. */
 const VISTAS = [
-  { id:'gantt',      label:'Cronograma', icon:'M3 5h9M3 10h13M3 15h6' },
-  { id:'tablero',    label:'Tablero',    icon:'M3 3h5v14H3zM10 3h5v9h-5z' },
-  { id:'calendario', label:'Calendario', icon:'M3.5 5h13v11.5h-13zM3.5 8.6h13M7 3.2v3.2M13 3.2v3.2' },
-  { id:'mias',       label:'Mi trabajo', icon:'M10 10a3.2 3.2 0 100-6.4A3.2 3.2 0 0010 10zM3.5 17c.6-3 3.2-4.6 6.5-4.6s5.9 1.6 6.5 4.6' },
-  { id:'proyectos',  label:'Proyectos',  icon:'M4 3h8l4 4v10H4zM12 3v4h4M6.5 11h7M6.5 14h4' },
-  { id:'equipo',     label:'Equipo',     icon:'M7 9.5a2.6 2.6 0 100-5.2 2.6 2.6 0 000 5.2zM14 9.5a2.2 2.2 0 100-4.4 2.2 2.2 0 000 4.4zM2 16c.5-2.6 2.6-4 5-4s4.5 1.4 5 4M13 12.2c2 .3 3.4 1.6 3.8 3.8' }
+  { id:'dashboard',   label:'Dashboard',   icon:'M3.5 3.5h5.5v5.5H3.5zM11 3.5h5.5v5.5H11zM3.5 11h5.5v5.5H3.5zM11 11h5.5v5.5H11z' },
+  { id:'organigrama', label:'Organigrama', icon:'M3 5h9M3 10h13M3 15h6' },
+  { id:'proyectos',   label:'Proyectos',   icon:'M4 3h8l4 4v10H4zM12 3v4h4M6.5 11h7M6.5 14h4' },
+  { id:'equipo',      label:'Equipo',      icon:'M7 9.5a2.6 2.6 0 100-5.2 2.6 2.6 0 000 5.2zM14 9.5a2.2 2.2 0 100-4.4 2.2 2.2 0 000 4.4zM2 16c.5-2.6 2.6-4 5-4s4.5 1.4 5 4M13 12.2c2 .3 3.4 1.6 3.8 3.8' }
 ];
 
+/* Cada pestaña con pestañas dentro: el segundo nivel se elige arriba
+   del contenido, no en el menú lateral. */
+const SUBVISTAS = {
+  dashboard:   [['resumen','Resumen'], ['mias','Mi trabajo'], ['tablero','Tablero']],
+  organigrama: [['gantt','Cronograma'], ['calendario','Calendario']]
+};
+const sub = () => state.sub[state.vista] || (SUBVISTAS[state.vista] || [[null]])[0][0];
+
 const state = {
-  vista:'gantt', persona:null, area:null, proyecto:null, query:'',
+  vista:'dashboard', sub:{ dashboard:'resumen', organigrama:'gantt' }, persona:null, area:null, proyecto:null, query:'',
   seleccion:null, mes:new Date(2026, 7, 1),
   agrupar:'proyecto', zoom:9, abiertos:new Set(), tipoEvento:'hito',
-  filtroEstado:null, atajo:null,
+  filtroEstado:null, filtroPrioridad:null, atajo:null, vistaPrevia:null, railAbierto:true,
   yo:null                      // quién está usando ESTE navegador
 };
 
@@ -3220,6 +4035,11 @@ const soyInvitado = () => !state.yo;
 /* ═══ Utilidades ═══ */
 
 const $ = s => document.querySelector(s);
+/* En español media búsqueda falla por una tilde. Se comparan las
+   dos cadenas sin acentos y en minúscula. */
+const sinTildes = txt => String(txt || '')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -3230,7 +4050,9 @@ const dt = iso => new Date(iso + 'T00:00:00');
 const toISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const fecha = iso => iso ? `${String(dt(iso).getDate()).padStart(2,'0')} ${MESES[dt(iso).getMonth()]}` : '—';
 const diasRestantes = iso => Math.round((dt(iso) - dt(HOY)) / 864e5);
-const vencida = t => t.estado !== 'completado' && t.fin && diasRestantes(t.fin) < 0;
+/* Vence por su fecha de entrega; si no tiene, por su fin. */
+const fechaClave = t => t.entrega || t.fin || null;
+const vencida = t => t.estado !== 'completado' && fechaClave(t) && diasRestantes(fechaClave(t)) < 0;
 const pct = n => Math.round((n || 0) * 100);
 
 function tareasDe(id, campo){ return TAREAS.filter(t => t[campo] === id); }
@@ -3238,7 +4060,7 @@ function rango(ts){
   const f = ts.flatMap(t => [t.inicio, t.fin]).filter(Boolean).sort();
   return f.length ? { inicio:f[0], fin:f[f.length-1] } : null;
 }
-function avance(ts){
+function avance_(ts){
   if (!ts.length) return 0;
   return ts.reduce((s,t) => s + (t.progreso || 0), 0) / ts.length;
 }
@@ -3318,17 +4140,21 @@ function toast(texto, color = 'var(--est-completado)', conDeshacer = false){
 
 function visibles(){
   return TAREAS.filter(t => {
-    if (state.vista === 'mias' && state.yo && !participa(t, state.yo)) return false;
+    if (sub() === 'mias' && state.yo && !participa(t, state.yo)) return false;
     if (state.persona  && t.responsable !== state.persona) return false;
     if (state.area     && t.area !== state.area) return false;
     if (state.proyecto && t.proyecto !== state.proyecto) return false;
     if (state.filtroEstado && t.estado !== state.filtroEstado) return false;
+    if (state.filtroPrioridad && t.prioridad !== state.filtroPrioridad) return false;
     if (state.atajo === 'vencidas'  && !vencida(t)) return false;
     if (state.atajo === 'sinduenio' && !(t.responsable === 'u-sin' && t.estado !== 'completado')) return false;
     if (state.query){
       const p = PR(t.proyecto);
-      const hay = [t.titulo, t.codigo, t.area, p && p.nombre, P(t.responsable).nombre].join(' ').toLowerCase();
-      if (!hay.includes(state.query)) return false;
+      const hay = sinTildes([t.titulo, t.codigo, t.area, p && p.nombre,
+        P(t.responsable).nombre, t.notas,
+        ...colaboradores(t).map(c => P(c.persona).nombre)].join(' '));
+      // Cada palabra debe aparecer: "andres cap" encuentra las de Andrés que digan cap
+      if (!state.query.split(/\s+/).every(w => hay.includes(w))) return false;
     }
     return true;
   });
@@ -3336,30 +4162,55 @@ function visibles(){
 
 /* ═══ Barra lateral ═══ */
 
+/* Cuatro destinos no necesitan agruparse: los títulos de sección
+   añadían tres líneas de ruido para separar de a uno o dos ítems. */
+
+/* Contadores que informan, no que decoran: solo aparecen si hay algo
+   que atender. */
+function contadorNav(id){
+  const act = TAREAS.filter(t => t.estado !== 'completado');
+  if (id === 'dashboard'){
+    const v = act.filter(t => vencida(t)).length;
+    if (v) return { n:v, alerta:true };
+    const n = state.yo ? act.filter(t => participa(t, state.yo)).length : 0;
+    return n ? { n, alerta:false } : null;
+  }
+  if (id === 'organigrama'){
+    const n = act.filter(t => fechaClave(t) === HOY).length;
+    return n ? { n, alerta:false } : null;
+  }
+  if (id === 'proyectos'){
+    const n = PROYECTOS.filter(p => p.seccion === 'PROYECTOS' || p.seccion === 'ALWAYS ON').length;
+    return n ? { n, alerta:false } : null;
+  }
+  if (id === 'equipo'){
+    const n = act.filter(t => t.responsable === 'u-sin').length;
+    return n ? { n, alerta:false } : null;
+  }
+  return null;
+}
+
 function renderNav(){
   $('#nav').innerHTML = VISTAS.map(v => {
     const on = state.vista === v.id;
-    return `<button data-vista="${v.id}"
-      class="w-full flex items-center gap-3 rounded-[11px] px-3 py-2.5 text-[13px] transition
-             ${on ? 'bg-panel2 text-ink' : 'text-mute hover:text-ink hover:bg-panel2/60'}">
-      <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"
-           stroke-linecap="round" stroke-linejoin="round" class="${on ? 'text-bar-cyan' : 'text-dim'}"><path d="${v.icon}"/></svg>
-      <span class="${on ? 'font-medium' : ''}">${v.label}</span>
-      ${v.id === 'mias' && state.yo ? (() => {
-        const n = TAREAS.filter(t => t.responsable === state.yo && t.estado !== 'completado').length;
-        const atras = TAREAS.filter(t => t.responsable === state.yo && vencida(t)).length;
-        return `<span class="tape ml-auto ${atras ? 'text-bar-red' : 'text-dim'}">${n}</span>`;
-      })() : ''}
+    const c = contadorNav(v.id);
+    return `<button data-vista="${v.id}" aria-current="${on ? 'page' : 'false'}"
+      class="relative w-full flex items-center gap-3 rounded-[12px] px-3.5 py-3 text-[13.5px] transition
+             ${on ? 'font-semibold' : 'text-mute hover:text-ink hover:bg-panel2/60'}"
+      style="${on ? 'background:color-mix(in srgb, var(--acento) 13%, transparent);color:var(--acento)' : ''}">
+      ${on ? `<span class="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full" style="background:var(--acento)"></span>` : ''}
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+           stroke-linecap="round" stroke-linejoin="round" class="${on ? '' : 'text-dim'}"><path d="${v.icon}"/></svg>
+      <span class="truncate">${v.label}</span>
+      ${c ? `<span class="ml-auto grid h-[21px] min-w-[21px] shrink-0 place-items-center rounded-full px-1.5 text-[11px] font-bold"
+        style="${c.alerta ? 'background:var(--alerta);color:#fff'
+                          : 'background:var(--sup-alta);color:var(--texto-2)'}">${c.n}</span>` : ''}
     </button>`;
   }).join('');
   $('#nav').querySelectorAll('button').forEach(b =>
     b.onclick = () => { state.vista = b.dataset.vista; cerrarNav(); renderAll(); });
 }
 
-
-/* La carga del equipo vive en un solo sitio: el panel derecho.
-   Antes estaba también en la barra lateral y en la franja de arriba,
-   tres veces lo mismo compitiendo por atención. */
 function bindPersonas(scope){
   document.querySelectorAll(scope + ' [data-persona]').forEach(b =>
     b.onclick = () => { state.persona = state.persona === b.dataset.persona ? null : b.dataset.persona; renderAll(); });
@@ -3392,20 +4243,36 @@ function renderSlate(){
         <span class="text-[12px] ${on ? 'text-ink font-medium' : 'text-mute'}">${e.nombre}</span>
         <span class="meta">${n}</span></button>`;
     }).join('') +
+    PRIORIDADES.filter(x => x.id !== 'media').map(x => {
+      const n = TAREAS.filter(t => t.prioridad === x.id && t.estado !== 'completado').length;
+      if (!n) return '';
+      const on = state.filtroPrioridad === x.id;
+      return `<button data-filtroprio="${x.id}" aria-pressed="${on}"
+        class="flex items-baseline gap-1.5 rounded-[7px] px-1.5 py-1 transition ${on ? 'bg-panel2' : 'hover:bg-panel2'}"
+        title="Ver solo prioridad ${x.nombre.toLowerCase()}">
+        <span style="color:${x.relleno};font-size:9px">${x.marca}</span>
+        <span class="text-[12px] ${on ? 'text-ink font-medium' : 'text-mute'}">${x.corto}</span>
+        <span class="dato text-dim">${n}</span></button>`;
+    }).join('') +
     `<span class="ml-auto flex items-center gap-2">
       ${vencidas ? `<button data-atajo="vencidas" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--alerta)">${vencidas} vencidas</button>` : ''}
       ${sinDuenio ? `<button data-atajo="sinduenio" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--cyan)">${sinDuenio} sin dueño</button>` : ''}
-      <span class="meta">${pct(avance(TAREAS))}% avance</span>
+      <span class="meta">${pct(avance_(TAREAS))}% avance</span>
     </span>`;
 
+  document.querySelectorAll('[data-filtroprio]').forEach(b => b.onclick = () => {
+    state.filtroPrioridad = state.filtroPrioridad === b.dataset.filtroprio ? null : b.dataset.filtroprio;
+    if (sub() !== 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
+    renderAll();
+  });
   document.querySelectorAll('[data-filtroestado]').forEach(b => b.onclick = () => {
     state.filtroEstado = state.filtroEstado === b.dataset.filtroestado ? null : b.dataset.filtroestado;
-    if (state.vista === 'equipo' || state.vista === 'proyectos') state.vista = 'tablero';
+    if (sub() !== 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
     renderAll();
   });
   document.querySelectorAll('[data-atajo]').forEach(b => b.onclick = () => {
     state.atajo = state.atajo === b.dataset.atajo ? null : b.dataset.atajo;
-    if (state.vista === 'equipo' || state.vista === 'proyectos') state.vista = 'tablero';
+    if (sub() !== 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
     renderAll();
   });
 }
@@ -3462,7 +4329,10 @@ function barra(t, eje){
       aria-label="${esc(t.titulo)}, ${fecha(ini)} a ${fecha(fin)}, ${e.nombre}, ${pct(t.progreso)} por ciento"
       title="${esc(t.titulo)} · ${fecha(ini)} – ${fecha(fin)} · ${e.nombre} · ${pct(t.progreso)}%">
       <div class="g-fill"><span style="width:${pct(t.progreso)}%;background:${e.relleno}"></span></div>
-    </button>`;
+    </button>
+    ${t.entrega && t.entrega !== fin ? `<span class="absolute" title="Entrega ${fecha(t.entrega)}"
+      style="left:${offsetDias(eje, t.entrega) * state.zoom + state.zoom/2 - 4}px;top:50%;transform:translateY(-50%);
+             width:8px;height:8px;rotate:45deg;background:var(--acento)"></span>` : ''}`;
 }
 
 function barraGrupo(g, eje){
@@ -3474,7 +4344,7 @@ function barraGrupo(g, eje){
   const w = Math.max(state.zoom, (offsetDias(eje, r.fin) - offsetDias(eje, r.inicio) + 1) * state.zoom);
   const est = state.agrupar === 'proyecto' && PR(g.id) ? PR(g.id).estado : estadoGrupo(g.tareas);
   const c = state.agrupar === 'persona' ? g.color : E(est).color;
-  const av = pct(avance(g.tareas));
+  const av = pct(avance_(g.tareas));
   return `<div class="g-bar grp" style="left:${x}px;width:${w}px;background:${tinte(c, 40)};border:1px solid ${c}"
       title="${esc(g.nombre)} · ${fecha(r.inicio)} – ${fecha(r.fin)} · ${av}%">
       <div class="g-fill" style="background:transparent"><span style="width:${av}%;background:${c}"></span></div>
@@ -3486,35 +4356,64 @@ function renderGantt(){
   const gs = grupos();
   if (!gs.length) return vacio('Sin resultados', 'Ningún proyecto coincide con los filtros activos.', { id:'limpiar', texto:'Quitar filtros' });
 
-  /* ── Encabezado del eje ── */
-  let meses = '', dias = '', fondo = '';
+  const Z = state.zoom;
+  const px = i => i * Z;
+
+  /* ── Encabezado de tres pisos: mes · semana · día ──────────────
+     Antes el mes llevaba el año pegado ("agosto 26") y los días se
+     amontonaban. Ahora cada piso tiene su altura y las semanas
+     numeradas dan un punto de referencia intermedio.            */
+  let filaMes = '', filaSem = '', filaDia = '', rejilla = '', marcas = '';
+
   let cur = new Date(eje.inicio);
   while (cur <= eje.fin){
     const ultimo = new Date(cur.getFullYear(), cur.getMonth() + 1, 0);
-    const desde = Math.max(0, offsetDias(eje, toISO(cur)));
-    const hasta = Math.min(eje.dias - 1, offsetDias(eje, toISO(ultimo)));
-    const w = (hasta - desde + 1) * state.zoom;
-    meses += `<div class="stencil-thin absolute text-[10px] text-mute border-l border-line pl-2 h-full flex items-center"
-      style="left:${desde*state.zoom}px;width:${w}px">${MESES_L[cur.getMonth()]} ${String(cur.getFullYear()).slice(2)}</div>`;
-    fondo += `<div class="g-monthline" style="left:${desde*state.zoom}px"></div>`;
+    const d0 = Math.max(0, offsetDias(eje, toISO(cur)));
+    const d1 = Math.min(eje.dias - 1, offsetDias(eje, toISO(ultimo)));
+    const ancho = px(d1 - d0 + 1);
+
+    filaMes += `<div class="g-mes" style="left:${px(d0)}px;width:${ancho}px">
+      <span>${MESES_L[cur.getMonth()]}</span></div>`;
+    rejilla += `<div class="g-mesLinea" style="left:${px(d0)}px"></div>`;
+
+    // Semanas del mes: 1-7, 8-14, 15-21, 22-28, resto
+    for (let ini = 1; ini <= ultimo.getDate(); ini += 7){
+      const fin = Math.min(ini + 6, ultimo.getDate());
+      const a = offsetDias(eje, toISO(new Date(cur.getFullYear(), cur.getMonth(), ini)));
+      const b = offsetDias(eje, toISO(new Date(cur.getFullYear(), cur.getMonth(), fin)));
+      if (b < 0 || a > eje.dias - 1) continue;
+      const izq = Math.max(0, a), der = Math.min(eje.dias - 1, b);
+      const w = px(der - izq + 1);
+      const num = Math.floor((ini - 1) / 7) + 1;
+      filaSem += `<div class="g-sem" style="left:${px(izq)}px;width:${w}px">
+        <span>${w >= 54 ? 'Semana ' + num : 'S' + num}</span></div>`;
+      if (a >= 0) rejilla += `<div class="g-semLinea" style="left:${px(a)}px"></div>`;
+    }
     cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
   }
+
   for (let i = 0; i < eje.dias; i++){
     const d = new Date(eje.inicio.getFullYear(), eje.inicio.getMonth(), eje.inicio.getDate() + i);
     const finde = d.getDay() === 0 || d.getDay() === 6;
-    if (finde) fondo += `<div class="g-weekend" style="left:${i*state.zoom}px;width:${state.zoom}px"></div>`;
-    if (state.zoom >= 9 && d.getDay() === 1)
-      dias += `<div class="tape absolute text-dim" style="left:${i*state.zoom+2}px;top:4px">${String(d.getDate()).padStart(2,'0')}</div>`;
+    if (finde) rejilla += `<div class="g-finde" style="left:${px(i)}px;width:${Z}px"></div>`;
+
+    // Los días solo se numeran si de verdad caben
+    if (Z >= 13)
+      filaDia += `<div class="g-dia ${finde ? 'finde' : ''}" style="left:${px(i)}px;width:${Z}px">
+        <span class="g-diaLetra">${DIAS[d.getDay() === 0 ? 6 : d.getDay() - 1][0]}</span>
+        <span class="g-diaNum">${d.getDate()}</span></div>`;
   }
-  const hoyX = offsetDias(eje, HOY) * state.zoom;
-  fondo += `<div class="g-today" style="left:${hoyX}px"></div>`;
-  let marcas = '';
+
+  const hoyX = offsetDias(eje, HOY) * Z;
+  if (hoyX >= 0 && hoyX <= eje.ancho){
+    rejilla += `<div class="g-today" style="left:${hoyX}px;width:${Z}px"></div>`;
+    marcas += `<div class="g-cabHoy" style="left:${Math.max(0, hoyX + Z / 2 - 20)}px">HOY</div>`;
+  }
   HITOS.forEach(h => {
-    const x = offsetDias(eje, h.fecha) * state.zoom;
+    const x = offsetDias(eje, h.fecha) * Z;
     if (x < 0 || x > eje.ancho) return;
-    fondo += `<div class="g-hito" style="left:${x}px"></div>`;
-    marcas += `<div class="absolute" style="left:${x-4}px;bottom:5px" title="${esc(h.titulo)} · ${fecha(h.fecha)}">
-      <span class="block h-[7px] w-[7px] rotate-45" style="background:var(--cyan)"></span></div>`;
+    rejilla += `<div class="g-hito" style="left:${x + Z / 2}px"></div>`;
+    marcas += `<div class="g-hitoMarca" style="left:${x + Z / 2 - 5}px" title="${esc(h.titulo)} · ${fecha(h.fecha)}"></div>`;
   });
 
   /* ── Filas ── */
@@ -3522,22 +4421,27 @@ function renderGantt(){
   gs.forEach(g => {
     const abierto = state.abiertos.has(g.id);
     const est = state.agrupar === 'proyecto' && PR(g.id) ? PR(g.id).estado : estadoGrupo(g.tareas);
-    const c = state.agrupar === 'persona' ? g.color : E(est).color;
+    const c = state.agrupar === 'persona' ? g.color : E(est).relleno;
+    const r = (state.agrupar === 'proyecto' && PR(g.id) && PR(g.id).inicio && PR(g.id).fin)
+      ? { inicio:PR(g.id).inicio, fin:PR(g.id).fin } : rango(g.tareas);
 
     etiquetas += `<div class="g-row g-group cursor-pointer px-3" data-grupo="${g.id}">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.9"
            class="shrink-0 text-dim transition-transform ${abierto ? 'rotate-90' : ''}"><path d="M3 1.5 6.5 5 3 8.5"/></svg>
-      <span class="ml-2 h-[7px] w-[7px] shrink-0 rounded-[1px]" style="background:${c}"></span>
-      <span class="ml-2 truncate text-[12px] font-medium">${esc(g.nombre)}</span>
-      <span class="tape ml-auto shrink-0 text-dim">${g.tareas.length}</span>
+      <span class="ml-2 h-[8px] w-[8px] shrink-0 rounded-[2px]" style="background:${c}"></span>
+      <span class="ml-2 truncate text-[12.5px] font-semibold">${esc(g.nombre)}</span>
+      <span class="dato ml-auto shrink-0 text-dim">${g.tareas.length}</span>
     </div>`;
-    pistas += `<div class="g-row g-group relative" data-grupo="${g.id}">${barraGrupo(g, eje)}</div>`;
+    pistas += `<div class="g-row g-group relative" data-grupo="${g.id}">
+      ${barraGrupo(g, eje)}
+      ${r ? `<span class="g-rango" style="left:${px(offsetDias(eje, r.inicio))}px">${fecha(r.inicio)} → ${fecha(r.fin)}</span>` : ''}
+    </div>`;
 
     if (abierto) g.tareas.forEach(t => {
       const sel = state.seleccion === t.id;
-      etiquetas += `<div class="g-row ${sel ? 'sel' : ''} cursor-pointer pl-8 pr-3" data-abrir="${t.id}">
-        <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${E(t.estado).color}"></span>
-        <span class="ml-2 truncate text-[11.5px] ${t.estado === 'completado' ? 'text-dim' : 'text-mute'}">${esc(t.titulo)}</span>
+      etiquetas += `<div class="g-row ${sel ? 'sel' : ''} cursor-pointer pl-9 pr-3" data-abrir="${t.id}">
+        <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${E(t.estado).relleno}"></span>
+        <span class="ml-2 truncate text-[11.5px] ${t.estado === 'completado' ? 'text-dim line-through' : 'text-mute'}">${esc(t.titulo)}</span>
       </div>`;
       pistas += `<div class="g-row ${sel ? 'sel' : ''} relative" data-abrir="${t.id}">${barra(t, eje)}</div>`;
     });
@@ -3547,38 +4451,40 @@ function renderGantt(){
 
   return `
   <div class="mb-4 flex flex-wrap items-center gap-2">
-    <div class="flex rounded-[4px] border border-line overflow-hidden">
-      ${[['proyecto','Proyecto'],['persona','Persona'],['area','Área']].map(([k,l]) => `
-        <button data-agrupar="${k}" class="accion px-3.5 py-2.5 transition"
-          style="${state.agrupar===k ? 'background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)' : 'color:var(--texto-2)'}">${l}</button>`).join('')}
+    <div class="flex gap-2" role="group" aria-label="Agrupar por">
+      ${[['proyecto','Proyecto'],['persona','Persona'],['area','Área']].map(([k,l]) =>
+        `<button data-agrupar="${k}" class="chip" aria-pressed="${state.agrupar===k}">${l}</button>`).join('')}
     </div>
-    <div class="flex rounded-[4px] border border-line overflow-hidden">
-      ${[[5,'Mes'],[9,'Semana'],[16,'Día']].map(([z,l]) => `
-        <button data-zoom="${z}" class="accion px-3.5 py-2.5 transition"
-          style="${state.zoom===z ? 'background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)' : 'color:var(--texto-2)'}">${l}</button>`).join('')}
+    <div class="flex gap-2" role="group" aria-label="Escala">
+      ${[[8,'Mes'],[14,'Semana'],[26,'Día']].map(([z,l]) =>
+        `<button data-zoom="${z}" class="chip" aria-pressed="${state.zoom===z}">${l}</button>`).join('')}
     </div>
-    <button data-todos="1" class="tape rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">
-      ${state.abiertos.size ? 'Contraer todo' : 'Expandir todo'}</button>
-    <button data-irhoy="1" class="accion rounded-[4px] border border-line bg-panel px-3 py-[8px] text-mute hover:text-ink hover:border-dim transition">Ir a hoy</button>
-    <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[9px] border px-3.5 py-2.5 transition"
-      style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+    <button data-todos="1" class="chip">${state.abiertos.size ? 'Contraer todo' : 'Expandir todo'}</button>
+    <button data-irhoy="1" class="chip">Ir a hoy</button>
+    <button id="addEvent" class="btn-principal ml-auto">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
       Nueva tarea</button>
   </div>
 
-  <div class="overflow-hidden rounded-[12px] border border-line">
+  <div class="overflow-hidden rounded-[16px] border border-line" style="background:var(--sup)">
     <div class="g-wrap">
       <div class="g-labels">
-        <div class="h-[44px] border-b border-line flex items-end px-3 pb-2">
-          <span class="meta">${state.agrupar === 'persona' ? 'Persona' : state.agrupar === 'area' ? 'Área' : 'Proyecto'}</span>
+        <div class="g-cabecera flex items-end px-3 pb-2">
+          <span class="item-s">${state.agrupar === 'persona' ? 'Persona' : state.agrupar === 'area' ? 'Área' : 'Proyecto'}</span>
         </div>
         ${etiquetas}
       </div>
       <div class="g-scroll" id="gScroll">
         <div style="width:${eje.ancho}px" class="relative">
-          <div class="h-[44px] border-b border-line relative">${meses}${dias}${marcas}</div>
-          <div class="relative">
-            <div class="absolute inset-0 pointer-events-none">${fondo}</div>
+          <div class="g-cabecera relative">
+            <div class="g-pisoMes">${filaMes}</div>
+            <div class="g-pisoSem">${filaSem}</div>
+            <div class="g-pisoDia">${filaDia}</div>
+            ${marcas}
+          </div>
+          <div class="relative" ${Z >= 13 ? `style="background-image:repeating-linear-gradient(to right,
+               var(--linea) 0 1px, transparent 1px ${Z}px);background-size:${Z}px 100%"` : ''}>
+            <div class="absolute inset-0 pointer-events-none">${rejilla}</div>
             ${pistas}
           </div>
         </div>
@@ -3588,12 +4494,12 @@ function renderGantt(){
 
   <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
     ${ESTADOS.map(e => `<div class="flex items-center gap-2">
-      <span class="h-[7px] w-[7px] rounded-[1px]" style="background:${e.color}"></span>
-      <span class="text-[11.5px] text-mute">${e.nombre}</span></div>`).join('')}
+      <span class="h-[8px] w-[8px] rounded-[2px]" style="background:${e.relleno}"></span>
+      <span class="text-[12px] text-mute">${e.nombre}</span></div>`).join('')}
     <div class="flex items-center gap-2">
-      <span class="h-[7px] w-[7px] rotate-45" style="background:var(--cyan)"></span>
-      <span class="text-[11.5px] text-mute">Hito</span></div>
-    <span class="tape ml-auto ${sinFecha ? 'text-bar-yellow' : 'text-dim'}">${sinFecha} tareas activas sin fecha</span>
+      <span class="h-[8px] w-[8px] rotate-45" style="background:var(--acento)"></span>
+      <span class="text-[12px] text-mute">Hito</span></div>
+    <span class="item-s ml-auto ${sinFecha ? 'text-bar-yellow' : ''}">${sinFecha} tareas activas sin fecha</span>
   </div>`;
 }
 
@@ -3621,7 +4527,7 @@ function wireGantt(){
   const irHoy = document.querySelector('[data-irhoy]');
   if (irHoy) irHoy.onclick = () => scrollAHoy(true);
   document.querySelectorAll('[data-tarea]').forEach(b => b.onclick = e => {
-    e.stopPropagation(); state.seleccion = b.dataset.tarea; renderAll();
+    e.stopPropagation(); seleccionar(b.dataset.tarea);
   });
   const add = document.getElementById('addEvent');
   if (add) add.onclick = () => abrirModal(HOY, 'tarea');
@@ -3651,12 +4557,16 @@ function tarjeta(t){
     <div class="flex items-center gap-2 mb-2">
       <span class="meta">${t.codigo}</span>
       ${chipPrioridad(t)}
-      ${vd ? `<span class="pildora" style="background:color-mix(in srgb, var(--alerta) 14%, transparent);color:var(--alerta)">Vencida</span>` : ''}
-      <span class="tape ml-auto ${vd ? 'text-bar-red' : 'text-dim'}">${t.fin ? fecha(t.fin) : 'sin fecha'}</span>
+      ${vd ? `<span class="pildora" style="background:color-mix(in srgb, var(--alerta) 16%, transparent);color:var(--alerta)"><span aria-hidden="true">⚠</span> Vencida</span>` : ''}
+      <span class="dato ml-auto ${vd ? 'text-bar-red' : 'text-dim'}">${fechaClave(t) ? fecha(fechaClave(t)) : 'sin fecha'}</span>
     </div>
 
     <h4 class="text-[13.5px] leading-snug text-ink mb-1">${esc(t.titulo)}</h4>
-    <div class="meta mb-3 truncate">${esc(nombreProy(t.proyecto))} · ${esc(t.area)}</div>
+    <div class="meta mb-3 truncate">
+      ${t.proyecto ? `<button data-verproy="${t.proyecto}" class="underline decoration-dotted underline-offset-2 transition hover:text-ink"
+        title="Abrir ${esc(nombreProy(t.proyecto))}">${esc(nombreProy(t.proyecto))}</button>` : 'Suelta'}
+      · ${esc(t.area)}
+    </div>
 
     <div class="flex items-center gap-2 mb-3">
       ${sprockets(t)}
@@ -3710,12 +4620,16 @@ function wireTablero(){
       ev.dataTransfer.setData('text/plain', arrastrando);
     });
     card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    card.addEventListener('pointerdown', ev => {
+      if (ev.target.closest('select, button')) return;
+      seleccionar(card.dataset.id);
+    });
     card.addEventListener('click', ev => {
       if (ev.target.closest('select')) return;
-      state.seleccion = card.dataset.id; renderAll();
+      seleccionar(card.dataset.id);
     });
     card.addEventListener('keydown', ev => {
-      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); state.seleccion = card.dataset.id; renderAll(); }
+      if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); seleccionar(card.dataset.id); }
     });
   });
   wireEstados();
@@ -3770,7 +4684,7 @@ function renderCalendario(){
   const celdas  = Math.ceil((offset + ultimo.getDate()) / 7) * 7;
   const clave   = toISO(primero).slice(0, 7);
   const ts = visibles();
-  const nMes = ts.filter(t => t.fin && t.fin.startsWith(clave)).length;
+  const nMes = ts.filter(t => fechaClave(t) && fechaClave(t).startsWith(clave)).length;
   const nHi  = HITOS.filter(h => h.fecha.startsWith(clave)).length;
 
   const barra = `
@@ -3801,7 +4715,7 @@ function renderCalendario(){
     const fuera = d.getMonth() !== primero.getMonth();
     const hoy = iso === HOY;
     const hs = HITOS.filter(h => h.fecha === iso);
-    const tk = ts.filter(t => t.fin === iso);
+    const tk = ts.filter(t => fechaClave(t) === iso);
     const items = [...hs.map(h => ({h})), ...tk.map(t => ({t}))];
     const mostrar = items.slice(0, 3), extra = items.length - mostrar.length;
 
@@ -3865,6 +4779,222 @@ function wireCalendario(){
 }
 
 
+
+/* ═══════════════════════════════════════════════════
+   RESUMEN
+   La primera pantalla. Responde cuatro preguntas en un
+   vistazo: cómo va el tráfico, qué se vence, quién está
+   cargado y qué pasa esta semana.
+   ═══════════════════════════════════════════════════ */
+
+function tarjetaCifra(etiqueta, valor, pie, color, accion){
+  return `<button ${accion ? `data-ir="${accion}"` : ''} class="caja p-5 text-left transition hover:-translate-y-0.5"
+    style="box-shadow:var(--sombra)">
+    <div class="flex items-start gap-2">
+      <span class="item-s">${etiqueta}</span>
+      ${accion ? `<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
+        stroke-linecap="round" class="ml-auto shrink-0 text-dim"><path d="M6.5 13.5 13.5 6.5M7.5 6.5h6v6"/></svg>` : ''}
+    </div>
+    <div class="cifra mt-3 text-[34px] leading-none" style="color:${color || 'var(--texto)'}">${valor}</div>
+    <div class="item-s mt-2">${pie}</div>
+  </button>`;
+}
+
+function renderResumen(){
+  const activas   = TAREAS.filter(t => t.estado !== 'completado');
+  const vencidas  = activas.filter(t => vencida(t));
+  const sinDuenio = activas.filter(t => t.responsable === 'u-sin');
+  const enCurso   = PROYECTOS.filter(p => p.seccion === 'PROYECTOS' || p.seccion === 'ALWAYS ON');
+  const listos    = PROYECTOS.filter(p => p.seccion === 'PROYECTOS COMPLETADOS');
+  const sinArranc = PROYECTOS.filter(p => p.seccion === 'PROYECTOS NO EMPEZADOS');
+  const av        = pct(avance_(TAREAS));
+  const hoyTareas = TAREAS.filter(t => fechaClave(t) === HOY && t.estado !== 'completado');
+
+  const hoy = dt(HOY);
+  const lunes = new Date(hoy); lunes.setDate(hoy.getDate() - ((hoy.getDay() + 6) % 7));
+  const semana = [...Array(7)].map((_, i) => {
+    const d = new Date(lunes); d.setDate(lunes.getDate() + i);
+    const iso = toISO(d);
+    return { iso, d, n: TAREAS.filter(t => fechaClave(t) === iso).length, esHoy: iso === HOY };
+  });
+  const tope = Math.max(1, ...semana.map(x => x.n));
+
+  const gente = PERSONAS.filter(x => !esSistema(x.id));
+  const topeP = Math.max(1, ...gente.map(x => TAREAS.filter(t => t.responsable === x.id && t.estado !== 'completado').length));
+  const proximas = ordenarPorUrgencia(activas.filter(t => fechaClave(t))).slice(0, 5);
+
+  const metrica = (etiqueta, valor, pie, accion, viva) => `
+    <button ${accion ? `data-ir="${accion}"` : ''} class="caja ${viva ? 'metrica-viva' : ''} p-5 text-left transition hover:-translate-y-0.5">
+      <div class="flex items-start gap-2">
+        <span class="item-s">${etiqueta}</span>
+        ${accion ? `<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" class="ml-auto shrink-0 opacity-60"><path d="M6.5 13.5 13.5 6.5M7.5 6.5h6v6"/></svg>` : ''}
+      </div>
+      <div class="cifra mt-3 text-[34px] leading-none">${valor}</div>
+      <div class="item-s mt-2">${pie}</div>
+    </button>`;
+
+  const nombreDia = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][hoy.getDay()];
+
+  return `
+  <div class="mb-4 flex flex-wrap items-center gap-2">
+    <button data-ir="proyectos" class="btn-suave">Ver proyectos</button>
+    <button id="resNueva" class="btn-principal ml-auto">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+      Nueva tarea</button>
+  </div>
+
+  <div class="rejilla">
+
+    ${metrica('Proyectos activos', enCurso.length, `${listos.length} finalizados · ${sinArranc.length} sin arrancar`, 'proyectos', true)}
+    ${metrica('Tareas abiertas', activas.length, `de ${TAREAS.length} en total`, 'tablero')}
+    ${metrica('Vencidas', vencidas.length, vencidas.length ? 'Necesitan atención hoy' : 'Nada atrasado', 'vencidas')}
+    ${metrica('Sin dueño', sinDuenio.length, sinDuenio.length ? 'Nadie las ha tomado' : 'Todo asignado', 'sinduenio')}
+
+    <div class="caja w2 p-5">
+      <div class="widget-cab">
+        <h2>Entregas de la semana</h2>
+        <span class="accion-mini">${semana.reduce((a, b) => a + b.n, 0)} en total</span>
+      </div>
+      <div class="flex items-end gap-1.5" style="height:158px">
+        ${semana.map(x => `<button data-dia="${x.iso}" class="flex flex-1 flex-col items-center justify-end gap-2 rounded-[10px] py-1 transition hover:bg-panel2"
+            title="${x.n} ${x.n === 1 ? 'entrega' : 'entregas'} el ${fecha(x.iso)}">
+            <span class="item-s">${x.n || ''}</span>
+            <span class="w-full rounded-t-[8px] transition-[height] duration-500"
+                  style="height:${Math.max(6, x.n / tope * 100)}px;background:${x.esHoy ? 'var(--acento)' : 'color-mix(in srgb, var(--acento) 24%, transparent)'}"></span>
+            <span class="text-[11.5px] ${x.esHoy ? 'font-semibold' : ''}" style="color:${x.esHoy ? 'var(--acento)' : 'var(--texto-3)'}">${DIAS[x.d.getDay() === 0 ? 6 : x.d.getDay() - 1]}</span>
+            <span class="item-s">${x.d.getDate()}</span>
+          </button>`).join('')}
+      </div>
+    </div>
+
+    <div class="caja flex flex-col p-5">
+      <div class="widget-cab"><h2>Avance</h2></div>
+      <div class="relative my-auto grid place-items-center py-2">
+        ${anillo(av, 'var(--g-completado)', 136)}
+        <span class="absolute text-center">
+          <span class="cifra block text-[28px] leading-none">${av}%</span>
+          <span class="item-s mt-1 block">cerrado</span>
+        </span>
+      </div>
+      <div class="mt-3">${segmentos(TAREAS)}</div>
+    </div>
+
+    <div class="caja destacada flex flex-col p-5">
+      <div class="widget-cab"><h2 style="color:inherit">Hoy</h2></div>
+      <p class="cifra text-[40px] leading-none">${hoy.getDate()}</p>
+      <p class="item-s mt-1.5 capitalize">${nombreDia} · ${MESES_L[hoy.getMonth()]}</p>
+      <p class="mt-auto pt-4 text-[13px] leading-snug">
+        ${hoyTareas.length
+          ? `<strong>${hoyTareas.length}</strong> ${hoyTareas.length === 1 ? 'entrega' : 'entregas'} para hoy`
+          : 'Sin entregas para hoy'}
+      </p>
+      <button data-ir="calendario" class="mt-3 rounded-full px-4 py-2.5 text-[12.5px] font-semibold transition"
+        style="background:var(--acento);color:var(--acento-tinta)">Abrir el calendario</button>
+    </div>
+
+    <div class="caja w2 p-5">
+      <div class="widget-cab">
+        <h2>Lo próximo</h2>
+        <button data-ir="mias" class="accion-mini">Ver todo</button>
+      </div>
+      <div class="space-y-2">
+        ${proximas.length ? proximas.map(t => filaTarea(t)).join('') : `<p class="nota">Nada con fecha próxima.</p>`}
+      </div>
+    </div>
+
+    <div class="caja w2 p-5">
+      <div class="widget-cab">
+        <h2>Quién está en qué</h2>
+        <button data-ir="equipo" class="accion-mini">Gestionar</button>
+      </div>
+      <div class="space-y-1">
+        ${gente.map(x => {
+          const suyas = TAREAS.filter(t => t.responsable === x.id && t.estado !== 'completado');
+          const enCurso1 = suyas.find(t => t.estado === 'proceso') || suyas[0];
+          const d = dispHoy(x);
+          return `<button data-verpersona="${x.id}" data-soltar="${x.id}"
+            title="Ver todo el trabajo de ${esc(x.nombre)}"
+            class="zona-drop flex w-full items-center gap-3 rounded-[12px] p-2 text-left transition hover:bg-panel2">
+            ${avatar(x.id, 34)}
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-[13px] font-medium">${esc(x.nombre)}</span>
+              <span class="item-s block truncate">${enCurso1 ? 'En: ' + esc(enCurso1.titulo) : (d.disponible ? 'Sin tareas abiertas' : esc(textoAusencia(x)))}</span>
+            </span>
+            <span class="w-[70px] shrink-0">
+              <span class="block h-[5px] w-full overflow-hidden rounded-full" style="background:var(--sup-alta)">
+                <span class="block h-full rounded-full" style="width:${suyas.length / topeP * 100}%;background:${x.color}"></span>
+              </span>
+            </span>
+            <span class="item-v w-6 shrink-0 text-right">${suyas.length}</span>
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"
+                 stroke-linecap="round" class="shrink-0 text-dim"><path d="M7.5 5 12.5 10l-5 5"/></svg>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="caja w4 p-5">
+      <div class="widget-cab">
+        <h2>Áreas</h2>
+        <button data-ir="proyectos" class="accion-mini">Ver proyectos</button>
+      </div>
+      <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        ${AREAS.map(a => {
+          const ps = PROYECTOS.filter(x => x.area === a);
+          const ts = TAREAS.filter(t => t.area === a);
+          if (!ps.length && !ts.length) return '';
+          const ab = ts.filter(t => t.estado !== 'completado').length;
+          return `<button data-area="${esc(a)}" class="rounded-[14px] border border-line p-4 text-left transition hover:border-dim hover:bg-panel2">
+            <span class="flex items-baseline gap-2">
+              <span class="text-[13px] font-semibold">${esc(a)}</span>
+              <span class="item-v ml-auto">${ab}</span>
+            </span>
+            <span class="item-s mt-1 block">${ps.length} ${ps.length === 1 ? 'proyecto' : 'proyectos'}</span>
+            <span class="mt-3 block">${segmentos(ts)}</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+
+  </div>`;
+}
+
+/* Abrir a una persona: su trabajo filtrado, listo para revisar. */
+function verPersona(pid){
+  state.persona = pid;
+  state.vista = 'dashboard';
+  state.sub.dashboard = 'tablero';
+  renderAll();
+  toast('Trabajo de ' + P(pid).nombre, P(pid).color);
+}
+
+function wireResumen(){
+  document.querySelectorAll('[data-verpersona]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); verPersona(b.dataset.verpersona);
+  });
+  document.querySelectorAll('[data-ir]').forEach(b => b.onclick = () => {
+    const a = b.dataset.ir;
+    if (a === 'vencidas' || a === 'sinduenio'){ state.atajo = a; state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
+    else if (a === 'mias'){ state.vista = 'dashboard'; state.sub.dashboard = 'mias'; }
+    else if (a === 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
+    else if (a === 'calendario'){ state.vista = 'organigrama'; state.sub.organigrama = 'calendario'; }
+    else state.vista = a;
+    renderAll();
+  });
+  const nueva = document.getElementById('resNueva');
+  if (nueva) nueva.onclick = () => abrirModal(HOY, 'tarea');
+  document.querySelectorAll('[data-dia]').forEach(b => b.onclick = () => {
+    const d = dt(b.dataset.dia);
+    state.mes = new Date(d.getFullYear(), d.getMonth(), 1);
+    state.vista = 'organigrama'; state.sub.organigrama = 'calendario';
+    renderAll();
+  });
+  document.querySelectorAll('[data-area]').forEach(b => b.onclick = () => {
+    state.area = b.dataset.area; state.vista = 'proyectos'; renderAll();
+  });
+}
+
 /* ═══════════════════════════════════════════════════
    MI TRABAJO
    La pantalla donde aterriza cada persona del equipo.
@@ -3877,9 +5007,10 @@ function ordenarPorUrgencia(ts){
   return [...ts].sort((a, b) => {
     const pa = PRI(a.prioridad).peso, pb = PRI(b.prioridad).peso;
     if (pa !== pb) return pa - pb;
-    if (!a.fin && b.fin) return 1;
-    if (a.fin && !b.fin) return -1;
-    if (a.fin && b.fin && a.fin !== b.fin) return a.fin < b.fin ? -1 : 1;
+    const fa = fechaClave(a), fb = fechaClave(b);
+    if (!fa && fb) return 1;
+    if (fa && !fb) return -1;
+    if (fa && fb && fa !== fb) return fa < fb ? -1 : 1;
     return 0;
   });
 }
@@ -3910,18 +5041,52 @@ const ICONOS = {
   tablero:'M3.5 3.5h4.2v13H3.5zM11 3.5h5.5v8H11z'
 };
 
-function chipPrioridad(t){
-  if (t.prioridad === 'media') return '';
-  const p = PRI(t.prioridad);
-  return `<span class="pildora shrink-0" style="background:${tinte(p.color, 12)};color:${p.color}">${p.nombre}</span>`;
+/* Botón, no etiqueta: un toque cambia la prioridad. Antes había que
+   abrir el panel de detalle y buscarla en un desplegable. */
+function botonPrioridad(t, compacto = false){
+  const pr = PRI(t.prioridad);
+  return `<button data-prio="${t.id}" ${compacto ? 'data-compacto="1"' : ''}
+    title="Prioridad ${pr.nombre.toLowerCase()} · toca para cambiarla"
+    aria-label="Prioridad ${pr.nombre}"
+    class="pildora shrink-0 transition hover:brightness-110"
+    style="background:${tinte(pr.relleno, 14)};color:${pr.color}">
+    <span aria-hidden="true" style="font-size:9px">${pr.marca}</span>${compacto ? '' : pr.corto}
+  </button>`;
+}
+const chipPrioridad = t => botonPrioridad(t, true);
+
+/* Ciclo alta → media → baja → alta: más rápido que abrir un menú
+   para tres opciones. */
+function ciclarPrioridad(id){
+  const t = T(id); if (!t) return;
+  const i = PRIORIDADES.findIndex(x => x.id === t.prioridad);
+  t.prioridad = PRIORIDADES[(i + 1) % PRIORIDADES.length].id;
+  const pr = PRI(t.prioridad);
+  document.querySelectorAll(`[data-prio="${id}"]`).forEach(b => {
+    b.style.background = tinte(pr.relleno, 14);
+    b.style.color = pr.color;
+    b.innerHTML = `<span aria-hidden="true" style="font-size:9px">${pr.marca}</span>` + (b.dataset.compacto ? '' : pr.corto);
+    b.title = `Prioridad ${pr.nombre.toLowerCase()} · toca para cambiarla`;
+  });
+  toast(t.titulo + ' → prioridad ' + pr.nombre.toLowerCase(), pr.relleno);
+  if (typeof Persist !== 'undefined') Persist.schedule();
+}
+
+function wirePrioridad(raiz = document){
+  raiz.querySelectorAll('[data-prio]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); ev.preventDefault(); ciclarPrioridad(b.dataset.prio);
+  });
 }
 
 function filaTarea(t, opts = {}){
+  const idPanel = t.id;          // de quién es este panel
   const e = E(t.estado), proy = PR(t.proyecto);
   const vd = vencida(t);
-  const dias = t.fin ? diasRestantes(t.fin) : null;
-  const cuando = t.fin
-    ? (dias === 0 ? 'Hoy' : dias === 1 ? 'Mañana' : dias < 0 ? `${Math.abs(dias)} d tarde` : fecha(t.fin))
+  const clave = fechaClave(t);
+  const dias = clave ? diasRestantes(clave) : null;
+  const cuando = clave
+    ? (dias === 0 ? 'Hoy' : dias === 1 ? 'Mañana' : dias === -1 ? 'Ayer'
+       : dias < 0 ? `⚠ ${Math.abs(dias)} d tarde` : fecha(clave))
     : 'Sin fecha';
 
   return `<div data-abrir="${t.id}" class="item ${state.seleccion === t.id ? 'sel' : ''} cursor-pointer">
@@ -3934,10 +5099,14 @@ function filaTarea(t, opts = {}){
 
     <span class="min-w-0 flex-1">
       <span class="flex items-center gap-2">
+        ${botonPrioridad(t)}
         <span class="item-t truncate ${t.estado === 'completado' ? 'line-through opacity-60' : ''}">${esc(t.titulo)}</span>
-        ${chipPrioridad(t)}
       </span>
-      <span class="item-s block truncate">${esc(nombreProy(t.proyecto))} · ${esc(t.area)}</span>
+      <span class="item-s block truncate">
+        ${t.proyecto ? `<button data-verproy="${t.proyecto}" class="rounded px-0.5 underline decoration-dotted underline-offset-2 transition hover:text-ink"
+          title="Abrir ${esc(nombreProy(t.proyecto))}">${esc(nombreProy(t.proyecto))}</button>` : 'Suelta'}
+        · ${esc(t.area)}
+      </span>
     </span>
 
     <span class="hidden shrink-0 text-right sm:block">
@@ -3985,9 +5154,9 @@ function renderMiTrabajo(){
   const mias = TAREAS.filter(t => participa(t, state.yo));
   const abiertas = mias.filter(t => t.estado !== 'completado');
   const atrasadas = abiertas.filter(t => vencida(t));
-  const semana    = abiertas.filter(t => !vencida(t) && t.fin && diasRestantes(t.fin) <= 7);
-  const despues   = abiertas.filter(t => !vencida(t) && t.fin && diasRestantes(t.fin) > 7);
-  const sinFecha  = abiertas.filter(t => !t.fin);
+  const semana    = abiertas.filter(t => !vencida(t) && fechaClave(t) && diasRestantes(fechaClave(t)) <= 7);
+  const despues   = abiertas.filter(t => !vencida(t) && fechaClave(t) && diasRestantes(fechaClave(t)) > 7);
+  const sinFecha  = abiertas.filter(t => !fechaClave(t));
   const cerradas  = mias.filter(t => t.estado === 'completado');
   const huerfanas = TAREAS.filter(t => t.responsable === 'u-sin' && t.estado !== 'completado');
 
@@ -4064,6 +5233,9 @@ function wireProyectos(){
   });
   document.querySelectorAll('[data-equipoproy]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); menuEquipoProyecto(PR(b.dataset.equipoproy), b);
+  });
+  document.querySelectorAll('[data-encargado]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); menuEncargado(PR(b.dataset.encargado), b);
   });
   document.querySelectorAll('[data-asignarproy]').forEach(el => {
     const abrir = ev => { ev.stopPropagation(); menuProyecto(el.dataset.asignarproy, el); };
@@ -4188,7 +5360,9 @@ function wireMiTrabajo(){
   document.querySelectorAll('[data-rapida]').forEach(b => b.onclick = () => {
     const a = b.dataset.rapida;
     if (a === 'nueva') return abrirModal(HOY, 'tarea');
-    if (a === 'sinduenio'){ state.atajo = 'sinduenio'; state.vista = 'tablero'; }
+    if (a === 'sinduenio'){ state.atajo = 'sinduenio'; state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
+    else if (a === 'gantt'){ state.vista = 'organigrama'; state.sub.organigrama = 'gantt'; }
+    else if (a === 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
     else state.vista = a;
     renderAll();
   });
@@ -4246,6 +5420,36 @@ function abrirMenuAsignar(tareaId, ancla){
 
 /* Equipo del proyecto: quién está metido aunque no tenga una tarea
    suya asignada todavía (el que aprueba, el que da contexto). */
+/* El encargado vigila que el proyecto salga; no es quien hace las
+   tareas. Por eso se elige aparte del equipo. */
+function menuEncargado(p, ancla){
+  cerrarMenu();
+  const r = ancla.getBoundingClientRect();
+  const m = document.createElement('div');
+  m.id = 'menuAsignar'; anclaMenu = ancla;
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[230px] overflow-hidden rounded-[18px] border border-line';
+  m.style.top  = Math.min(window.innerHeight - 340, r.bottom + 6) + 'px';
+  m.style.left = Math.min(window.innerWidth - 242, Math.max(8, r.left)) + 'px';
+  m.innerHTML = `<div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Encargado del proyecto</div>
+    <div class="max-h-[280px] overflow-y-auto py-1">
+      ${PERSONAS.map(x => `<button data-enc="${x.id}"
+        class="flex min-h-[44px] w-full items-center gap-2.5 px-3.5 py-2 text-left transition hover:bg-panel2
+               ${x.id === p.responsable ? 'bg-panel2' : ''}">
+        ${avatar(x.id, 26)}
+        <span class="min-w-0 flex-1 truncate text-[12.5px] ${x.id === p.responsable ? 'text-ink' : 'text-mute'}">${esc(x.nombre)}</span>
+      </button>`).join('')}
+    </div>`;
+  document.body.appendChild(m);
+  m.querySelectorAll('[data-enc]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    p.responsable = b.dataset.enc;
+    cerrarMenu();
+    toast(p.nombre + ': encargado ' + P(p.responsable).nombre, P(p.responsable).color);
+    renderAll();
+  });
+  setTimeout(() => document.addEventListener('click', cerrarMenu, { once:true }), 0);
+}
+
 function menuEquipoProyecto(p, ancla){
   cerrarMenu();
   const r = ancla.getBoundingClientRect();
@@ -4544,7 +5748,9 @@ function abrirIdentidad(){
   m.querySelectorAll('[data-yo]').forEach(b => b.onclick = () => {
     guardarYo(b.dataset.yo);
     m.classList.add('hidden');
-    state.vista = 'mias';
+    // Se entra por el Resumen: la foto completa antes que lo tuyo
+    state.vista = 'dashboard';
+    state.sub.dashboard = 'resumen';
     renderAll();
     toast('Hola, ' + YO().nombre, YO().color);
   });
@@ -4567,12 +5773,11 @@ function abrirProyecto(id){
   focoPrevio = document.activeElement;
   proyEditando = id || null;
   const p = id ? PR(id) : { nombre:'', seccion:'PROYECTOS', area:AREAS[0], estado:'pendiente',
-                            entrega:null, nota:'', inicio:null, fin:null };
+                            responsable:'u-sin', nota:'', inicio:null, fin:null };
   const areas = [...new Set([...AREAS, ...PROYECTOS.map(x => x.area)])].filter(Boolean);
 
   $('#prTitulo').textContent = id ? 'Editar proyecto' : 'Nuevo proyecto';
   $('#prNombre').value  = p.nombre;
-  $('#prEntrega').value = p.entrega || '';
   $('#prInicio').value   = p.inicio || '';
   $('#prFin').value      = p.fin || '';
   pintarDuracion();
@@ -4581,6 +5786,8 @@ function abrirProyecto(id){
     `<option value="${esc(g.id)}" ${g.id === p.seccion ? 'selected' : ''}>${esc(g.nombre)}</option>`).join('');
   $('#prArea').innerHTML    = areas.map(x => `<option value="${esc(x)}" ${x === p.area ? 'selected' : ''}>${esc(x)}</option>`).join('');
   $('#prEstado').innerHTML  = ESTADOS.map(x => `<option value="${x.id}" ${x.id === p.estado ? 'selected' : ''}>${x.nombre}</option>`).join('');
+  $('#prResp').innerHTML    = PERSONAS.map(x =>
+    `<option value="${x.id}" ${x.id === (p.responsable || 'u-sin') ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('');
   $('#prError').textContent = '';
   $('#prBorrar').classList.toggle('hidden', !id);
   $('#proyModal').classList.remove('hidden');
@@ -4621,7 +5828,7 @@ function guardarProyecto(){
     seccion: $('#prSeccion').value,
     area:    $('#prArea').value,
     estado:  $('#prEstado').value,
-    entrega: $('#prEntrega').value || null,
+    responsable: $('#prResp').value,
     inicio:  ini,
     fin:     fin,
     nota:    $('#prNota').value.trim() || null
@@ -4640,7 +5847,7 @@ function guardarProyecto(){
       : 'Proyecto actualizado: ' + nombre, E(p.estado).color);
   } else {
     const id = 'p-' + (++uid);
-    PROYECTOS.push({ id, ...datos, nTareas:0 });
+    PROYECTOS.push({ id, ...datos, equipo:[], nTareas:0 });
     toast('Proyecto creado: ' + nombre, E(datos.estado).color);
   }
   cerrarProyecto();
@@ -4696,7 +5903,7 @@ function renderProyectos(){
 
   const tarjeta = (p, i) => {
     const ts = tareasDe(p.id, 'proyecto');
-    const e = E(p.estado), av = pct(avance(ts)), r = rango(ts);
+    const e = E(p.estado), av = pct(avance_(ts)), r = rango(ts);
     const abiertas = ts.filter(t => t.estado !== 'completado').length;
     return `<div class="rise caja p-5" style="animation-delay:${i*35}ms">
       <div data-proyecto="${p.id}" class="cursor-pointer">
@@ -4717,17 +5924,23 @@ function renderProyectos(){
           <span class="item-s">${p.inicio && p.fin
             ? `${fecha(p.inicio)} — ${fecha(p.fin)} · ${Math.round((dt(p.fin) - dt(p.inicio)) / 864e5) + 1} días`
             : r ? `${fecha(r.inicio)} — ${fecha(r.fin)}` : 'Sin fechas'}</span>
-          ${p.entrega ? `<span class="item-s ml-auto" style="color:var(--acento)">Entrega ${fecha(p.entrega)}</span>` : ''}
         </div>
         ${ts.length && abiertas === 0 && p.estado !== 'completado'
           ? `<p class="nota mt-3" style="color:var(--est-completado)">Todas sus tareas están cerradas. ¿Lo marcas como completado?</p>` : ''}
-        ${p.entrega && p.inicio && p.entrega < p.inicio
-          ? `<p class="nota mt-3" style="color:var(--est-proceso)">La entrega es anterior al inicio.</p>` : ''}
+
         ${p.nota ? `<p class="nota mt-3">${esc(p.nota)}</p>` : ''}
       </div>
 
       <div class="mt-4 flex items-center gap-2 border-t border-line pt-4">
-        <span class="flex -space-x-2">
+        <button data-encargado="${p.id}" class="flex min-w-0 items-center gap-2 rounded-full py-1 pr-2 text-left transition hover:bg-panel2"
+          title="Cambiar encargado de ${esc(p.nombre)}">
+          ${avatar(p.responsable || 'u-sin', 28)}
+          <span class="min-w-0">
+            <span class="item-s block leading-tight">Encargado</span>
+            <span class="block truncate text-[12.5px] font-medium leading-tight">${esc(P(p.responsable || 'u-sin').nombre)}</span>
+          </span>
+        </button>
+        <span class="ml-2 flex -space-x-2">
           ${[...new Set([...colaboradores(p).map(c => c.persona), ...duenios(ts)])].slice(0, 5)
             .map(id => avatar(id, 26)).join('') || `<span class="item-s">Sin equipo</span>`}
         </span>
@@ -4859,8 +6072,66 @@ function vacio(titulo, msg, accion){
    PANEL DERECHO
    ═══════════════════════════════════════════════════ */
 
+/* El panel se puede plegar: ocupa un cuarto de pantalla y no siempre
+   hace falta. Se recuerda plegado o no entre sesiones. */
+const RAIL_KEY = 'slate.comms.rail';
+
+function alternarRail(){
+  state.railAbierto = !state.railAbierto;
+  try { localStorage.setItem(RAIL_KEY, state.railAbierto ? '1' : '0'); } catch {}
+  renderAll();
+}
+
+function pintarRail(oculto){
+  const rail = document.getElementById('rail');
+  const cuerpo = document.getElementById('cuerpo');
+  const btn = document.getElementById('railToggle');
+  const ico = document.getElementById('railIcono');
+  const detalle = document.getElementById('railDetail');
+  if (!rail || !cuerpo) return;
+
+  const plegado = oculto || !state.railAbierto;
+  rail.classList.toggle('hidden', oculto);
+  if (detalle) detalle.classList.toggle('hidden', plegado && !oculto);
+  rail.style.borderColor = plegado ? 'var(--linea)' : 'var(--acento)';
+
+  cuerpo.classList.toggle('xl:grid', !oculto);
+  cuerpo.classList.remove('xl:grid-cols-[minmax(0,1fr)_336px]', 'xl:grid-cols-[minmax(0,1fr)_44px]');
+  if (!oculto) cuerpo.classList.add(plegado ? 'xl:grid-cols-[minmax(0,1fr)_44px]' : 'xl:grid-cols-[minmax(0,1fr)_336px]');
+
+  if (btn){
+    btn.setAttribute('aria-expanded', String(!plegado));
+    btn.setAttribute('aria-label', plegado ? 'Mostrar el panel de edición' : 'Ocultar el panel de edición');
+    btn.title = plegado ? 'Mostrar edición' : 'Ocultar edición';
+    btn.style.background = plegado ? 'var(--sup)' : 'var(--acento)';
+    btn.style.color = plegado ? 'var(--texto-2)' : 'var(--acento-tinta)';
+    btn.style.borderColor = plegado ? 'var(--borde)' : 'var(--acento)';
+  }
+  if (ico) ico.innerHTML = `<path d="${plegado ? 'M6 3l5 5-5 5' : 'M10 3 5 8l5 5'}"/>`;
+
+  // Plegado, un rótulo vertical recuerda para qué sirve
+  let rot = document.getElementById('railRotulo');
+  if (plegado && !oculto){
+    if (!rot){
+      rot = document.createElement('div');
+      rot.id = 'railRotulo';
+      rot.className = 'absolute inset-y-0 left-0 w-[44px] items-center justify-center';
+      rot.innerHTML = `<span class="whitespace-nowrap text-[11.5px] font-semibold"
+        style="writing-mode:vertical-rl;transform:rotate(180deg);color:var(--texto-3)">Modifica tu tarea</span>`;
+      rail.appendChild(rot);
+    }
+    rot.style.display = window.innerWidth >= 1280 ? 'flex' : 'none';
+  } else if (rot) rot.style.display = 'none';
+}
+
 function renderRailDetalle(){
   const box = $('#railDetail');
+
+  /* El resumen es un tablero completo: ocupa todo el ancho y no
+     necesita el panel lateral repitiendo al equipo. */
+  const oculto = sub() === 'resumen' && !state.seleccion;
+  pintarRail(oculto);
+  if (!state.railAbierto && !oculto) return;
   const t = T(state.seleccion);
   /* Sin tarea abierta el panel no se queda en blanco: muestra al
      equipo, que además es la zona donde se sueltan las tareas. */
@@ -4879,9 +6150,9 @@ function renderRailDetalle(){
           const tope = Math.max(1, ...PERSONAS.filter(z => !esSistema(z.id))
             .map(z => TAREAS.filter(y => y.responsable === z.id && y.estado !== 'completado').length));
           const carga = Math.round(ab / tope * 100);
-          return `<button data-persona="${x.id}" data-soltar="${x.id}"
+          return `<button data-verpersona="${x.id}" data-soltar="${x.id}"
             class="zona-drop item w-full ${state.persona === x.id ? 'sel' : ''}"
-            title="${esc(x.nombre)} · ${esc(textoAusencia(x))}. Suelta una tarea aquí para asignársela.">
+            title="Ver el trabajo de ${esc(x.nombre)} · ${esc(textoAusencia(x))}. Suelta una tarea aquí para asignársela.">
             ${avatar(x.id, 36)}
             <span class="min-w-0 flex-1">
               <span class="item-t block truncate">${esc(x.nombre)}</span>
@@ -4895,16 +6166,23 @@ function renderRailDetalle(){
         }).join('')}
       </div>
       ${sin ? `<button data-atajo="sinduenio" class="btn-suave mt-4 w-full">${sin} tareas sin dueño</button>` : ''}
-      <p class="item-s mt-4">Arrastra una tarea sobre una persona para asignársela.</p>`;
+      <p class="item-s mt-4" id="pistaAsignar">Arrastra una tarea sobre una persona para asignársela.</p>`;
+    if (matchMedia('(hover: none)').matches){
+      const pista = document.getElementById('pistaAsignar');
+      if (pista) pista.textContent = 'Toca el avatar de una tarea para cambiarle el responsable.';
+    }
 
-    bindPersonas('#railDetail');
+    box.querySelectorAll('[data-verpersona]').forEach(b => b.onclick = ev => {
+      ev.stopPropagation(); verPersona(b.dataset.verpersona);
+    });
     wireSoltar();
     box.querySelectorAll('[data-vista]').forEach(b => b.onclick = () => { state.vista = b.dataset.vista; renderAll(); });
     box.querySelectorAll('[data-atajo]').forEach(b => b.onclick = () => {
-      state.atajo = 'sinduenio'; state.vista = 'tablero'; renderAll();
+      state.atajo = 'sinduenio'; state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; renderAll();
     });
     return;
   }
+  const idPanel = t.id;          // de quién es este panel
   const e = E(t.estado), proy = PR(t.proyecto);
 
   box.innerHTML = `
@@ -4916,7 +6194,7 @@ function renderRailDetalle(){
     <div class="tarjeta p-5">
       <div class="flex items-center gap-2 mb-2">
         <span class="meta">${t.codigo}</span>
-        ${vencida(t) ? `<span class="pildora ml-auto" style="background:color-mix(in srgb, var(--alerta) 14%, transparent);color:var(--alerta)">Vencida</span>` : ''}
+        ${vencida(t) ? `<span class="pildora ml-auto" style="background:color-mix(in srgb, var(--alerta) 16%, transparent);color:var(--alerta)"><span aria-hidden="true">⚠</span> Vencida</span>` : ''}
       </div>
 
       <textarea data-campo="titulo" rows="2"
@@ -4948,13 +6226,19 @@ function renderRailDetalle(){
             </select></label>
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <label class="block"><span class="etiqueta">Inicio</span>
-            <input type="date" data-fecha="inicio" value="${t.inicio || ''}"
-              class="campo"></label>
-          <label class="block"><span class="etiqueta">Fin</span>
-            <input type="date" data-fecha="fin" value="${t.fin || ''}"
-              class="campo"></label>
+        <label class="block">
+          <span class="etiqueta">Fecha de entrega</span>
+          <input type="date" data-fecha="entrega" value="${t.entrega || ''}" class="campo">
+          <p class="nota mt-2">Es la fecha que manda: por ella se ordena tu día, se marca lo vencido y aparece en el calendario.</p>
+        </label>
+
+        <div>
+          <span class="etiqueta">Cuándo se trabaja</span>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="date" data-fecha="inicio" value="${t.inicio || ''}" class="campo" aria-label="Inicio del trabajo">
+            <input type="date" data-fecha="fin" value="${t.fin || ''}" class="campo" aria-label="Fin del trabajo">
+          </div>
+          ${t.inicio && t.fin ? `<p class="nota mt-2">${Math.round((dt(t.fin) - dt(t.inicio)) / 864e5) + 1} días de trabajo</p>` : ''}
         </div>
       </div>
     </div>
@@ -5045,6 +6329,8 @@ function renderRailDetalle(){
 
   const btnBorrar = box.querySelector('[data-borrartarea]');
   if (btnBorrar) btnBorrar.onclick = () => borrarTarea(t.id);
+  wireProyectoRapido(box);
+  wirePrioridad(box);
   const btnDup = box.querySelector('[data-duplicar]');
   if (btnDup) btnDup.onclick = () => duplicarTarea(t.id);
 
@@ -5062,6 +6348,8 @@ function renderRailDetalle(){
   });
 
   box.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
+    const t = T(idPanel);
+    if (!t) return;
     t.progreso = +b.dataset.prog;
     if (t.progreso === 1 && t.estado !== 'completado') t.estado = 'completado';
     if (t.progreso > 0 && t.progreso < 1 && t.estado === 'pendiente') t.estado = 'proceso';
@@ -5070,6 +6358,12 @@ function renderRailDetalle(){
   });
   box.querySelectorAll('[data-campo]').forEach(el => {
     const aplicar = () => {
+      // El cambio pertenece a la tarea que este panel estaba
+      // mostrando, no a la que acabas de seleccionar. Si haces clic
+      // en otra tarea mientras escribías, lo escrito se guarda en la
+      // correcta en vez de perderse o caer en la equivocada.
+      const t = T(idPanel);
+      if (!t) return;
       const campo = el.dataset.campo;
       const valor = el.value.trim ? el.value.trim() : el.value;
       if (campo === 'titulo' && !valor) { el.value = t.titulo; return; }
@@ -5082,12 +6376,31 @@ function renderRailDetalle(){
       toast(etiqueta + ' actualizado', E(t.estado).color);
       renderAll();
     };
-    if (el.tagName === 'SELECT') el.onchange = aplicar;
-    else { el.onblur = aplicar;
-           el.onkeydown = ev => { if (ev.key === 'Enter'){ ev.preventDefault(); el.blur(); } }; }
+    if (el.tagName === 'SELECT'){ el.onchange = aplicar; return; }
+
+    // El título se guarda mientras escribes, no al salir del campo.
+    // Depender del blur era lo que perdía el cambio al cambiar de tarea.
+    let temp;
+    el.oninput = () => {
+      clearTimeout(temp);
+      temp = setTimeout(() => {
+        const t = T(idPanel);
+        if (!t) return;
+        const v = el.value.trim();
+        if (!v || t.titulo === v) return;
+        t.titulo = v;
+        // Se refresca solo la fila, no el tablero entero
+        document.querySelectorAll(`[data-abrir="${t.id}"] .item-t`).forEach(n => n.textContent = v);
+        if (typeof Persist !== 'undefined') Persist.schedule();
+      }, 450);
+    };
+    el.onblur = () => { clearTimeout(temp); aplicar(); };
+    el.onkeydown = ev => { if (ev.key === 'Enter'){ ev.preventDefault(); el.blur(); } };
   });
 
   box.querySelectorAll('[data-fecha]').forEach(inp => inp.onchange = () => {
+    const t = T(idPanel);
+    if (!t) return;
     t[inp.dataset.fecha] = inp.value || null;
     if (t.inicio && t.fin && t.fin < t.inicio) t.fin = t.inicio;
     toast('Fechas actualizadas', 'var(--acento)');
@@ -5384,6 +6697,103 @@ function duplicarTarea(id){
   renderAll();
 }
 
+
+/* ═══════════════════════════════════════════════════
+   APARIENCIA
+   Tema, acento y densidad. Se guardan por navegador
+   porque son preferencias de quien mira, no del tablero.
+   ═══════════════════════════════════════════════════ */
+
+const ACENTOS = [
+  { id:'rojo',    nombre:'Rojo',     osc:'#FF7A6B', cla:'#B4232E' },
+  { id:'azul',    nombre:'Azul',     osc:'#6E9BFF', cla:'#2456D6' },
+  { id:'menta',   nombre:'Menta',    osc:'#5FD3D0', cla:'#0B6B5A' },
+  { id:'violeta', nombre:'Violeta',  osc:'#A78BFA', cla:'#6D28D9' },
+  { id:'verde',   nombre:'Verde',    osc:'#5FD08A', cla:'#17734A' },
+  { id:'ambar',   nombre:'Ámbar',    osc:'#F0B95C', cla:'#8A5A05' },
+  { id:'rosa',    nombre:'Rosa',     osc:'#F58BB0', cla:'#A62A5C' }
+];
+const ACENTO_KEY = 'slate.comms.acento';
+const DENS_KEY   = 'slate.comms.densidad';
+
+function aplicarAcento(id){
+  const a = ACENTOS.find(x => x.id === id) || ACENTOS[0];
+  const oscuro = document.documentElement.getAttribute('data-tema') !== 'claro';
+  const raiz = document.documentElement;
+  raiz.style.setProperty('--acento', oscuro ? a.osc : a.cla);
+  raiz.style.setProperty('--acento-tinta', oscuro ? '#0A0B0C' : '#FFFFFF');
+  raiz.setAttribute('data-acento', a.id);
+}
+
+function aplicarDensidad(d){
+  document.documentElement.setAttribute('data-densidad', d);
+}
+
+function iniciarApariencia(){
+  let a, d;
+  try { a = localStorage.getItem(ACENTO_KEY); d = localStorage.getItem(DENS_KEY); } catch { /* incógnito */ }
+  aplicarAcento(a || 'rojo');
+  aplicarDensidad(d || 'comoda');
+}
+
+function abrirApariencia(){
+  focoPrevio = document.activeElement;
+  const temaActual = document.documentElement.getAttribute('data-tema');
+  const acentoActual = document.documentElement.getAttribute('data-acento') || 'rojo';
+  const densActual = document.documentElement.getAttribute('data-densidad') || 'comoda';
+
+  $('#apTema').innerHTML = [['oscuro','Oscuro'],['claro','Claro'],['sistema','Sistema']].map(([k, l]) =>
+    `<button data-tema-opt="${k}" aria-pressed="${temaActual === k}"
+      class="rounded-[12px] border px-3 py-2.5 text-[12.5px] font-medium transition"
+      style="${temaActual === k ? 'border-color:var(--acento);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--acento)'
+                                : 'border-color:var(--linea);color:var(--texto-2)'}">${l}</button>`).join('');
+
+  $('#apColores').innerHTML = ACENTOS.map(a => {
+    const on = a.id === acentoActual;
+    const oscuro = temaActual !== 'claro';
+    return `<button data-acento-opt="${a.id}" aria-label="${a.nombre}" title="${a.nombre}"
+      class="h-9 w-9 rounded-full transition"
+      style="background:${oscuro ? a.osc : a.cla};${on ? 'box-shadow:0 0 0 2px var(--sup),0 0 0 4px ' + (oscuro ? a.osc : a.cla) : 'opacity:.6'}"></button>`;
+  }).join('');
+
+  $('#apDensidad').innerHTML = [['comoda','Cómoda'],['compacta','Compacta']].map(([k, l]) =>
+    `<button data-dens-opt="${k}" aria-pressed="${densActual === k}"
+      class="rounded-[12px] border px-3 py-2.5 text-[12.5px] font-medium transition"
+      style="${densActual === k ? 'border-color:var(--acento);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--acento)'
+                                : 'border-color:var(--linea);color:var(--texto-2)'}">${l}</button>`).join('');
+
+  $('#apColores').querySelectorAll('[data-acento-opt]').forEach(b => b.onclick = () => {
+    aplicarAcento(b.dataset.acentoOpt);
+    try { localStorage.setItem(ACENTO_KEY, b.dataset.acentoOpt); } catch {}
+    abrirApariencia();
+  });
+  $('#apTema').querySelectorAll('[data-tema-opt]').forEach(b => b.onclick = () => {
+    const k = b.dataset.temaOpt;
+    if (k === 'sistema'){
+      try { localStorage.removeItem(TEMA_KEY); } catch {}
+      aplicarTema(matchMedia('(prefers-color-scheme: light)').matches ? 'claro' : 'oscuro');
+    } else {
+      aplicarTema(k);
+      try { localStorage.setItem(TEMA_KEY, k); } catch {}
+    }
+    aplicarAcento(document.documentElement.getAttribute('data-acento') || 'rojo');
+    abrirApariencia();
+  });
+  $('#apDensidad').querySelectorAll('[data-dens-opt]').forEach(b => b.onclick = () => {
+    aplicarDensidad(b.dataset.densOpt);
+    try { localStorage.setItem(DENS_KEY, b.dataset.densOpt); } catch {}
+    abrirApariencia();
+  });
+
+  $('#aparienciaModal').classList.remove('hidden');
+}
+
+function cerrarApariencia(){
+  $('#aparienciaModal').classList.add('hidden');
+  if (focoPrevio && document.body.contains(focoPrevio)) focoPrevio.focus();
+  focoPrevio = null;
+}
+
 /* ═══════════════════════════════════════════════════
    TEMA CLARO / OSCURO
    Se guarda por navegador, igual que la identidad: cada
@@ -5409,7 +6819,9 @@ function aplicarTema(t){
   const texto = document.getElementById('temaTexto');
   if (texto) texto.textContent = t === 'oscuro' ? 'Claro' : 'Oscuro';
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', t === 'oscuro' ? '#0E0F12' : '#F4F5F7');
+  if (meta) meta.setAttribute('content', t === 'oscuro' ? '#0A0B0C' : '#F1F2F4');
+  if (typeof aplicarAcento === 'function')
+    aplicarAcento(document.documentElement.getAttribute('data-acento') || 'rojo');
 }
 
 function iniciarTema(){
@@ -5430,6 +6842,44 @@ function alternarTema(){
    ORQUESTACIÓN
    ═══════════════════════════════════════════════════ */
 
+/* Abrir un proyecto desde donde estés: filtra el cronograma por él y
+   despliega sus tareas. Antes había que ir a Proyectos y buscarlo. */
+function irAProyecto(pid){
+  if (!PR(pid)) return;
+  state.proyecto = pid;
+  state.abiertos.add(pid);
+  state.agrupar = 'proyecto';
+  state.vista = 'organigrama'; state.sub.organigrama = 'gantt';
+  renderAll();
+  toast('Proyecto: ' + PR(pid).nombre, E(PR(pid).estado).color);
+}
+
+function wireProyectoRapido(raiz = document){
+  raiz.querySelectorAll('[data-verproy]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); irAProyecto(b.dataset.verproy);
+  });
+}
+
+/* Seleccionar una tarea NO redibuja el tablero entero.
+   Antes sí, y con 116 tareas eso tardaba lo suficiente como para
+   comerse el clic siguiente: parecía que se congelaba y quedaba
+   abierto el detalle de la tarea anterior. Ahora solo se marca la
+   fila y se repinta el panel derecho. */
+function seleccionar(id){
+  if (state.seleccion === id) return;
+  state.seleccion = id;
+  // Si el panel estaba plegado, se abre: elegiste una tarea para verla
+  if (!state.railAbierto){
+    state.railAbierto = true;
+    try { localStorage.setItem(RAIL_KEY, '1'); } catch {}
+  }
+  document.querySelectorAll('[data-abrir]').forEach(el =>
+    el.classList.toggle('sel', el.dataset.abrir === id));
+  document.querySelectorAll('[data-id]').forEach(el =>
+    el.classList.toggle('selected', el.dataset.id === id));
+  renderRailDetalle();
+}
+
 /* Todo lo que se puede pulsar con el ratón se puede pulsar con el
    teclado. Se aplica a los <div> y <span> clicables: los <button>
    ya lo traen del navegador. */
@@ -5449,9 +6899,13 @@ function renderFiltros(){
   const chips = [];
   if (state.persona)  chips.push(['persona',  'Responsable: ' + P(state.persona).nombre]);
   if (state.area)     chips.push(['area',     'Área: ' + state.area]);
-  if (state.proyecto) chips.push(['proyecto', 'Proyecto: ' + (PR(state.proyecto) || {}).nombre]);
-  if (state.query)    chips.push(['query',    'Búsqueda: ' + state.query]);
+  if (state.proyecto) chips.push(['proyecto', (PR(state.proyecto) || {}).nombre]);
+  if (state.query){
+    const n = visibles().length;
+    chips.push(['query', `“${state.query}” · ${n} ${n === 1 ? 'resultado' : 'resultados'}`]);
+  }
   if (state.filtroEstado) chips.push(['filtroEstado', E(state.filtroEstado).nombre]);
+  if (state.filtroPrioridad) chips.push(['filtroPrioridad', 'Prioridad ' + PRI(state.filtroPrioridad).nombre.toLowerCase()]);
   if (state.atajo === 'vencidas')  chips.push(['atajo', 'Solo vencidas']);
   if (state.atajo === 'sinduenio') chips.push(['atajo', 'Solo sin dueño']);
 
@@ -5463,7 +6917,7 @@ function renderFiltros(){
 
   bar.querySelectorAll('[data-quitar]').forEach(b => b.onclick = () => {
     const k = b.dataset.quitar;
-    if (k === 'todo'){ state.persona = state.area = state.proyecto = state.filtroEstado = state.atajo = null;
+    if (k === 'todo'){ state.persona = state.area = state.proyecto = state.filtroEstado = state.filtroPrioridad = state.atajo = null;
                        state.query = ''; $('#search').value = ''; }
     else if (k === 'query'){ state.query = ''; $('#search').value = ''; }
     else state[k] = null;
@@ -5475,46 +6929,63 @@ function renderViewBody(){
   const body = $('#viewBody');
   const lista = visibles();
 
-  const titulo = { gantt:'Cronograma', tablero:'Tablero', calendario:'Calendario',
-                   mias:'Mi trabajo', proyectos:'Proyectos', equipo:'Equipo' }[state.vista];
-  const sub = {
-    gantt:'Quién hace qué y cuándo. Toca una fila para abrir sus tareas; arrastra una tarea a una persona de arriba para reasignarla.',
-    tablero:'Arrastra una tarjeta entre columnas para cambiar su estado, o suéltala sobre una persona para reasignarla.',
-    calendario:'Cada tarea cae en su fecha de entrega. Los rombos son hitos: fechas que no se mueven.',
+  const v = state.vista, sv = sub();
+  const titulo = { dashboard:'Dashboard', organigrama:'Organigrama',
+                   proyectos:'Proyectos', equipo:'Equipo' }[v];
+  const AYUDAS = {
+    resumen:'Cómo va el tráfico hoy. Toca cualquier cifra para ir al detalle.',
     mias:'Lo tuyo, ordenado por lo que vence primero. Abajo están las tareas que nadie ha tomado.',
+    tablero:'Arrastra una tarjeta entre columnas para cambiar su estado, o suéltala sobre una persona.',
+    gantt:'De cuándo a cuándo va cada proyecto. Toca una fila para abrir sus tareas.',
+    calendario:'Cada tarea cae en su fecha de entrega. Los rombos son hitos: fechas que no se mueven.',
     proyectos:'Toca un proyecto para verlo en el cronograma. Al eliminarlo, sus tareas quedan sueltas.',
     equipo:'Carga de cada persona y dónde está hoy. Aquí se agrega, edita o quita gente.'
-  }[state.vista];
+  };
+  const ayuda = AYUDAS[sv] || AYUDAS[v];
+
+  const pestanas = SUBVISTAS[v] ? `
+    <div class="segmento mb-5" role="tablist" aria-label="${titulo}">
+      ${SUBVISTAS[v].map(([k, l]) =>
+        `<button data-sub="${k}" role="tab" aria-selected="${sv === k}">${l}</button>`).join('')}
+    </div>` : '';
 
   let inner;
-  if (state.vista === 'gantt')            inner = renderGantt();
-  else if (state.vista === 'calendario')  inner = renderCalendario();
-  else if (state.vista === 'proyectos')   inner = renderProyectos();
-  else if (state.vista === 'equipo')      inner = renderEquipo();
-  else if (state.vista === 'mias')        inner = renderMiTrabajo();
-  else if (!lista.length)                 inner = vacio('Sin resultados', 'Ninguna tarea coincide con los filtros o la búsqueda.', { id:'limpiar', texto:'Quitar filtros' });
-  else                                    inner = renderTablero();
+  if (v === 'proyectos')       inner = renderProyectos();
+  else if (v === 'equipo')     inner = renderEquipo();
+  else if (sv === 'resumen')   inner = renderResumen();
+  else if (sv === 'mias')      inner = renderMiTrabajo();
+  else if (sv === 'gantt')     inner = renderGantt();
+  else if (sv === 'calendario')inner = renderCalendario();
+  else if (!lista.length)      inner = vacio('Sin resultados', 'Ninguna tarea coincide con los filtros o la búsqueda.', { id:'limpiar', texto:'Quitar filtros' });
+  else                         inner = renderTablero();
 
-  const conFranja = false;   // el equipo vive ahora en el panel derecho
+  const conFranja = false;   // el equipo vive en el panel derecho
 
   body.innerHTML = `${conFranja ? franjaEquipo() : ''}
     <div class="mb-4">
       <h2 class="titulo">${titulo}</h2>
-      <p class="nota mt-1.5">${sub}</p>
-    </div>${inner}`;
+      <p class="nota mt-1.5">${ayuda}</p>
+    </div>${pestanas}${inner}`;
 
-  if (state.vista === 'gantt') wireGantt();
-  if (state.vista === 'calendario') wireCalendario();
-  if (state.vista === 'tablero') wireTablero();
-  if (state.vista === 'mias'){ wireMiTrabajo(); wireEstados(); }
-  if (state.vista === 'equipo') wireEquipo();
-  if (state.vista === 'proyectos') wireProyectos();
+  body.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => {
+    state.sub[state.vista] = b.dataset.sub; renderAll();
+  });
+
+  if (sv === 'resumen'){ wireResumen(); wireSoltar(); }
+  if (sv === 'gantt') wireGantt();
+  if (sv === 'calendario') wireCalendario();
+  if (sv === 'tablero') wireTablero();
+  if (sv === 'mias'){ wireMiTrabajo(); wireEstados(); }
+  if (v === 'equipo') wireEquipo();
+  if (v === 'proyectos') wireProyectos();
   wireAsignar();
   wireSoltar();
+  wireProyectoRapido(body);
+  wirePrioridad(body);
   body.querySelectorAll('[data-vista]').forEach(b => b.onclick = () => { state.vista = b.dataset.vista; renderAll(); });
   body.querySelectorAll('[data-vacio]').forEach(b => b.onclick = () => {
     if (b.dataset.vacio === 'limpiar'){
-      state.persona = state.area = state.proyecto = state.filtroEstado = state.atajo = null;
+      state.persona = state.area = state.proyecto = state.filtroEstado = state.filtroPrioridad = state.atajo = null;
       state.query = ''; $('#search').value = '';
       renderAll();
     }
@@ -5522,11 +6993,15 @@ function renderViewBody(){
     if (b.dataset.vacio === 'nuevoproy') abrirProyecto(null);
   });
 
-  body.querySelectorAll('[data-abrir]').forEach(el => accionable(el, ev => {
-    ev.stopPropagation();
-    state.seleccion = el.dataset.abrir;
-    renderAll();
-  }));
+  body.querySelectorAll('[data-abrir]').forEach(el => {
+    // pointerdown va antes que el blur del campo que estuvieras
+    // editando, así el clic nunca se pierde
+    el.addEventListener('pointerdown', ev => {
+      if (ev.target.closest('button, select, input, textarea, a')) return;
+      seleccionar(el.dataset.abrir);
+    });
+    accionable(el, ev => { ev.stopPropagation(); seleccionar(el.dataset.abrir); });
+  });
   body.querySelectorAll('[data-proyecto]').forEach(el => accionable(el, () => {
     state.proyecto = el.dataset.proyecto;
     state.vista = 'gantt';
@@ -5538,7 +7013,7 @@ function renderViewBody(){
 /* Cinco destinos como máximo: más de eso en una barra inferior deja
    de ser navegación y pasa a ser un menú. Equipo vive en la franja
    de arriba y en el chip de la barra lateral. */
-const VISTAS_MOVIL = ['mias','gantt','tablero','calendario','proyectos'];
+const VISTAS_MOVIL = ['dashboard','organigrama','proyectos','equipo'];
 
 function renderNavMovil(){
   const n = document.getElementById('navMovil');
@@ -5608,6 +7083,9 @@ $('#exportar').onclick = exportarCSV;
 $('#importar').onclick = pedirCSV;
 $('#toastUndo').onclick = () => { $('#toast').classList.add('hidden'); deshacer(); };
 $('#temaBtn').onclick = alternarTema;
+$('#aparienciaBtn').onclick = abrirApariencia;
+$('#railToggle').onclick = alternarRail;
+document.querySelectorAll('#aparienciaModal [data-cerrarap]').forEach(b => b.onclick = cerrarApariencia);
 $('#yoChip').onclick = abrirIdentidad;
 $('#nuevaTarea').onclick = () => abrirModal(HOY, 'tarea');
 $('#identInvitado').onclick = () => {
@@ -5626,7 +7104,7 @@ $('#evSubmit').onclick = guardarEvento;
 $('#evTitle').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarEvento(); });
 
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape'){ cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarProyecto(); cerrarNav(); }
+  if (ev.key === 'Escape'){ cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarProyecto(); cerrarApariencia(); cerrarNav(); }
   if (ev.key.toLowerCase() === 'n' && !ev.metaKey && !ev.ctrlKey &&
       !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
     ev.preventDefault(); abrirModal(HOY, 'tarea');
@@ -5634,9 +7112,48 @@ document.addEventListener('keydown', ev => {
 });
 
 let buscaTimer;
+
+/* Buscar desde el Resumen o el Equipo no mostraba nada, porque esas
+   vistas no son listas de tareas. Ahora la búsqueda salta sola a una
+   vista donde los resultados se puedan ver. */
+/* Vistas donde una búsqueda no se vería: el resumen y el equipo no
+   son listas, y "Mi trabajo" solo muestra lo tuyo. Buscar es global,
+   así que salta al tablero, que enseña todo. */
+const VISTAS_SIN_LISTA = ['organigrama', 'equipo', 'proyectos'];
+
+function buscar(texto){
+  const previa = state.query;
+  state.query = sinTildes(texto.trim());
+
+  // Buscar es global: salta al tablero, que enseña todo
+  if (state.query && (VISTAS_SIN_LISTA.includes(state.vista) || sub() !== 'tablero')){
+    state.vistaPrevia = { vista:state.vista, sub:{ ...state.sub } };
+    state.vista = 'dashboard'; state.sub.dashboard = 'tablero';
+  }
+  if (!state.query && previa && state.vistaPrevia){
+    state.vista = state.vistaPrevia.vista;
+    state.sub = state.vistaPrevia.sub;
+    state.vistaPrevia = null;
+  }
+  renderAll();
+}
+
 $('#search').addEventListener('input', ev => {
   clearTimeout(buscaTimer);
-  buscaTimer = setTimeout(() => { state.query = ev.target.value.trim().toLowerCase(); renderFiltros(); renderViewBody(); }, 140);
+  buscaTimer = setTimeout(() => buscar(ev.target.value), 160);
+});
+$('#search').addEventListener('keydown', ev => {
+  if (ev.key === 'Escape'){ ev.target.value = ''; buscar(''); ev.target.blur(); }
+});
+
+/* Atajo: barra o Ctrl+F llevan al buscador desde donde estés */
+document.addEventListener('keydown', ev => {
+  const escribiendo = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if (((ev.key === 'f' && (ev.ctrlKey || ev.metaKey)) || (ev.key === '/' && !escribiendo))){
+    ev.preventDefault();
+    $('#search').focus();
+    $('#search').select();
+  }
 });
 
 /* ═══════════════════════════════════════════════════
@@ -5804,6 +7321,7 @@ $('#resetBoard').onclick = () => { if (confirm('¿Restaurar los datos originales
 /* ═══ Arranque ═══ */
 
 iniciarTema();
+iniciarApariencia();
 
 (async function arranque(){
   const g = await Persist.cargar();
@@ -5814,6 +7332,7 @@ iniciarTema();
     if (Array.isArray(g.personas) && g.personas.length) PERSONAS = g.personas;
     if (Array.isArray(g.areas) && g.areas.length) AREAS = g.areas;
   }
+  try { state.railAbierto = localStorage.getItem(RAIL_KEY) !== '0'; } catch {}
   const guardado = cargarYo();
   state.yo = guardado || null;
 
@@ -5822,7 +7341,7 @@ iniciarTema();
 
   // Primera visita en este navegador: preguntar quién es antes de nada.
   if (guardado === null){ abrirIdentidad(); }
-  else if (guardado){ state.vista = 'mias'; renderAll(); }
+  else if (guardado){ state.vista = 'dashboard'; state.sub.dashboard = 'resumen'; renderAll(); }
 
   Persist.ultimo = Persist.foto();
   Persist.listo = true;
