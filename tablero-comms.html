@@ -4450,6 +4450,21 @@ function normalizar(){
   [...TAREAS, ...PROYECTOS].forEach(x => { if (x.carpeta && !cids.has(x.carpeta)) x.carpeta = null; });
   if (state.carpeta && !cids.has(state.carpeta)) state.carpeta = null;
 
+  /* Códigos repetidos. Las versiones viejas numeraban contando filas,
+     así que borrar una tarea hacía que la siguiente reutilizara un
+     código ya usado. Se renumeran las repetidas a partir del mayor y
+     se conserva la primera, para no cambiarle el código a quien ya lo
+     tenga anotado en otro sitio. */
+  const vistos = new Set();
+  let mayorCod = TAREAS.reduce((m, t) => {
+    const n = parseInt(String(t.codigo || '').replace(/\D/g, ''), 10);
+    return isNaN(n) ? m : Math.max(m, n);
+  }, 0);
+  TAREAS.forEach(t => {
+    if (!t.codigo || vistos.has(t.codigo)) t.codigo = 'T-' + String(++mayorCod).padStart(3, '0');
+    vistos.add(t.codigo);
+  });
+
   /* Si algo deja la vista en un valor que no existe, la pantalla se
      queda a medias y sin manejadores. Antes que mostrar eso, se
      vuelve al Dashboard. */
@@ -4484,7 +4499,7 @@ const VISTAS = [
 /* Cada pestaña con pestañas dentro: el segundo nivel se elige arriba
    del contenido, no en el menú lateral. */
 const SUBVISTAS = {
-  dashboard:   [['resumen','Resumen'], ['mias','Mi trabajo'], ['tablero','Tablero']],
+  dashboard:   [['resumen','Resumen'], ['mias','Mi trabajo'], ['tablero','Tablero'], ['archivo','Completadas']],
   organigrama: [['gantt','Cronograma'], ['calendario','Calendario']]
 };
 const sub = () => state.sub[state.vista] || (SUBVISTAS[state.vista] || [[null]])[0][0];
@@ -4496,6 +4511,7 @@ const state = {
   diasAbiertos:new Set(),      // días del calendario desplegados
   filtroEstado:null, filtroPrioridad:null, carpeta:null, atajo:null, vistaPrevia:null, railAbierto:true,
   agruparProy:'carpeta',       // cómo se agrupa la vista Proyectos
+  verCompletadas:false,        // lo terminado vive en su propia pestaña
   carpetasPlegadas:new Set(),  // qué carpetas están cerradas en el menú
   yo:null                      // quién está usando ESTE navegador
 };
@@ -4636,6 +4652,13 @@ function toast(texto, color = 'var(--est-completado)', conDeshacer = false){
    así los contadores de cada opción del menú se pueden calcular sin
    que dependan de en qué pestaña estés parado. */
 function pasaFiltros(t){
+  /* El archivo. Con 64 de 140 tareas terminadas, dejarlas en las
+     listas del día a día era como trabajar sobre el escritorio sin
+     vaciar la papelera: casi la mitad de lo que veías ya no había
+     que hacerlo. Se van a su pestaña, salvo que las pidas por el
+     filtro de estado o enciendas el interruptor de la barra. */
+  if (!state.verCompletadas && t.estado === 'completado'
+      && state.filtroEstado !== 'completado') return false;
   if (state.persona  && t.responsable !== state.persona) return false;
   if (state.area     && t.area !== state.area) return false;
   /* SUELTAS no es un proyecto: es "las que no tienen ninguno" */
@@ -4662,6 +4685,16 @@ function pasaFiltros(t){
 function visibles(){
   return TAREAS.filter(t =>
     !(sub() === 'mias' && state.yo && !participa(t, state.yo)) && pasaFiltros(t));
+}
+
+/* Lo completado, pasando el RESTO de filtros. Se usa donde el archivo
+   sí se tiene que ver: su pestaña y la última columna del tablero. */
+function completadasFiltradas(){
+  const previo = state.verCompletadas;
+  state.verCompletadas = true;
+  const r = TAREAS.filter(t => t.estado === 'completado' && pasaFiltros(t));
+  state.verCompletadas = previo;
+  return r;
 }
 
 const hayFiltros = () => !!(state.persona || state.area || state.proyecto || state.carpeta ||
@@ -5146,14 +5179,81 @@ function repartoCarpetas(ts, opts = {}){
   </div>`;
 }
 
+/* ═══════════════════════════════════════════════════
+   COMPLETADAS
+   El archivo. No es una lista de trabajo: es el sitio
+   donde se va a buscar algo que ya se hizo. Por eso se
+   ordena por mes, de lo más reciente hacia atrás, y no
+   por urgencia. Toda tarea se puede reabrir desde aquí.
+   ═══════════════════════════════════════════════════ */
+
+function renderArchivo(){
+  const ts = completadasFiltradas();
+  const total = TAREAS.filter(t => t.estado === 'completado').length;
+
+  if (!ts.length) return total
+    ? vacio('Sin resultados en el archivo',
+            `Hay ${total} tareas completadas, pero ninguna coincide con los filtros puestos.`,
+            { id:'limpiar', texto:'Quitar filtros' })
+    : vacio('Todavía no hay nada terminado',
+            'Cuando marques una tarea como completada, se guarda aquí y sale de las listas de trabajo.');
+
+  /* Por mes, de lo más reciente hacia atrás */
+  const meses = {};
+  ts.forEach(t => {
+    const f = fechaClave(t);
+    const k = f ? f.slice(0, 7) : 'sin';
+    (meses[k] = meses[k] || []).push(t);
+  });
+  const claves = Object.keys(meses).filter(k => k !== 'sin').sort().reverse();
+  if (meses.sin) claves.push('sin');
+
+  const nombreMes = k => k === 'sin' ? 'Sin fecha'
+    : `${MESES_L[+k.slice(5, 7) - 1]} ${k.slice(0, 4)}`;
+
+  return `
+    <div class="caja mb-5 flex flex-wrap items-center gap-4 p-5">
+      <div>
+        <p class="item-s !mt-0">Tareas completadas</p>
+        <p class="heroe mt-1" style="color:var(--est-completado)">${ts.length}</p>
+      </div>
+      <p class="nota max-w-[320px]">
+        Ya no aparecen en el tablero, el cronograma ni tu día. Búscalas aquí
+        o enciende "Con completadas" en la barra de arriba.
+      </p>
+      <span class="ml-auto flex flex-wrap gap-1.5">
+        ${repartoCarpetas(ts, { tope:4 }).replace('mb-3', 'mb-0') || ''}
+      </span>
+    </div>
+
+    ${claves.map(k => {
+      const grupo = ordenarPorUrgencia(meses[k]).reverse();
+      return `<section class="mb-7" data-seccion="${esc(nombreMes(k).toLowerCase())}">
+        <div class="mb-3 flex items-baseline gap-2">
+          <h3 class="seccion">${esc(nombreMes(k))}</h3>
+          <span class="meta">${grupo.length}</span>
+        </div>
+        <div class="space-y-2">${grupo.map(t => filaTarea(t, { reabrir:true })).join('')}</div>
+      </section>`;
+    }).join('')}`;
+}
+
 function renderTablero(){
   const lista = visibles();
+  const archivadas = completadasFiltradas();
   const cols = ESTADOS.map((e, i) => {
-    const items = lista.filter(t => t.estado === e.id);
+    /* La columna de completadas se surte del archivo, no de la lista
+       de trabajo. Plegada muestra las cuatro últimas: sigue siendo un
+       sitio donde soltar una tarjeta, sin ser un cementerio de 64. */
+    const esArchivo = e.id === 'completado';
+    const todas = esArchivo ? archivadas : lista.filter(t => t.estado === e.id);
+    const items = (esArchivo && !state.verCompletadas)
+      ? ordenarPorUrgencia(todas).reverse().slice(0, 4)
+      : todas;
     return `<div class="flex min-w-[268px] flex-1 flex-col rise" style="animation-delay:${i*60}ms">
       <div class="mb-2 flex items-center gap-2 border-t-2 pt-2.5" style="border-color:${e.color}">
         <span class="stencil-thin text-[11px]" style="color:${e.color}">${e.nombre}</span>
-        <span class="meta">${String(items.length).padStart(2,'0')}</span>
+        <span class="meta">${String(todas.length).padStart(2,'0')}</span>
         ${items.filter(t => vencida(t)).length
           ? `<span class="chip-mini" style="background:${tinte('var(--alerta)', 16)};color:var(--alerta)"
               title="${items.filter(t => vencida(t)).length} vencidas en esta columna"><span aria-hidden="true">⚠</span>${items.filter(t => vencida(t)).length}</span>` : ''}
@@ -5163,6 +5263,9 @@ function renderTablero(){
       <div class="col-drop flex-1 space-y-2.5 rounded-[5px] p-1 min-h-[120px] max-h-[70vh] overflow-y-auto" data-col="${e.id}">
         ${items.map(tarjeta).join('') || `<div class="grid h-[110px] place-items-center rounded-[12px] border border-dashed border-line">
           <span class="meta">Suelta una tarjeta aquí</span></div>`}
+        ${esArchivo && todas.length > items.length
+          ? `<button data-ir="archivo" class="w-full rounded-[12px] border border-dashed border-line py-3 text-center transition hover:border-dim hover:bg-panel2">
+              <span class="item-s !mt-0">Y ${todas.length - items.length} más · ver el archivo</span></button>` : ''}
       </div></div>`;
   }).join('');
   return `<div class="scroll-x flex gap-4 overflow-x-auto pb-2">${cols}</div>`;
@@ -5700,6 +5803,10 @@ function wireResumen(){
     ev.stopPropagation(); verPersona(b.dataset.verpersona);
   });
   document.querySelectorAll('[data-ir]').forEach(b => b.onclick = () => {
+    if (b.dataset.ir === 'archivo'){
+      state.vista = 'dashboard'; state.sub.dashboard = 'archivo';
+      return renderAll();
+    }
     const a = b.dataset.ir;
     if (a === 'vencidas' || a === 'sinduenio'){ state.atajo = a; state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
     else if (a === 'mias'){ state.vista = 'dashboard'; state.sub.dashboard = 'mias'; }
@@ -5846,6 +5953,7 @@ function filaTarea(t, opts = {}){
         <span class="hidden sm:inline">${e.nombre}</span></span>
       ${botonPrioridad(t, true)}
       ${opts.tomar ? `<button data-tomar="${t.id}" class="btn-principal !px-3.5 !py-1.5 !text-[12px]">Tomarla</button>` : ''}
+      ${opts.reabrir ? `<button data-reabrir="${t.id}" class="btn-suave !px-3 !py-1.5 !text-[12px]">Reabrir</button>` : ''}
     </span>
   </div>`;
 }
@@ -5931,7 +6039,7 @@ function renderMiTrabajo(){
                                         && diasRestantes(fechaClave(t)) <= 7);
   const despues   = activas.filter(t => !vencida(t) && fechaClave(t) && diasRestantes(fechaClave(t)) > 7);
   const sinFecha  = activas.filter(t => !fechaClave(t));
-  const cerradas  = mias.filter(t => t.estado === 'completado');
+  const cerradas  = completadasFiltradas().filter(t => participa(t, state.yo));
   const huerfanas = TAREAS.filter(t => t.responsable === 'u-sin' && t.estado !== 'completado');
 
   /* Una frase que diga la verdad de tu día, no un saludo vacío */
@@ -5994,10 +6102,16 @@ function renderMiTrabajo(){
     ${seccion('Sin fecha', sinFecha, { nota:'ponles una fecha para que salgan en el cronograma' })}
     ${seccion('Entregadas, esperando visto bueno', revision, { color:'var(--est-revision)', nota:'ya no dependen de ti' })}
     ${huerfanas.length && !filtrando ? seccion('Sin dueño — puedes tomarlas', huerfanas, { color:'var(--acento)', tomar:true }) : ''}
-    ${cerradas.length ? `<details class="mt-2">
-      <summary class="tape cursor-pointer text-dim hover:text-ink">Completadas (${cerradas.length})</summary>
-      <div class="mt-3 space-y-2">${ordenarPorUrgencia(cerradas).map(t => filaTarea(t)).join('')}</div>
-    </details>` : ''}
+    ${cerradas.length ? `<button data-ir="archivo"
+      class="mt-2 flex w-full items-center gap-3 rounded-[14px] border border-dashed border-line px-4 py-3.5 text-left transition hover:border-dim hover:bg-panel2">
+      <span class="grid h-9 min-w-[36px] place-items-center rounded-[11px] px-2 text-[15px] font-bold"
+        style="background:${tinte('var(--est-completado)', 14)};color:var(--est-completado)">${cerradas.length}</span>
+      <span>
+        <span class="block text-[13px] font-medium">Completadas</span>
+        <span class="item-s block !mt-0">Guardadas en su pestaña, fuera de tus listas</span>
+      </span>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="ml-auto shrink-0 text-dim"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+    </button>` : ''}
 
     ${!abiertas.length && !cerradas.length
       ? (filtrando
@@ -6163,6 +6277,17 @@ function wireEquipo(){
 }
 
 function wireMiTrabajo(){
+  document.querySelectorAll('[data-reabrir]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const t = T(b.dataset.reabrir);
+    if (!t) return;
+    recordar('reabrir ' + t.titulo);
+    t.estado = 'proceso';
+    /* El avance se queda como estaba: reabrir no borra lo que ya se
+       hizo, solo dice que la tarea vuelve a estar viva. */
+    toast('Reabierta: ' + t.titulo, E('proceso').relleno, true);
+    renderAll();
+  });
   document.querySelectorAll('[data-tomar]').forEach(b => b.onclick = ev => {
     ev.stopPropagation();
     const t = T(b.dataset.tomar);
@@ -7340,6 +7465,7 @@ function vacio(titulo, msg, accion){
 
 /* El panel se puede plegar: ocupa un cuarto de pantalla y no siempre
    hace falta. Se recuerda plegado o no entre sesiones. */
+const COMPLETADAS_KEY = 'slate.comms.completadas';
 const RAIL_KEY = 'slate.comms.rail';
 
 function alternarRail(){
@@ -8303,11 +8429,23 @@ function renderFiltros(){
   bar.innerHTML = `${botones}
     ${state.query ? `<button data-quitar="query" class="fbtn on">
         <span>Busca: ${esc(state.query)}</span><span class="fbtn-x">&times;</span></button>` : ''}
+    <button data-completadas class="fbtn ${state.verCompletadas ? 'on' : ''}"
+      aria-pressed="${state.verCompletadas}"
+      title="${state.verCompletadas ? 'Ocultar lo ya terminado' : 'Lo terminado está en la pestaña Completadas'}">
+      <span>${state.verCompletadas ? 'Con completadas' : 'Sin completadas'}</span>
+      <span class="fbtn-n">${TAREAS.filter(t => t.estado === 'completado').length}</span>
+    </button>
     <span class="resumen-filtros ml-auto flex items-center gap-3">
       ${cuenta}
       ${activos ? `<button data-quitar="todo" class="accion rounded-full border border-line px-3 py-1.5 text-dim transition hover:border-bar-red hover:text-bar-red">Limpiar todo</button>` : ''}
     </span>`;
 
+  const inter = bar.querySelector('[data-completadas]');
+  if (inter) inter.onclick = () => {
+    state.verCompletadas = !state.verCompletadas;
+    try { localStorage.setItem(COMPLETADAS_KEY, state.verCompletadas ? '1' : '0'); } catch {}
+    renderAll();
+  };
   bar.querySelectorAll('[data-filtro]').forEach(b => b.onclick = ev => {
     // La × vive dentro del botón: no debe abrir el menú al pulsarla
     if (ev.target.closest('[data-quitar]')) return;
@@ -8338,6 +8476,7 @@ function renderViewBody(){
     resumen:'Cómo va el tráfico hoy. Toca cualquier cifra para ir al detalle.',
     mias:'Lo tuyo, ordenado por lo que vence primero. Abajo están las tareas que nadie ha tomado.',
     tablero:'Arrastra una tarjeta entre columnas para cambiar su estado, o suéltala sobre una persona.',
+    archivo:'Lo que ya está hecho, guardado por mes. No aparece en el tablero ni en tu día, pero se puede reabrir.',
     gantt:'De cuándo a cuándo va cada proyecto. Toca una fila para abrir sus tareas.',
     calendario:'Cada tarea cae en su fecha de entrega. Los rombos son hitos: fechas que no se mueven.',
     proyectos:'Toca un proyecto para verlo en el cronograma. Al eliminarlo, sus tareas quedan sueltas.',
@@ -8356,6 +8495,7 @@ function renderViewBody(){
   else if (v === 'equipo')     inner = renderEquipo();
   else if (sv === 'resumen')   inner = renderResumen();
   else if (sv === 'mias')      inner = renderMiTrabajo();
+  else if (sv === 'archivo')   inner = renderArchivo();
   else if (sv === 'gantt')     inner = renderGantt();
   else if (sv === 'calendario')inner = renderCalendario();
   else if (!lista.length)      inner = vacio('Sin resultados', 'Ninguna tarea coincide con los filtros o la búsqueda.', { id:'limpiar', texto:'Quitar filtros' });
@@ -8380,6 +8520,7 @@ function renderViewBody(){
      si el tablero está en pantalla, arrastrar y soltar funciona. */
   if (esTablero) wireTablero();
   if (sv === 'mias'){ wireMiTrabajo(); wireEstados(); }
+  if (sv === 'archivo') wireMiTrabajo();
   if (v === 'equipo') wireEquipo();
   if (v === 'proyectos') wireProyectos();
   wireAsignar();
@@ -8759,6 +8900,7 @@ iniciarApariencia();
     if (Array.isArray(g.carpetas)) CARPETAS = g.carpetas;
   }
   try { state.railAbierto = localStorage.getItem(RAIL_KEY) !== '0'; } catch {}
+  try { state.verCompletadas = localStorage.getItem(COMPLETADAS_KEY) === '1'; } catch {}
   const guardado = cargarYo();
   state.yo = guardado || null;
 

@@ -166,6 +166,39 @@ Las carpetas se ven en **todas** las vistas, no solo en Proyectos:
 Cualquiera de esos chips filtra por su carpeta, y volver a pulsarlo quita
 el filtro.
 
+## Completadas
+
+Casi la mitad del tablero está terminado (64 de 140). Dejarlas en las
+listas del día a día era trabajar sobre un escritorio sin vaciar la
+papelera, así que **lo completado vive en su propia pestaña** y sale del
+tablero, el cronograma, el calendario y Mi trabajo.
+
+- La pestaña **Completadas** las agrupa por mes, de lo más reciente hacia
+  atrás, que es como se busca algo que ya se hizo.
+- Cualquiera se puede **reabrir** desde ahí. El avance no se toca:
+  reabrir dice que la tarea vuelve a estar viva, no que se deshizo.
+- La columna Completado del tablero sigue existiendo como sitio donde
+  soltar una tarjeta, pero solo enseña las cuatro últimas y enlaza al
+  archivo.
+- El interruptor **Sin completadas / Con completadas** de la barra de
+  filtros las devuelve a la vista cuando hacen falta. Filtrar por
+  `Estado: Completado` también las muestra.
+
+Las métricas no cambian: el avance de un proyecto, los anillos y las
+barras de estado siguen contando todas las tareas. El archivo esconde
+tareas de las listas de trabajo, no de las cuentas.
+
+De paso, el tablero pinta 80 tarjetas en vez de 140: el pintado bajó un
+43%.
+
+### Códigos de tarea
+
+Las versiones viejas numeraban `T-###` contando filas, así que borrar una
+tarea hacía que la siguiente reutilizara un código ya usado. Hoy los tres
+drivers numeran a partir del **mayor código existente**, y al cargar se
+renumera cualquier repetido que venga de esa época, conservando el
+primero para no cambiarle el código a quien ya lo tenga anotado.
+
 ## Arrastrar y soltar
 
 El tablero usa **eventos de puntero**, no el arrastre nativo de HTML5.
