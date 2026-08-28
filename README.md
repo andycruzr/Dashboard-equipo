@@ -11,7 +11,7 @@ server/
 ├── render.yaml          Plano de Render: crea base + servicio de una vez
 ├── .env.example         Variables a llenar
 ├── public/index.html    El tablero (copia de tablero-comms.html)
-├── data/seed.json       Los 95 registros del Excel
+├── data/seed.json       Los datos de partida (140 tareas, 27 proyectos)
 └── store/
     ├── index.js         Elige el driver según STORAGE
     ├── json-file.js     Archivo JSON en disco, cero configuración
@@ -43,8 +43,9 @@ datos. No hay que editar ninguna línea.
    `render.yaml` crea la base PostgreSQL y el servicio web, y los conecta.
 3. Render genera `CLAVE_ACCESO` — la ves en **Environment** del servicio.
    El usuario es `comms`.
-   tablas y carga los 95 registros del Excel. En los logs verás:
-   `{"tablas":"creadas","sembrado":true,"tareas":95}`
+4. Al arrancar por primera vez, el servidor crea las tablas y carga los
+   datos de `data/seed.json`. En los logs verás:
+   `{"tablas":"creadas","sembrado":true,"tareas":140}`
 
 La capa gratuita de Render duerme el servicio tras 15 minutos sin uso;
 la primera visita después tarda unos 30 segundos en despertar. El plan
@@ -110,6 +111,8 @@ Es lo que usa el tablero: una lectura al cargar, una escritura con debounce por 
 
 | Método | Ruta |
 | --- | --- |
+| GET · POST | `/api/carpetas` |
+| PATCH · DELETE | `/api/carpetas/:id` |
 | GET | `/api/tareas?estado=&responsable=&proyecto=` |
 | GET | `/api/tareas/:id` |
 | POST | `/api/tareas` |
@@ -129,6 +132,48 @@ curl -u comms:TU_CLAVE -X PATCH https://tu-app.onrender.com/api/tareas/t13 \
 
 Los errores de PostgreSQL se traducen a códigos correctos: un `CHECK`
 violado o una llave foránea inexistente devuelven `400`, no `500`.
+
+## Carpetas
+
+Una capa de orden **aparte del estado**: un proyecto puede estar en la
+carpeta "Marca empleadora" y a la vez estar en curso. Agrupan proyectos
+y también tareas sueltas.
+
+- Admiten **un nivel de subcarpeta**. Con dos, nadie recuerda dónde dejó
+  las cosas, así que el esquema y la interfaz lo impiden.
+- Una tarea **hereda la carpeta de su proyecto** salvo que tenga una
+  propia. Archivar el proyecto archiva sus doce tareas de una vez.
+- Filtrar por una carpeta madre **incluye lo que hay en sus hijas**.
+- **Borrar una carpeta no borra nada**: sus proyectos y tareas quedan sin
+  carpeta y sus subcarpetas suben al primer nivel.
+
+La columna `carpeta` de `tareas` y `proyectos` no lleva llave foránea a
+propósito: si alguien borra una fila de `carpetas` a mano en la base, lo
+de dentro no debe irse con ella. Las referencias muertas se limpian en
+cada arranque, en `schema.sql`.
+
+Las carpetas se ven en **todas** las vistas, no solo en Proyectos:
+
+| Vista | Qué muestra |
+| --- | --- |
+| Resumen | Una tarjeta por carpeta con abiertas, proyectos, subcarpetas, barra de estados y vencidas |
+| Mi trabajo | Chip de carpeta en cada fila |
+| Tablero | Chip en cada tarjeta y reparto por carpeta en la cabecera de cada columna |
+| Cronograma | Opción **Agrupar por carpeta**, con las subcarpetas colgando de su madre |
+| Calendario | Línea de color a la izquierda de cada tarea y reparto del mes |
+| Equipo | En qué carpetas trabaja cada persona |
+
+Cualquiera de esos chips filtra por su carpeta, y volver a pulsarlo quita
+el filtro.
+
+## Arrastrar y soltar
+
+El tablero usa **eventos de puntero**, no el arrastre nativo de HTML5.
+El nativo no existe en pantallas táctiles: en iPad las tarjetas no se
+movían. Con ratón la tarjeta se levanta a los 6px de movimiento; con el
+dedo hay que mantener pulsado 350ms, para que deslizar la columna siga
+siendo deslizar. El desplegable de estado de cada tarjeta sigue estando:
+arrastrar es el atajo, no el único camino.
 
 ## Escrituras simultáneas
 
@@ -151,6 +196,8 @@ tareas distintas nunca chocan.
 - **Respaldos.** Render y Neon respaldan la base en sus planes pagos. En
   el gratuito, exporta `/api/state` de vez en cuando.
 - **Migraciones con historial** cuando el esquema empiece a cambiar seguido.
+- **Orden de carpetas a mano.** Hoy se ordenan por el campo `orden`, que
+  se asigna al crearlas. Falta poder reordenarlas arrastrando.
 
 ## De dónde salen los datos
 
@@ -158,8 +205,8 @@ tareas distintas nunca chocan.
 
 | Excel | JSON |
 | --- | --- |
-| Hoja `GANTT COMMS`, filas sin estado | `proyectos` (21) |
-| Hoja `GANTT COMMS`, filas con estado | `tareas` (95) |
+| Hoja `GANTT COMMS`, filas sin estado | `proyectos` (27) |
+| Hoja `GANTT COMMS`, filas con estado | `tareas` (140) |
 | Columna `ASIGNADO A` | `responsable` |
 | Columna `CLIENTE` | `area` |
 | Columna `PROGRESO` | `progreso` (0–1) |
@@ -168,3 +215,15 @@ tareas distintas nunca chocan.
 
 Estados: `NO EMPEZADO`→`pendiente`, `EN PROCESO`→`proceso`,
 `ENTREGADO`→`revision`, `APROBADO`→`completado`.
+
+## Volver a cargar datos desde un CSV exportado
+
+`Exportar CSV` saca el tablero completo. Para devolverlo al seed hay
+que **fusionar**, no reemplazar: el CSV no lleva ids, ni carpetas, ni
+las fechas de los comentarios. Las tareas se emparejan por **código +
+título**, porque el código solo no basta.
+
+Los códigos se generaban contando tareas, así que borrar una hacía que
+la siguiente repitiera un código ya usado. En el CSV del 27 de agosto
+había tres pares repetidos. Ahora salen del mayor código existente, en
+el cliente y en los dos drivers.

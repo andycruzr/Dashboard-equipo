@@ -74,12 +74,15 @@ module.exports = {
     return readFile();
   },
 
-  async setState({ tareas, proyectos, hitos, personas, areas }) {
+  async setState({ tareas, proyectos, hitos, personas, areas, carpetas }) {
     return commit(s => {
       s.tareas = tareas;
       if (proyectos) s.proyectos = proyectos;
       if (personas)  s.personas  = personas;
       if (areas)     s.areas     = areas;
+      // Aquí sí se acepta el arreglo vacío: borrar la última carpeta
+      // es una acción legítima y tiene que quedar guardada.
+      if (Array.isArray(carpetas)) s.carpetas = carpetas;
       s.hitos = hitos;
       return s;
     });
@@ -90,6 +93,7 @@ module.exports = {
     return commit(s => {
       s.tareas = seed.tareas; s.proyectos = seed.proyectos;
       s.hitos = seed.hitos; s.personas = seed.personas; s.areas = seed.areas;
+      s.carpetas = seed.carpetas || [];
       return s;
     });
   },
@@ -109,7 +113,12 @@ module.exports = {
 
       created = {
         id: nextId(s.tareas, 't'),
-        codigo: 'T-' + String(s.tareas.length + 1).padStart(3, '0'),
+        // Del mayor existente, no del total: contando se repetían
+        // códigos en cuanto se borraba una tarea
+        codigo: 'T-' + String(s.tareas.reduce((m, x) => {
+          const n = parseInt(String(x.codigo || '').replace(/\D/g, ''), 10);
+          return isNaN(n) ? m : Math.max(m, n);
+        }, 0) + 1).padStart(3, '0'),
         proyecto: null, area: 'SIN ÁREA', estado: 'pendiente',
         responsable: 'u-sin', progreso: 0, notas: null,
         inicio: null, fin: null, comentarios: [],
@@ -234,6 +243,49 @@ module.exports = {
       s.personas = (s.personas || []).filter(p => p.id !== id);
       removed = s.personas.length < antes;
       if (removed) s.tareas.forEach(t => { if (t.responsable === id) t.responsable = 'u-sin'; });
+      return s;
+    });
+    return removed;
+  },
+
+  async createCarpeta(fields) {
+    let created;
+    await commit(s => {
+      s.carpetas = s.carpetas || [];
+      const limpio = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
+      created = { id: nextId(s.carpetas, 'c-'), color:'#7B8794', padre:null,
+                  orden:s.carpetas.length, ...limpio };
+      s.carpetas.push(created);
+      return s;
+    });
+    return created;
+  },
+
+  async updateCarpeta(id, patch) {
+    let updated = null;
+    await commit(s => {
+      const c = (s.carpetas || []).find(x => x.id === id);
+      if (!c) return s;
+      const { id: _i, ...safe } = patch;
+      Object.assign(c, safe);
+      updated = c;
+      return s;
+    });
+    return updated;
+  },
+
+  /* Lo de dentro no se borra: queda sin carpeta. Las subcarpetas
+     suben al primer nivel en el mismo commit. */
+  async deleteCarpeta(id) {
+    let removed = false;
+    await commit(s => {
+      const antes = (s.carpetas || []).length;
+      s.carpetas = (s.carpetas || []).filter(c => c.id !== id);
+      removed = s.carpetas.length < antes;
+      if (removed){
+        s.carpetas.forEach(c => { if (c.padre === id) c.padre = null; });
+        [...s.tareas, ...(s.proyectos || [])].forEach(x => { if (x.carpeta === id) x.carpeta = null; });
+      }
       return s;
     });
     return removed;

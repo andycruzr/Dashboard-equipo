@@ -130,7 +130,7 @@ app.get('/api/state', wrap(async (req, res) => {
 }));
 
 app.put('/api/state', wrap(async (req, res) => {
-  const { tareas, proyectos, hitos, personas, areas, version } = req.body || {};
+  const { tareas, proyectos, hitos, personas, areas, carpetas, version } = req.body || {};
   if (!Array.isArray(tareas)) return bad(res, 'tareas debe ser un arreglo');
   if (!Array.isArray(hitos))  return bad(res, 'hitos debe ser un arreglo');
 
@@ -142,7 +142,9 @@ app.put('/api/state', wrap(async (req, res) => {
   }
 
   const saved = await store.setState({ tareas, proyectos: proyectos || current.proyectos, hitos,
-                                      personas: personas || current.personas, areas: areas || current.areas });
+                                      personas: personas || current.personas, areas: areas || current.areas,
+                                      // Un cliente viejo no manda carpetas: se conservan las que hay
+                                      carpetas: Array.isArray(carpetas) ? carpetas : current.carpetas });
   broadcast(saved);
   res.json({ version: saved.version, updatedAt: saved.updatedAt });
 }));
@@ -281,6 +283,39 @@ app.patch('/api/proyectos/:id', wrap(async (req, res) => {
 app.delete('/api/proyectos/:id', wrap(async (req, res) => {
   const ok = await store.deleteProyecto(req.params.id);
   if (!ok) return res.status(404).json({ error: 'Proyecto no encontrado' });
+  broadcast(await store.getState());
+  res.status(204).end();
+}));
+
+/* ── Carpetas ────────────────────────────────────── */
+
+app.get('/api/carpetas', wrap(async (req, res) => {
+  const { carpetas } = await store.getState();
+  res.json(carpetas || []);
+}));
+
+app.post('/api/carpetas', wrap(async (req, res) => {
+  const { nombre } = req.body || {};
+  if (!nombre) return bad(res, 'nombre es obligatorio');
+  const c = await store.createCarpeta({
+    nombre, color: req.body.color, padre: req.body.padre || null
+  });
+  broadcast(await store.getState());
+  res.status(201).json(c);
+}));
+
+app.patch('/api/carpetas/:id', wrap(async (req, res) => {
+  if (req.body && req.body.padre === req.params.id) return bad(res, 'Una carpeta no puede estar dentro de sí misma');
+  const c = await store.updateCarpeta(req.params.id, req.body || {});
+  if (!c) return res.status(404).json({ error: 'Carpeta no encontrada' });
+  broadcast(await store.getState());
+  res.json(c);
+}));
+
+/* Sus proyectos y tareas quedan sin carpeta, no se borran. */
+app.delete('/api/carpetas/:id', wrap(async (req, res) => {
+  const ok = await store.deleteCarpeta(req.params.id);
+  if (!ok) return res.status(404).json({ error: 'Carpeta no encontrada' });
   broadcast(await store.getState());
   res.status(204).end();
 }));

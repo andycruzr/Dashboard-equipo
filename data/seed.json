@@ -15,7 +15,8 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t2",
@@ -32,7 +33,8 @@
    "fin": "2026-10-02",
    "entrega": "2026-10-02",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t3",
@@ -49,7 +51,8 @@
    "fin": "2026-08-05",
    "entrega": "2026-08-05",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t4",
@@ -66,7 +69,8 @@
    "fin": "2026-08-31",
    "entrega": "2026-08-31",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t5",
@@ -83,7 +87,8 @@
    "fin": "2026-09-01",
    "entrega": "2026-09-01",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t6",
@@ -100,7 +105,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t7",
@@ -117,7 +123,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t8",
@@ -134,7 +141,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t9",
@@ -151,7 +159,8 @@
    "fin": "2026-08-12",
    "entrega": "2026-08-12",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t10",
@@ -168,7 +177,8 @@
    "fin": "2026-07-14",
    "entrega": "2026-07-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t11",
@@ -185,7 +195,8 @@
    "fin": "2026-07-14",
    "entrega": "2026-07-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t12",
@@ -202,7 +213,8 @@
    "fin": "2026-07-14",
    "entrega": "2026-07-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t13",
@@ -219,7 +231,8 @@
    "fin": "2026-07-14",
    "entrega": "2026-07-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t14",
@@ -236,7 +249,8 @@
    "fin": "2026-07-21",
    "entrega": "2026-07-21",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t15",
@@ -253,7 +267,8 @@
    "fin": "2026-07-22",
    "entrega": "2026-07-22",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t16",
@@ -270,7 +285,8 @@
    "fin": "2026-07-17",
    "entrega": "2026-07-17",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t17",
@@ -287,7 +303,8 @@
    "fin": "2026-07-22",
    "entrega": "2026-07-22",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t18",
@@ -304,7 +321,8 @@
    "fin": "2026-07-24",
    "entrega": "2026-07-24",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t19",
@@ -321,7 +339,8 @@
    "fin": "2026-07-23",
    "entrega": "2026-07-23",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t20",
@@ -338,7 +357,8 @@
    "fin": "2026-07-24",
    "entrega": "2026-07-24",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t21",
@@ -355,7 +375,8 @@
    "fin": "2026-07-24",
    "entrega": "2026-07-24",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t22",
@@ -372,7 +393,8 @@
    "fin": "2026-07-30",
    "entrega": "2026-07-30",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t23",
@@ -389,7 +411,8 @@
    "fin": "2026-07-23",
    "entrega": "2026-07-23",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t24",
@@ -406,7 +429,8 @@
    "fin": "2026-07-30",
    "entrega": "2026-07-30",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t25",
@@ -423,7 +447,8 @@
    "fin": "2026-08-03",
    "entrega": "2026-08-03",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t26",
@@ -440,7 +465,8 @@
    "fin": "2026-08-03",
    "entrega": "2026-08-03",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t27",
@@ -457,7 +483,8 @@
    "fin": "2026-08-03",
    "entrega": "2026-08-03",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t28",
@@ -474,7 +501,8 @@
    "fin": "2026-08-03",
    "entrega": "2026-08-03",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t29",
@@ -491,7 +519,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t30",
@@ -508,7 +537,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t31",
@@ -525,7 +555,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t32",
@@ -542,7 +573,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t33",
@@ -559,7 +591,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t34",
@@ -576,7 +609,8 @@
    "fin": "2026-08-03",
    "entrega": "2026-08-03",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t35",
@@ -593,7 +627,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t36",
@@ -610,7 +645,8 @@
    "fin": "2026-08-06",
    "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t37",
@@ -627,7 +663,8 @@
    "fin": "2026-08-06",
    "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t38",
@@ -644,7 +681,8 @@
    "fin": "2026-08-18",
    "entrega": "2026-08-18",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t39",
@@ -661,7 +699,8 @@
    "fin": "2026-08-05",
    "entrega": "2026-08-05",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t40",
@@ -678,7 +717,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t41",
@@ -695,7 +735,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t42",
@@ -712,7 +753,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t43",
@@ -729,7 +771,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t44",
@@ -746,7 +789,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t45",
@@ -763,7 +807,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t46",
@@ -780,7 +825,8 @@
    "fin": "2026-08-24",
    "entrega": "2026-08-24",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t47",
@@ -797,7 +843,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t48",
@@ -814,7 +861,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t49",
@@ -831,7 +879,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t50",
@@ -848,7 +897,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t51",
@@ -865,7 +915,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t52",
@@ -882,7 +933,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t53",
@@ -899,7 +951,8 @@
    "fin": "2026-08-14",
    "entrega": "2026-08-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t54",
@@ -916,7 +969,8 @@
    "fin": "2026-08-14",
    "entrega": "2026-08-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t55",
@@ -933,7 +987,8 @@
    "fin": "2026-08-14",
    "entrega": "2026-08-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t56",
@@ -950,7 +1005,8 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t57",
@@ -967,7 +1023,8 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t58",
@@ -984,7 +1041,8 @@
    "fin": "2026-08-25",
    "entrega": "2026-08-25",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t59",
@@ -1001,7 +1059,8 @@
    "fin": "2026-08-06",
    "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t60",
@@ -1018,7 +1077,8 @@
    "fin": "2026-08-06",
    "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t61",
@@ -1033,9 +1093,10 @@
    "notas": null,
    "inicio": "2026-08-27",
    "fin": "2026-09-03",
-   "entrega": "2026-09-03",
+   "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t62",
@@ -1052,7 +1113,8 @@
    "fin": "2026-08-06",
    "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t63",
@@ -1069,7 +1131,8 @@
    "fin": "2026-07-27",
    "entrega": "2026-07-27",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t64",
@@ -1086,7 +1149,8 @@
    "fin": "2026-07-28",
    "entrega": "2026-07-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t65",
@@ -1103,7 +1167,8 @@
    "fin": "2026-08-06",
    "entrega": "2026-08-06",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t66",
@@ -1120,7 +1185,8 @@
    "fin": "2026-08-18",
    "entrega": "2026-08-18",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t67",
@@ -1137,7 +1203,8 @@
    "fin": "2026-08-14",
    "entrega": "2026-08-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t68",
@@ -1154,7 +1221,8 @@
    "fin": "2026-08-14",
    "entrega": "2026-08-14",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t69",
@@ -1171,7 +1239,8 @@
    "fin": "2026-08-18",
    "entrega": "2026-08-18",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t70",
@@ -1188,7 +1257,8 @@
    "fin": "2026-08-05",
    "entrega": "2026-08-05",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t71",
@@ -1205,7 +1275,8 @@
    "fin": "2026-10-02",
    "entrega": "2026-10-02",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t72",
@@ -1222,7 +1293,8 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t73",
@@ -1239,7 +1311,8 @@
    "fin": "2026-10-02",
    "entrega": "2026-10-02",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t74",
@@ -1256,7 +1329,8 @@
    "fin": "2026-10-02",
    "entrega": "2026-10-02",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t75",
@@ -1273,11 +1347,12 @@
    "fin": "2026-10-15",
    "entrega": "2026-10-15",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t76",
-   "codigo": "T-076",
+   "id": "t77",
+   "codigo": "T-077",
    "titulo": "Actividades monas",
    "proyecto": null,
    "area": "CORPO",
@@ -1290,11 +1365,12 @@
    "fin": "2026-08-30",
    "entrega": "2026-08-30",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t77",
-   "codigo": "T-077",
+   "id": "t78",
+   "codigo": "T-078",
    "titulo": "Declaración de renta",
    "proyecto": "p-declaracion-de-renta",
    "area": "CORPO",
@@ -1307,11 +1383,12 @@
    "fin": "2026-08-11",
    "entrega": "2026-08-11",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t78",
-   "codigo": "T-078",
+   "id": "t79",
+   "codigo": "T-079",
    "titulo": "Imagen navidad portada 1",
    "proyecto": "p-plataforma-regalos",
    "area": "BIENESTAR",
@@ -1324,11 +1401,12 @@
    "fin": "2026-08-21",
    "entrega": "2026-08-21",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t79",
-   "codigo": "T-079",
+   "id": "t80",
+   "codigo": "T-080",
    "titulo": "Imagen navidad portada 2",
    "proyecto": "p-plataforma-regalos",
    "area": "BIENESTAR",
@@ -1341,11 +1419,12 @@
    "fin": "2026-08-21",
    "entrega": "2026-08-21",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t80",
-   "codigo": "T-080",
+   "id": "t81",
+   "codigo": "T-081",
    "titulo": "Imagen donación",
    "proyecto": "p-plataforma-regalos",
    "area": "BIENESTAR",
@@ -1358,11 +1437,12 @@
    "fin": "2026-08-21",
    "entrega": "2026-08-21",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t81",
-   "codigo": "T-081",
+   "id": "t82",
+   "codigo": "T-082",
    "titulo": "Cápsulas pantallas",
    "proyecto": "p-esonova",
    "area": "CORPO",
@@ -1375,11 +1455,12 @@
    "fin": "2026-09-30",
    "entrega": "2026-09-30",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t82",
-   "codigo": "T-082",
+   "id": "t83",
+   "codigo": "T-083",
    "titulo": "Hackeo de espacios",
    "proyecto": "p-esonova",
    "area": "CORPO",
@@ -1392,11 +1473,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t83",
-   "codigo": "T-083",
+   "id": "t84",
+   "codigo": "T-084",
    "titulo": "Grabación contenido",
    "proyecto": "p-capsulas-cerveceras",
    "area": "MKT",
@@ -1409,11 +1491,12 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t84",
-   "codigo": "T-084",
+   "id": "t85",
+   "codigo": "T-085",
    "titulo": "Sistema de dispensado",
    "proyecto": "p-capsulas-cerveceras",
    "area": "MKT",
@@ -1426,11 +1509,12 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t85",
-   "codigo": "T-085",
+   "id": "t86",
+   "codigo": "T-086",
    "titulo": "Estilos de cerveza",
    "proyecto": "p-capsulas-cerveceras",
    "area": "MKT",
@@ -1443,11 +1527,12 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t86",
-   "codigo": "T-086",
+   "id": "t87",
+   "codigo": "T-087",
    "titulo": "Cristalería",
    "proyecto": "p-capsulas-cerveceras",
    "area": "MKT",
@@ -1460,11 +1545,12 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t87",
-   "codigo": "T-087",
+   "id": "t88",
+   "codigo": "T-088",
    "titulo": "Conservación y servicio de la cerveza",
    "proyecto": "p-capsulas-cerveceras",
    "area": "MKT",
@@ -1477,11 +1563,12 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t88",
-   "codigo": "T-088",
+   "id": "t89",
+   "codigo": "T-089",
    "titulo": "Maridaje",
    "proyecto": "p-capsulas-cerveceras",
    "area": "MKT",
@@ -1494,11 +1581,12 @@
    "fin": null,
    "entrega": null,
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t89",
-   "codigo": "T-089",
+   "id": "t90",
+   "codigo": "T-090",
    "titulo": "Capitulo 8",
    "proyecto": "p-malto-y-malta",
    "area": "CDI",
@@ -1511,11 +1599,12 @@
    "fin": "2026-09-15",
    "entrega": "2026-09-15",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t90",
-   "codigo": "T-090",
+   "id": "t91",
+   "codigo": "T-091",
    "titulo": "Capitulo 9",
    "proyecto": "p-malto-y-malta",
    "area": "CDI",
@@ -1528,11 +1617,12 @@
    "fin": "2026-09-15",
    "entrega": "2026-09-15",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t91",
-   "codigo": "T-091",
+   "id": "t92",
+   "codigo": "T-092",
    "titulo": "Capitulo 10",
    "proyecto": "p-malto-y-malta",
    "area": "CDI",
@@ -1545,11 +1635,12 @@
    "fin": "2026-09-15",
    "entrega": "2026-09-15",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t92",
-   "codigo": "T-092",
+   "id": "t93",
+   "codigo": "T-093",
    "titulo": "Save the date",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1562,11 +1653,12 @@
    "fin": "2026-09-11",
    "entrega": "2026-09-11",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t93",
-   "codigo": "T-093",
+   "id": "t94",
+   "codigo": "T-094",
    "titulo": "Kv",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1585,11 +1677,12 @@
      "cuando": "importado"
     }
    ],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t94",
-   "codigo": "T-094",
+   "id": "t95",
+   "codigo": "T-095",
    "titulo": "Pieza general cronograma",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1602,11 +1695,12 @@
    "fin": "2026-09-21",
    "entrega": "2026-09-21",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t95",
-   "codigo": "T-095",
+   "id": "t96",
+   "codigo": "T-096",
    "titulo": "Pieza día 1",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1619,11 +1713,12 @@
    "fin": "2026-09-22",
    "entrega": "2026-09-22",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t96",
-   "codigo": "T-096",
+   "id": "t97",
+   "codigo": "T-097",
    "titulo": "Pieza día 2",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1636,11 +1731,12 @@
    "fin": "2026-09-23",
    "entrega": "2026-09-23",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t97",
-   "codigo": "T-097",
+   "id": "t98",
+   "codigo": "T-098",
    "titulo": "Pieza día 3",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1653,11 +1749,12 @@
    "fin": "2026-09-24",
    "entrega": "2026-09-24",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t98",
-   "codigo": "T-098",
+   "id": "t99",
+   "codigo": "T-099",
    "titulo": "Pieza día 4",
    "proyecto": "p-semana-de-la-salud-y-bienestar",
    "area": "BIENESTAR",
@@ -1670,11 +1767,12 @@
    "fin": "2026-09-25",
    "entrega": "2026-09-25",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t99",
-   "codigo": "T-099",
+   "id": "t100",
+   "codigo": "T-100",
    "titulo": "Save the date",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1687,11 +1785,12 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t100",
-   "codigo": "T-100",
+   "id": "t101",
+   "codigo": "T-101",
    "titulo": "Capsula Inicio",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1704,11 +1803,12 @@
    "fin": "2026-09-01",
    "entrega": "2026-09-01",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t101",
-   "codigo": "T-101",
+   "id": "t102",
+   "codigo": "T-102",
    "titulo": "Pieza Push 1",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1721,11 +1821,12 @@
    "fin": "2026-09-04",
    "entrega": "2026-09-04",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t102",
-   "codigo": "T-102",
+   "id": "t103",
+   "codigo": "T-103",
    "titulo": "Pieza Push 2",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1738,11 +1839,12 @@
    "fin": "2026-09-11",
    "entrega": "2026-09-11",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t103",
-   "codigo": "T-103",
+   "id": "t104",
+   "codigo": "T-104",
    "titulo": "Pieza push 3",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1755,11 +1857,12 @@
    "fin": "2026-09-18",
    "entrega": "2026-09-18",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t104",
-   "codigo": "T-104",
+   "id": "t105",
+   "codigo": "T-105",
    "titulo": "Cápsula Mitad",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1772,11 +1875,12 @@
    "fin": "2026-09-11",
    "entrega": "2026-09-11",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t105",
-   "codigo": "T-105",
+   "id": "t106",
+   "codigo": "T-106",
    "titulo": "Cápsula final",
    "proyecto": "p-mes-de-compliance",
    "area": "CORPO",
@@ -1789,11 +1893,12 @@
    "fin": "2026-09-21",
    "entrega": "2026-09-21",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t106",
-   "codigo": "T-106",
+   "id": "t108",
+   "codigo": "T-108",
    "titulo": "Instalación  127",
    "proyecto": "p-pantallas-tekus",
    "area": "CORPO",
@@ -1806,11 +1911,12 @@
    "fin": "2026-09-04",
    "entrega": "2026-09-04",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t107",
-   "codigo": "T-107",
+   "id": "t109",
+   "codigo": "T-109",
    "titulo": "Animaciones Pantallas",
    "proyecto": "p-leyendas",
    "area": "CORPO",
@@ -1828,11 +1934,12 @@
      "persona": "u-julian-peralta",
      "rol": "Apoya"
     }
-   ]
+   ],
+   "carpeta": null
   },
   {
-   "id": "t108",
-   "codigo": "T-108",
+   "id": "t110",
+   "codigo": "T-110",
    "titulo": "Capitulo 2",
    "proyecto": "p-los-10-principios",
    "area": "TALENT",
@@ -1850,11 +1957,12 @@
      "persona": "u-nicolas-adan",
      "rol": "Apoya"
     }
-   ]
+   ],
+   "carpeta": null
   },
   {
-   "id": "t109",
-   "codigo": "T-109",
+   "id": "t111",
+   "codigo": "T-111",
    "titulo": "Grabación Tocancipá",
    "proyecto": "p-los-10-principios",
    "area": "TALENT",
@@ -1872,11 +1980,12 @@
      "persona": "u-nicolas-adan",
      "rol": "Apoya"
     }
-   ]
+   ],
+   "carpeta": null
   },
   {
-   "id": "t110",
-   "codigo": "T-110",
+   "id": "t112",
+   "codigo": "T-112",
    "titulo": "Grabación127",
    "proyecto": "p-los-10-principios",
    "area": "TALENT",
@@ -1894,11 +2003,12 @@
      "persona": "u-nicolas-adan",
      "rol": "Apoya"
     }
-   ]
+   ],
+   "carpeta": null
   },
   {
-   "id": "t111",
-   "codigo": "T-111",
+   "id": "t113",
+   "codigo": "T-113",
    "titulo": "Bajada de la estrategia",
    "proyecto": "p-fiesta-de-fin-de-ano",
    "area": "BIENESTAR",
@@ -1911,11 +2021,12 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t112",
-   "codigo": "T-112",
+   "id": "t114",
+   "codigo": "T-114",
    "titulo": "Letreros de Seguridad",
    "proyecto": null,
    "area": "GENERAL",
@@ -1928,11 +2039,12 @@
    "fin": "2026-09-01",
    "entrega": "2026-09-01",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t113",
-   "codigo": "T-113",
+   "id": "t115",
+   "codigo": "T-115",
    "titulo": "Animación el Orgullo de ser Extraordinario",
    "proyecto": null,
    "area": "GENERAL",
@@ -1945,11 +2057,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t114",
-   "codigo": "T-114",
+   "id": "t116",
+   "codigo": "T-116",
    "titulo": "Táctico Amor y Amistad Legal",
    "proyecto": null,
    "area": "GENERAL",
@@ -1962,11 +2075,12 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t115",
-   "codigo": "T-115",
+   "id": "t117",
+   "codigo": "T-117",
    "titulo": "Completar Annual Report Global",
    "proyecto": null,
    "area": "GENERAL",
@@ -1979,11 +2093,12 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t116",
-   "codigo": "T-116",
+   "id": "t118",
+   "codigo": "T-118",
    "titulo": "Revisar los hallazgos de Genome KPI",
    "proyecto": null,
    "area": "GENERAL",
@@ -1996,11 +2111,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t117",
-   "codigo": "T-117",
+   "id": "t119",
+   "codigo": "T-119",
    "titulo": "Escribir nuevos textos de la web + fotos",
    "proyecto": "p-newsletter",
    "area": "CORPO",
@@ -2013,11 +2129,12 @@
    "fin": "2026-09-04",
    "entrega": "2026-09-04",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t118",
-   "codigo": "T-118",
+   "id": "t120",
+   "codigo": "T-120",
    "titulo": "Gmts osc zona",
    "proyecto": "p-osc-zona",
    "area": "OSC ZONA",
@@ -2030,11 +2147,12 @@
    "fin": "2026-08-27",
    "entrega": "2026-08-27",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t119",
-   "codigo": "T-119",
+   "id": "t122",
+   "codigo": "T-122",
    "titulo": "Un min gerente de logística",
    "proyecto": "p-osc-colombia",
    "area": "OSC COLOMBIA",
@@ -2047,11 +2165,12 @@
    "fin": "2026-08-29",
    "entrega": "2026-08-29",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t120",
-   "codigo": "T-120",
+   "id": "t123",
+   "codigo": "T-123",
    "titulo": "Video datos atlántico",
    "proyecto": null,
    "area": "GENERAL",
@@ -2064,11 +2183,12 @@
    "fin": "2026-08-27",
    "entrega": "2026-08-27",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t121",
-   "codigo": "T-121",
+   "id": "t124",
+   "codigo": "T-124",
    "titulo": "Visual serie directores",
    "proyecto": null,
    "area": "GENERAL",
@@ -2081,11 +2201,12 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t122",
-   "codigo": "T-122",
+   "id": "t125",
+   "codigo": "T-125",
    "titulo": "Cotización pantallas cds",
    "proyecto": null,
    "area": "GENERAL",
@@ -2098,11 +2219,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t123",
-   "codigo": "T-123",
+   "id": "t126",
+   "codigo": "T-126",
    "titulo": "Brandeo pared transporte tocancipá",
    "proyecto": "p-osc-colombia",
    "area": "OSC COLOMBIA",
@@ -2115,11 +2237,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t124",
-   "codigo": "T-124",
+   "id": "t127",
+   "codigo": "T-127",
    "titulo": "Reconocimiento juan carlos",
    "proyecto": null,
    "area": "GENERAL",
@@ -2132,11 +2255,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t125",
-   "codigo": "T-125",
+   "id": "t128",
+   "codigo": "T-128",
    "titulo": "Cartelera transporte tev",
    "proyecto": null,
    "area": "GENERAL",
@@ -2149,11 +2273,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t126",
-   "codigo": "T-126",
+   "id": "t129",
+   "codigo": "T-129",
    "titulo": "Plantillas plantas (cumpleaños, aniversarios)",
    "proyecto": null,
    "area": "GENERAL",
@@ -2166,11 +2291,12 @@
    "fin": "2026-09-04",
    "entrega": "2026-09-04",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t127",
-   "codigo": "T-127",
+   "id": "t130",
+   "codigo": "T-130",
    "titulo": "Encuesta Indicadores_MERCO Empresas",
    "proyecto": null,
    "area": "GENERAL",
@@ -2183,11 +2309,12 @@
    "fin": "2026-09-09",
    "entrega": "2026-09-09",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t128",
-   "codigo": "T-128",
+   "id": "t131",
+   "codigo": "T-131",
    "titulo": "Comunicado Fairplay",
    "proyecto": null,
    "area": "GENERAL",
@@ -2200,11 +2327,12 @@
    "fin": "2026-09-04",
    "entrega": "2026-09-04",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t129",
-   "codigo": "T-129",
+   "id": "t132",
+   "codigo": "T-132",
    "titulo": "Video GMT",
    "proyecto": null,
    "area": "GENERAL",
@@ -2217,11 +2345,12 @@
    "fin": "2026-08-23",
    "entrega": "2026-08-23",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t130",
-   "codigo": "T-130",
+   "id": "t133",
+   "codigo": "T-133",
    "titulo": "Video BEES ACADEMY",
    "proyecto": null,
    "area": "GENERAL",
@@ -2234,11 +2363,12 @@
    "fin": "2026-08-28",
    "entrega": "2026-08-28",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t131",
-   "codigo": "T-131",
+   "id": "t134",
+   "codigo": "T-134",
    "titulo": "Cortinilla lau luque",
    "proyecto": null,
    "area": "GENERAL",
@@ -2251,11 +2381,12 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
-   "id": "t132",
-   "codigo": "T-132",
+   "id": "t135",
+   "codigo": "T-135",
    "titulo": "Animacion pantallas",
    "proyecto": null,
    "area": "GENERAL",
@@ -2268,143 +2399,152 @@
    "fin": "2026-08-26",
    "entrega": "2026-08-26",
    "comentarios": [],
-   "equipo": []
-  },
-  {
-   "id": "t133",
-   "codigo": "T-133",
-   "titulo": "Visual café con AI",
-   "proyecto": null,
-   "area": "GENERAL",
-   "responsable": "u-isabella-oliveros",
-   "progreso": 0.0,
-   "estado": "pendiente",
-   "prioridad": "media",
-   "notas": null,
-   "inicio": "2026-08-25",
-   "fin": "2026-08-31",
-   "entrega": "2026-08-31",
-   "comentarios": [],
-   "equipo": []
-  },
-  {
-   "id": "t134",
-   "codigo": "T-134",
-   "titulo": "Café con AI",
-   "proyecto": "p-osc-zona",
-   "area": "OSC ZONA",
-   "responsable": "u-isabella-oliveros",
-   "progreso": 0.0,
-   "estado": "pendiente",
-   "prioridad": "media",
-   "notas": null,
-   "inicio": "2026-08-25",
-   "fin": "2026-09-01",
-   "entrega": "2026-09-01",
-   "comentarios": [],
-   "equipo": []
-  },
-  {
-   "id": "t135",
-   "codigo": "T-135",
-   "titulo": "Kv people osc zona",
-   "proyecto": "p-osc-zona",
-   "area": "OSC ZONA",
-   "responsable": "u-isabella-oliveros",
-   "progreso": 0.0,
-   "estado": "pendiente",
-   "prioridad": "media",
-   "notas": null,
-   "inicio": "2026-08-25",
-   "fin": "2026-09-01",
-   "entrega": "2026-09-01",
-   "comentarios": [],
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "t136",
    "codigo": "T-136",
-   "titulo": "Kv next gen",
-   "proyecto": "p-osc-zona",
-   "area": "OSC ZONA",
+   "titulo": "Visual café con AI",
+   "proyecto": null,
+   "area": "GENERAL",
    "responsable": "u-isabella-oliveros",
-   "progreso": 0.0,
    "estado": "pendiente",
    "prioridad": "media",
-   "notas": null,
+   "progreso": 0.0,
    "inicio": "2026-08-25",
-   "fin": "2026-08-25",
-   "entrega": "2026-08-25",
+   "fin": "2026-08-31",
+   "notas": null,
+   "equipo": [],
+   "entrega": "2026-08-31",
    "comentarios": [],
-   "equipo": []
+   "carpeta": null
   },
   {
    "id": "t137",
    "codigo": "T-137",
-   "titulo": "Datos unión",
-   "proyecto": "p-osc-colombia",
-   "area": "OSC COLOMBIA",
+   "titulo": "Café con AI",
+   "proyecto": "p-osc-zona",
+   "area": "OSC ZONA",
    "responsable": "u-isabella-oliveros",
-   "progreso": 0.0,
-   "estado": "proceso",
+   "estado": "pendiente",
    "prioridad": "media",
+   "progreso": 0.0,
+   "inicio": "2026-08-25",
+   "fin": "2026-09-01",
    "notas": null,
-   "inicio": "2026-08-29",
-   "fin": "2026-08-29",
-   "entrega": "2026-08-29",
+   "equipo": [],
+   "entrega": "2026-09-01",
    "comentarios": [],
-   "equipo": []
+   "carpeta": null
   },
   {
    "id": "t138",
    "codigo": "T-138",
-   "titulo": "Historia atlantico",
-   "proyecto": "p-osc-colombia",
-   "area": "OSC COLOMBIA",
+   "titulo": "Kv people osc zona",
+   "proyecto": "p-osc-zona",
+   "area": "OSC ZONA",
    "responsable": "u-isabella-oliveros",
-   "progreso": 0.0,
    "estado": "pendiente",
    "prioridad": "media",
+   "progreso": 0.0,
+   "inicio": "2026-08-25",
+   "fin": "2026-09-01",
    "notas": null,
-   "inicio": "2026-08-31",
-   "fin": "2026-08-31",
-   "entrega": "2026-08-31",
+   "equipo": [],
+   "entrega": "2026-09-01",
    "comentarios": [],
-   "equipo": []
+   "carpeta": null
   },
   {
    "id": "t139",
    "codigo": "T-139",
-   "titulo": "mailblast Compliance",
-   "proyecto": null,
-   "area": "GENERAL",
-   "responsable": "u-nicolas-adan",
-   "progreso": 0.0,
-   "estado": "proceso",
+   "titulo": "Kv next gen",
+   "proyecto": "p-osc-zona",
+   "area": "OSC ZONA",
+   "responsable": "u-isabella-oliveros",
+   "estado": "pendiente",
    "prioridad": "media",
+   "progreso": 0.0,
+   "inicio": "2026-08-25",
+   "fin": "2026-08-25",
    "notas": null,
-   "inicio": "2026-08-27",
-   "fin": "2026-08-27",
-   "entrega": "2026-08-27",
+   "equipo": [],
+   "entrega": "2026-08-25",
    "comentarios": [],
-   "equipo": []
+   "carpeta": null
   },
   {
    "id": "t140",
    "codigo": "T-140",
+   "titulo": "Datos unión",
+   "proyecto": "p-osc-colombia",
+   "area": "OSC COLOMBIA",
+   "responsable": "u-isabella-oliveros",
+   "estado": "proceso",
+   "prioridad": "media",
+   "progreso": 0.0,
+   "inicio": "2026-08-29",
+   "fin": "2026-08-29",
+   "notas": null,
+   "equipo": [],
+   "entrega": "2026-08-29",
+   "comentarios": [],
+   "carpeta": null
+  },
+  {
+   "id": "t141",
+   "codigo": "T-141",
+   "titulo": "Historia atlantico",
+   "proyecto": "p-osc-colombia",
+   "area": "OSC COLOMBIA",
+   "responsable": "u-isabella-oliveros",
+   "estado": "pendiente",
+   "prioridad": "media",
+   "progreso": 0.0,
+   "inicio": "2026-08-31",
+   "fin": "2026-08-31",
+   "notas": null,
+   "equipo": [],
+   "entrega": "2026-08-31",
+   "comentarios": [],
+   "carpeta": null
+  },
+  {
+   "id": "t142",
+   "codigo": "T-142",
+   "titulo": "mailblast Compliance",
+   "proyecto": null,
+   "area": "GENERAL",
+   "responsable": "u-nicolas-adan",
+   "estado": "proceso",
+   "prioridad": "media",
+   "progreso": 0.0,
+   "inicio": "2026-08-27",
+   "fin": "2026-08-27",
+   "notas": null,
+   "equipo": [],
+   "entrega": "2026-08-27",
+   "comentarios": [],
+   "carpeta": null
+  },
+  {
+   "id": "t143",
+   "codigo": "T-143",
    "titulo": "Video Sala U Bavaria",
    "proyecto": null,
    "area": "GENERAL",
    "responsable": "u-andres-cruz",
-   "progreso": 0.0,
    "estado": "revision",
    "prioridad": "media",
-   "notas": null,
+   "progreso": 0.0,
    "inicio": "2026-08-24",
    "fin": "2026-08-27",
+   "notas": null,
+   "equipo": [],
    "entrega": "2026-08-27",
    "comentarios": [],
-   "equipo": []
+   "carpeta": null
   }
  ],
  "proyectos": [
@@ -2418,7 +2558,8 @@
    "inicio": "2026-08-26",
    "fin": "2026-09-04",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-codigo-16-9",
@@ -2430,7 +2571,8 @@
    "inicio": "2026-08-05",
    "fin": "2026-10-02",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-malto-y-malta",
@@ -2442,7 +2584,8 @@
    "inicio": "2026-08-12",
    "fin": "2026-09-15",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-duenos-duenas",
@@ -2454,7 +2597,8 @@
    "inicio": "2026-07-10",
    "fin": "2026-08-03",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-tech-fest",
@@ -2466,7 +2610,8 @@
    "inicio": "2026-07-28",
    "fin": "2026-08-18",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-charla-con-el-mancom",
@@ -2478,7 +2623,8 @@
    "inicio": "2026-08-05",
    "fin": "2026-08-05",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-practicantes",
@@ -2490,7 +2636,8 @@
    "inicio": "2026-08-10",
    "fin": "2026-08-25",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-cuadros",
@@ -2502,7 +2649,8 @@
    "inicio": "2026-08-25",
    "fin": "2026-08-26",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-cheers-to-bars",
@@ -2514,7 +2662,8 @@
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-ppt-talent",
@@ -2526,7 +2675,8 @@
    "inicio": "2026-08-06",
    "fin": "2026-09-03",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-legal",
@@ -2538,7 +2688,8 @@
    "inicio": "2026-08-06",
    "fin": "2026-08-06",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-change-management",
@@ -2550,7 +2701,8 @@
    "inicio": "2026-07-27",
    "fin": "2026-08-18",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-fairplay",
@@ -2562,7 +2714,8 @@
    "inicio": "2026-08-03",
    "fin": "2026-08-05",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-leyendas",
@@ -2574,7 +2727,21 @@
    "inicio": "2026-08-25",
    "fin": "2026-10-15",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
+  },
+  {
+   "id": "p-album",
+   "nombre": "Álbum",
+   "seccion": "PROYECTOS NO EMPEZADOS",
+   "area": "CORPO",
+   "estado": "pendiente",
+   "responsable": "u-nicolas-adan",
+   "inicio": "2026-07-01",
+   "fin": "2026-08-30",
+   "nota": null,
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-declaracion-de-renta",
@@ -2586,7 +2753,8 @@
    "inicio": "2026-08-10",
    "fin": "2026-08-11",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-plataforma-regalos",
@@ -2598,7 +2766,8 @@
    "inicio": "2026-08-21",
    "fin": "2026-08-21",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-esonova",
@@ -2610,7 +2779,8 @@
    "inicio": "2026-08-25",
    "fin": "2026-09-30",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-capsulas-cerveceras",
@@ -2622,7 +2792,8 @@
    "inicio": null,
    "fin": null,
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-semana-de-la-salud-y-bienestar",
@@ -2634,19 +2805,34 @@
    "inicio": "2026-09-04",
    "fin": "2026-09-25",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-mes-de-compliance",
    "nombre": "Mes de Compliance",
-   "seccion": "PROYECTOS NO EMPEZADOS",
+   "seccion": "PROYECTOS",
    "area": "CORPO",
-   "estado": "pendiente",
+   "estado": "revision",
    "responsable": "u-julian-peralta",
    "inicio": "2026-08-26",
    "fin": "2026-09-21",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
+  },
+  {
+   "id": "p-fin-de-ano",
+   "nombre": "Fin de año",
+   "seccion": "PROYECTOS NO EMPEZADOS",
+   "area": "CORPO",
+   "estado": "pendiente",
+   "responsable": "u-david-rodriguez",
+   "inicio": "2026-08-26",
+   "fin": "2026-08-26",
+   "nota": null,
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-pantallas-tekus",
@@ -2658,7 +2844,8 @@
    "inicio": "2026-08-25",
    "fin": "2026-09-04",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-los-10-principios",
@@ -2670,19 +2857,21 @@
    "inicio": "2026-08-26",
    "fin": "2026-09-04",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-fiesta-de-fin-de-ano",
    "nombre": "Fiesta de fin de año",
    "seccion": "PROYECTOS",
    "area": "BIENESTAR",
-   "estado": "revision",
+   "estado": "proceso",
    "responsable": "u-andres-cruz",
    "inicio": "2026-08-26",
    "fin": "2026-08-26",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-osc-zona",
@@ -2690,23 +2879,25 @@
    "seccion": "PROYECTOS",
    "area": "OSC ZONA",
    "estado": "proceso",
-   "responsable": "u-isabella-oliveros",
+   "responsable": "u-valentina-huertas",
    "inicio": "2026-08-24",
    "fin": "2026-09-01",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   },
   {
    "id": "p-osc-colombia",
    "nombre": "Osc colombia",
    "seccion": "PROYECTOS",
    "area": "OSC COLOMBIA",
-   "estado": "proceso",
+   "estado": "pendiente",
    "responsable": "u-valentina-huertas",
    "inicio": "2026-08-23",
    "fin": "2026-08-31",
    "nota": null,
-   "equipo": []
+   "equipo": [],
+   "carpeta": null
   }
  ],
  "personas": [
@@ -2823,5 +3014,6 @@
   "TALENT",
   "TECH"
  ],
- "version": 1
+ "version": 1,
+ "carpetas": []
 }

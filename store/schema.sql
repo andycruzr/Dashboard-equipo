@@ -191,3 +191,38 @@ $dp$;
 INSERT INTO personas (id, nombre, iniciales, rol, color, capacidad, orden)
 VALUES ('u-sin', 'Sin asignar', '—', 'Pendiente de asignación', '#6B7079', 8, 9999)
 ON CONFLICT (id) DO NOTHING;
+
+-- ── Carpetas ─────────────────────────────────────────
+-- Agrupan proyectos y tareas por tema, aparte del estado.
+-- No llevan llave foránea a propósito: si alguien borra una
+-- carpeta a mano, lo de dentro no debe irse con ella. Las
+-- referencias muertas se limpian aquí abajo al arrancar.
+CREATE SEQUENCE IF NOT EXISTS carpeta_seq START 1000;
+
+CREATE TABLE IF NOT EXISTS carpetas (
+  id     text PRIMARY KEY,
+  nombre text NOT NULL,
+  color  text NOT NULL DEFAULT '#7B8794',
+  padre  text,
+  orden  int  NOT NULL DEFAULT 0
+);
+
+ALTER TABLE proyectos ADD COLUMN IF NOT EXISTS carpeta text;
+ALTER TABLE tareas    ADD COLUMN IF NOT EXISTS carpeta text;
+
+CREATE INDEX IF NOT EXISTS proyectos_carpeta_idx ON proyectos (carpeta);
+CREATE INDEX IF NOT EXISTS tareas_carpeta_idx    ON tareas (carpeta);
+
+-- Un solo nivel de anidación: la nieta sube a hija.
+UPDATE carpetas h SET padre = NULL
+ WHERE h.padre IS NOT NULL
+   AND EXISTS (SELECT 1 FROM carpetas m WHERE m.id = h.padre AND m.padre IS NOT NULL);
+
+-- Nadie es su propio padre.
+UPDATE carpetas SET padre = NULL WHERE padre = id;
+
+-- Apuntar a una carpeta que ya no existe equivale a no tener carpeta.
+UPDATE proyectos SET carpeta = NULL
+ WHERE carpeta IS NOT NULL AND carpeta NOT IN (SELECT id FROM carpetas);
+UPDATE tareas SET carpeta = NULL
+ WHERE carpeta IS NOT NULL AND carpeta NOT IN (SELECT id FROM carpetas);
