@@ -74,12 +74,11 @@ module.exports = {
     return readFile();
   },
 
-  async setState({ tareas, proyectos, hitos, personas, areas, carpetas }) {
+  async setState({ tareas, proyectos, hitos, personas, carpetas }) {
     return commit(s => {
       s.tareas = tareas;
       if (proyectos) s.proyectos = proyectos;
       if (personas)  s.personas  = personas;
-      if (areas)     s.areas     = areas;
       // Aquí sí se acepta el arreglo vacío: borrar la última carpeta
       // es una acción legítima y tiene que quedar guardada.
       if (Array.isArray(carpetas)) s.carpetas = carpetas;
@@ -92,7 +91,7 @@ module.exports = {
     const seed = JSON.parse(await fs.readFile(SEED, 'utf8'));
     return commit(s => {
       s.tareas = seed.tareas; s.proyectos = seed.proyectos;
-      s.hitos = seed.hitos; s.personas = seed.personas; s.areas = seed.areas;
+      s.hitos = seed.hitos; s.personas = seed.personas;
       s.carpetas = seed.carpetas || [];
       return s;
     });
@@ -119,7 +118,7 @@ module.exports = {
           const n = parseInt(String(x.codigo || '').replace(/\D/g, ''), 10);
           return isNaN(n) ? m : Math.max(m, n);
         }, 0) + 1).padStart(3, '0'),
-        proyecto: null, area: 'SIN ÁREA', estado: 'pendiente',
+        proyecto: null, carpetas: [], estado: 'pendiente',
         responsable: 'u-sin', progreso: 0, notas: null,
         inicio: null, fin: null, comentarios: [],
         ...limpio
@@ -172,7 +171,7 @@ module.exports = {
     await commit(s => {
       s.proyectos = s.proyectos || [];
       const limpio = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
-      created = { id: nextId(s.proyectos, 'p-'), seccion:'PROYECTOS', area:null,
+      created = { id: nextId(s.proyectos, 'p-'), seccion:'PROYECTOS', carpetas:[],
                   estado:'pendiente', entrega:null, nota:null, ...limpio };
       s.proyectos.push(created);
       return s;
@@ -253,7 +252,7 @@ module.exports = {
     await commit(s => {
       s.carpetas = s.carpetas || [];
       const limpio = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
-      created = { id: nextId(s.carpetas, 'c-'), color:'#7B8794', padre:null,
+      created = { id: nextId(s.carpetas, 'c-'), color:'#7B8794',
                   orden:s.carpetas.length, ...limpio };
       s.carpetas.push(created);
       return s;
@@ -282,10 +281,9 @@ module.exports = {
       const antes = (s.carpetas || []).length;
       s.carpetas = (s.carpetas || []).filter(c => c.id !== id);
       removed = s.carpetas.length < antes;
-      if (removed){
-        s.carpetas.forEach(c => { if (c.padre === id) c.padre = null; });
-        [...s.tareas, ...(s.proyectos || [])].forEach(x => { if (x.carpeta === id) x.carpeta = null; });
-      }
+      if (removed) [...s.tareas, ...(s.proyectos || [])].forEach(x => {
+        if (x.carpetas) x.carpetas = x.carpetas.filter(c => c !== id);
+      });
       return s;
     });
     return removed;

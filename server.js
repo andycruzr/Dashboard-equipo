@@ -130,7 +130,7 @@ app.get('/api/state', wrap(async (req, res) => {
 }));
 
 app.put('/api/state', wrap(async (req, res) => {
-  const { tareas, proyectos, hitos, personas, areas, carpetas, version } = req.body || {};
+  const { tareas, proyectos, hitos, personas, carpetas, version } = req.body || {};
   if (!Array.isArray(tareas)) return bad(res, 'tareas debe ser un arreglo');
   if (!Array.isArray(hitos))  return bad(res, 'hitos debe ser un arreglo');
 
@@ -142,7 +142,7 @@ app.put('/api/state', wrap(async (req, res) => {
   }
 
   const saved = await store.setState({ tareas, proyectos: proyectos || current.proyectos, hitos,
-                                      personas: personas || current.personas, areas: areas || current.areas,
+                                      personas: personas || current.personas,
                                       // Un cliente viejo no manda carpetas: se conservan las que hay
                                       carpetas: Array.isArray(carpetas) ? carpetas : current.carpetas });
   broadcast(saved);
@@ -184,7 +184,7 @@ app.post('/api/tareas', wrap(async (req, res) => {
     fin: fin || inicio,
     codigo: req.body.codigo,
     proyecto: req.body.proyecto || null,
-    area: req.body.area || 'SIN ÁREA',
+    carpetas: req.body.carpetas || [],
     estado: req.body.estado || 'pendiente',
     responsable: req.body.responsable || 'u-sin',
     progreso: req.body.progreso || 0,
@@ -249,11 +249,6 @@ app.delete('/api/hitos/:id', wrap(async (req, res) => {
   res.status(204).end();
 }));
 
-app.get('/api/areas', wrap(async (req, res) => {
-  const { areas } = await store.getState();
-  res.json(areas || []);
-}));
-
 app.get('/api/proyectos', wrap(async (req, res) => {
   const { proyectos } = await store.getState();
   res.json(proyectos);
@@ -263,7 +258,7 @@ app.post('/api/proyectos', wrap(async (req, res) => {
   const { nombre } = req.body || {};
   if (!nombre) return bad(res, 'nombre es obligatorio');
   const p = await store.createProyecto({
-    nombre, seccion: req.body.seccion, area: req.body.area,
+    nombre, seccion: req.body.seccion, carpetas: req.body.carpetas,
     estado: req.body.estado, entrega: req.body.entrega, nota: req.body.nota,
     inicio: req.body.inicio, fin: req.body.fin, equipo: req.body.equipo,
     responsable: req.body.responsable
@@ -297,15 +292,12 @@ app.get('/api/carpetas', wrap(async (req, res) => {
 app.post('/api/carpetas', wrap(async (req, res) => {
   const { nombre } = req.body || {};
   if (!nombre) return bad(res, 'nombre es obligatorio');
-  const c = await store.createCarpeta({
-    nombre, color: req.body.color, padre: req.body.padre || null
-  });
+  const c = await store.createCarpeta({ nombre, color: req.body.color });
   broadcast(await store.getState());
   res.status(201).json(c);
 }));
 
 app.patch('/api/carpetas/:id', wrap(async (req, res) => {
-  if (req.body && req.body.padre === req.params.id) return bad(res, 'Una carpeta no puede estar dentro de sí misma');
   const c = await store.updateCarpeta(req.params.id, req.body || {});
   if (!c) return res.status(404).json({ error: 'Carpeta no encontrada' });
   broadcast(await store.getState());

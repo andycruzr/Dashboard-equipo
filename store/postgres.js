@@ -37,19 +37,19 @@ const LOCK_ID = 728461;
 /* Las fechas se piden ya formateadas para que pg no las
    convierta a Date y se corran por zona horaria. */
 
-const COLS_TAREA = `id, codigo, titulo, proyecto, carpeta, area, responsable, estado,
+const COLS_TAREA = `id, codigo, titulo, proyecto, carpetas, responsable, estado,
   progreso::float8 AS progreso, notas, prioridad, equipo,
   to_char(entrega,'YYYY-MM-DD') AS entrega,
   to_char(inicio,'YYYY-MM-DD') AS inicio,
   to_char(fin,'YYYY-MM-DD')    AS fin,
   comentarios`;
 
-const COLS_PROYECTO = `id, nombre, seccion, carpeta, area, estado, equipo, responsable,
+const COLS_PROYECTO = `id, nombre, seccion, carpetas, estado, equipo, responsable,
   to_char(entrega,'YYYY-MM-DD') AS entrega,
   to_char(inicio,'YYYY-MM-DD')  AS inicio,
   to_char(fin,'YYYY-MM-DD')     AS fin, nota`;
 
-const COLS_CARPETA = `id, nombre, color, padre, orden`;
+const COLS_CARPETA = `id, nombre, color, orden`;
 
 const COLS_HITO = `id, titulo, to_char(fecha,'YYYY-MM-DD') AS fecha, fijo, tipo, hora, lugar`;
 
@@ -94,7 +94,7 @@ async function init() {
 
 /* Reemplaza el contenido completo. El orden importa por la FK:
    proyectos entra antes que tareas y sale después. */
-async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], personas = [], areas = [], carpetas = [] }) {
+async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], personas = [], carpetas = [] }) {
   await client.query('DELETE FROM tareas');
   await client.query('DELETE FROM hitos');
   if (proyectos.length) await client.query('DELETE FROM proyectos');
@@ -119,33 +119,27 @@ async function escribirTodo(client, { tareas = [], proyectos = [], hitos = [], p
   for (let i = 0; i < carpetas.length; i++) {
     const c = carpetas[i];
     await client.query(
-      `INSERT INTO carpetas (id, nombre, color, padre, orden) VALUES ($1,$2,$3,$4,$5)`,
-      [c.id, c.nombre, c.color || '#7B8794', c.padre || null,
-       c.orden == null ? i : c.orden]);
+      `INSERT INTO carpetas (id, nombre, color, orden) VALUES ($1,$2,$3,$4)`,
+      [c.id, c.nombre, c.color || '#7B8794', c.orden == null ? i : c.orden]);
   }
 
   for (const p of proyectos) {
     await client.query(
-      `INSERT INTO proyectos (id, nombre, seccion, carpeta, area, estado, inicio, fin, nota, equipo, responsable)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [p.id, p.nombre, p.seccion, p.carpeta || null, p.area, p.estado || 'pendiente',
+      `INSERT INTO proyectos (id, nombre, seccion, carpetas, estado, inicio, fin, nota, equipo, responsable)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [p.id, p.nombre, p.seccion, JSON.stringify(p.carpetas || []), p.estado || 'pendiente',
        p.inicio || null, p.fin || null, p.nota || null,
        JSON.stringify(p.equipo || []), p.responsable || 'u-sin']);
   }
   for (const t of tareas) {
     await client.query(
-      `INSERT INTO tareas (id, codigo, titulo, proyecto, carpeta, area, responsable, estado,
+      `INSERT INTO tareas (id, codigo, titulo, proyecto, carpetas, responsable, estado,
                            progreso, notas, prioridad, inicio, fin, comentarios, equipo, entrega)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
-      [t.id, t.codigo, t.titulo, t.proyecto || null, t.carpeta || null, t.area || 'SIN ÁREA',
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+      [t.id, t.codigo, t.titulo, t.proyecto || null, JSON.stringify(t.carpetas || []),
        t.responsable || 'u-sin', t.estado || 'pendiente', t.progreso || 0,
        t.notas || null, t.prioridad || 'media', t.inicio || null, t.fin || null,
        JSON.stringify(t.comentarios || []), JSON.stringify(t.equipo || []), t.entrega || null]);
-  }
-  if (areas.length) {
-    await client.query('DELETE FROM areas');
-    for (let i = 0; i < areas.length; i++)
-      await client.query('INSERT INTO areas (nombre, orden) VALUES ($1,$2)', [areas[i], i]);
   }
   for (const h of hitos) {
     await client.query(
@@ -168,13 +162,12 @@ module.exports = {
   init,
 
   async getState() {
-    const [board, tareas, proyectos, hitos, personas, areas, carpetas] = await Promise.all([
+    const [board, tareas, proyectos, hitos, personas, carpetas] = await Promise.all([
       q('SELECT version, updated_at FROM board WHERE id = 1'),
       q(`SELECT ${COLS_TAREA} FROM tareas ORDER BY fin NULLS LAST, codigo`),
       q(`SELECT ${COLS_PROYECTO} FROM proyectos ORDER BY nombre`),
       q(`SELECT ${COLS_HITO} FROM hitos ORDER BY fecha`),
       q(`SELECT ${COLS_PERSONA} FROM personas ORDER BY orden, nombre`),
-      q('SELECT nombre FROM areas ORDER BY orden, nombre'),
       q(`SELECT ${COLS_CARPETA} FROM carpetas ORDER BY orden, nombre`)
     ]);
     return {
@@ -184,19 +177,18 @@ module.exports = {
       proyectos: proyectos.rows,
       hitos: hitos.rows,
       personas: personas.rows,
-      areas: areas.rows.map(r => r.nombre),
       carpetas: carpetas.rows
     };
   },
 
-  async setState({ tareas, proyectos, hitos, personas, areas, carpetas }) {
+  async setState({ tareas, proyectos, hitos, personas, carpetas }) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await escribirTodo(client, { tareas, proyectos, hitos, personas, areas, carpetas });
+      await escribirTodo(client, { tareas, proyectos, hitos, personas, carpetas });
       const v = await subirVersion(client);
       await client.query('COMMIT');
-      return { version: v.version, updatedAt: v.updated_at, tareas, proyectos, hitos, personas, areas, carpetas };
+      return { version: v.version, updatedAt: v.updated_at, tareas, proyectos, hitos, personas, carpetas };
     } catch (e) {
       await client.query('ROLLBACK');
       throw e;
@@ -218,7 +210,7 @@ module.exports = {
 
   async createTarea(f) {
     const { rows } = await q(
-      `INSERT INTO tareas (id, codigo, titulo, proyecto, area, responsable, estado,
+      `INSERT INTO tareas (id, codigo, titulo, proyecto, carpetas, responsable, estado,
                            progreso, notas, prioridad, inicio, fin, comentarios)
        VALUES (COALESCE($1, 't' || nextval('tarea_seq')),
                -- Del mayor código existente, no del total de filas:
@@ -229,7 +221,7 @@ module.exports = {
                $3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
        RETURNING ${COLS_TAREA}`,
       [f.id || null, f.codigo || null, f.titulo, f.proyecto || null,
-       f.area || 'SIN ÁREA', f.responsable || 'u-sin', f.estado || 'pendiente',
+       JSON.stringify(f.carpetas || []), f.responsable || 'u-sin', f.estado || 'pendiente',
        f.progreso || 0, f.notas || null, f.prioridad || 'media',
        f.inicio || null, f.fin || null, JSON.stringify(f.comentarios || [])]);
     await subirVersion();
@@ -237,13 +229,13 @@ module.exports = {
   },
 
   async updateTarea(id, patch) {
-    const permitidos = ['titulo','proyecto','carpeta','area','responsable','estado',
+    const permitidos = ['titulo','proyecto','carpetas','responsable','estado',
                         'progreso','notas','prioridad','inicio','fin','comentarios','equipo','entrega'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return module.exports.getTarea(id);
 
     const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');
-    const vals = claves.map(k => ['comentarios','equipo'].includes(k) ? JSON.stringify(patch[k]) : patch[k]);
+    const vals = claves.map(k => ['comentarios','equipo','carpetas'].includes(k) ? JSON.stringify(patch[k]) : patch[k]);
 
     const { rows } = await q(
       `UPDATE tareas SET ${sets} WHERE id = $1 RETURNING ${COLS_TAREA}`, [id, ...vals]);
@@ -286,10 +278,10 @@ module.exports = {
 
   async createProyecto(f) {
     const { rows } = await q(
-      `INSERT INTO proyectos (id, nombre, seccion, area, estado, entrega, inicio, fin, nota, equipo)
+      `INSERT INTO proyectos (id, nombre, seccion, carpetas, estado, entrega, inicio, fin, nota, equipo)
        VALUES (COALESCE($1, 'p-' || nextval('proyecto_seq')), $2,$3,$4,$5,$6,$7,$8,$9,$10)
        RETURNING ${COLS_PROYECTO}`,
-      [f.id || null, f.nombre, f.seccion || 'PROYECTOS', f.area || null,
+      [f.id || null, f.nombre, f.seccion || 'PROYECTOS', JSON.stringify(f.carpetas || []),
        f.estado || 'pendiente', f.entrega || null, f.inicio || null, f.fin || null,
        f.nota || null, JSON.stringify(f.equipo || [])]);
     await subirVersion();
@@ -297,13 +289,13 @@ module.exports = {
   },
 
   async updateProyecto(id, patch) {
-    const permitidos = ['nombre','seccion','carpeta','area','estado','inicio','fin','nota','equipo','responsable'];
+    const permitidos = ['nombre','seccion','carpetas','estado','inicio','fin','nota','equipo','responsable'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return null;
     const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');
     const { rows } = await q(
       `UPDATE proyectos SET ${sets} WHERE id = $1 RETURNING ${COLS_PROYECTO}`,
-      [id, ...claves.map(k => k === 'equipo' ? JSON.stringify(patch[k]) : patch[k])]);
+      [id, ...claves.map(k => ['equipo','carpetas'].includes(k) ? JSON.stringify(patch[k]) : patch[k])]);
     if (!rows[0]) return null;
     await subirVersion();
     return rows[0];
@@ -321,17 +313,17 @@ module.exports = {
 
   async createCarpeta(f) {
     const { rows } = await q(
-      `INSERT INTO carpetas (id, nombre, color, padre, orden)
-       VALUES (COALESCE($1, 'c-' || nextval('carpeta_seq')), $2, $3, $4,
+      `INSERT INTO carpetas (id, nombre, color, orden)
+       VALUES (COALESCE($1, 'c-' || nextval('carpeta_seq')), $2, $3,
                (SELECT COALESCE(MAX(orden), 0) + 1 FROM carpetas))
        RETURNING ${COLS_CARPETA}`,
-      [f.id || null, f.nombre, f.color || '#7B8794', f.padre || null]);
+      [f.id || null, f.nombre, f.color || '#7B8794']);
     await subirVersion();
     return rows[0];
   },
 
   async updateCarpeta(id, patch) {
-    const permitidos = ['nombre','color','padre','orden'];
+    const permitidos = ['nombre','color','orden'];
     const claves = Object.keys(patch).filter(k => permitidos.includes(k));
     if (!claves.length) return null;
     const sets = claves.map((k, i) => `${k} = $${i + 2}`).join(', ');
@@ -349,9 +341,9 @@ module.exports = {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await client.query('UPDATE carpetas SET padre = NULL WHERE padre = $1', [id]);
-      await client.query('UPDATE proyectos SET carpeta = NULL WHERE carpeta = $1', [id]);
-      await client.query('UPDATE tareas    SET carpeta = NULL WHERE carpeta = $1', [id]);
+      // Se quita la etiqueta de todo lo que la lleve, sin tocar las demás
+      await client.query(`UPDATE proyectos SET carpetas = carpetas - $1 WHERE carpetas ? $1`, [id]);
+      await client.query(`UPDATE tareas    SET carpetas = carpetas - $1 WHERE carpetas ? $1`, [id]);
       const { rowCount } = await client.query('DELETE FROM carpetas WHERE id = $1', [id]);
       if (rowCount) await subirVersion(client);
       await client.query('COMMIT');

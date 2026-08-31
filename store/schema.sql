@@ -120,24 +120,6 @@ ALTER TABLE hitos ADD COLUMN IF NOT EXISTS tipo  text NOT NULL DEFAULT 'hito';
 ALTER TABLE hitos ADD COLUMN IF NOT EXISTS hora  text;
 ALTER TABLE hitos ADD COLUMN IF NOT EXISTS lugar text;
 
--- Las áreas se administran desde la app
-CREATE TABLE IF NOT EXISTS areas (
-  nombre text PRIMARY KEY,
-  orden  int NOT NULL DEFAULT 0
-);
-
--- Al crear la tabla por primera vez sobre una base que ya tiene
--- datos, se rescatan las áreas que ya estén en uso. Así nadie pierde
--- sus áreas al actualizar.
-INSERT INTO areas (nombre)
-SELECT DISTINCT area FROM tareas WHERE area IS NOT NULL
- UNION
-SELECT DISTINCT area FROM proyectos WHERE area IS NOT NULL
- -- Solo la primera vez: si ya hay áreas, el equipo las administra y
- -- una que borraron a propósito no debe reaparecer en cada arranque.
- WHERE NOT EXISTS (SELECT 1 FROM areas)
-ON CONFLICT DO NOTHING;
-
 -- Coherencia: un proyecto que ya arrancó no puede seguir en
 -- "No empezados". Se corrige también del lado del servidor, para
 -- que la API devuelva datos consistentes aunque nadie abra la web.
@@ -226,3 +208,50 @@ UPDATE proyectos SET carpeta = NULL
  WHERE carpeta IS NOT NULL AND carpeta NOT IN (SELECT id FROM carpetas);
 UPDATE tareas SET carpeta = NULL
  WHERE carpeta IS NOT NULL AND carpeta NOT IN (SELECT id FROM carpetas);
+
+-- ── Baja de las áreas ────────────────────────────────
+-- Las áreas cliente (CORPO, TALENT, CDI...) se convirtieron en
+-- carpetas: hacían el mismo trabajo de agrupar y obligaban a
+-- mantener dos taxonomías. La migración es directa porque el área
+-- de cada tarea coincidía siempre con la de su proyecto.
+INSERT INTO carpetas (id, nombre, color, padre, orden)
+SELECT 'c-' || lower(regexp_replace(area, '[^a-zA-Z0-9]+', '-', 'g')),
+       initcap(area), '#7B8794', NULL, 0
+  FROM (SELECT DISTINCT area FROM proyectos WHERE area IS NOT NULL) a
+ WHERE EXISTS (SELECT 1 FROM information_schema.columns
+                WHERE table_name='proyectos' AND column_name='area')
+ON CONFLICT (id) DO NOTHING;
+
+UPDATE proyectos SET carpeta = 'c-' || lower(regexp_replace(area, '[^a-zA-Z0-9]+', '-', 'g'))
+ WHERE carpeta IS NULL AND area IS NOT NULL;
+UPDATE tareas t SET carpeta = 'c-' || lower(regexp_replace(t.area, '[^a-zA-Z0-9]+', '-', 'g'))
+ WHERE t.carpeta IS NULL AND t.proyecto IS NULL AND t.area IS NOT NULL;
+
+ALTER TABLE tareas    DROP COLUMN IF EXISTS area;
+ALTER TABLE proyectos DROP COLUMN IF EXISTS area;
+DROP TABLE IF EXISTS areas;
+
+-- ── De cajón único a etiquetas ───────────────────────
+-- Una carpeta pasó a ser una etiqueta: un proyecto o una tarea puede
+-- llevar varias y aparece en todas. La columna carpeta (una sola) se
+-- convierte en carpetas (jsonb con la lista), y la jerarquía de
+-- subcarpetas desaparece, que era lo que se sentía raro: una
+-- subcarpeta no es "esto también es de aquello", es otro cajón.
+ALTER TABLE proyectos ADD COLUMN IF NOT EXISTS carpetas jsonb NOT NULL DEFAULT '[]';
+ALTER TABLE tareas    ADD COLUMN IF NOT EXISTS carpetas jsonb NOT NULL DEFAULT '[]';
+
+DO $mig$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns
+              WHERE table_name='proyectos' AND column_name='carpeta') THEN
+    UPDATE proyectos SET carpetas = to_jsonb(ARRAY[carpeta])
+     WHERE carpeta IS NOT NULL AND carpetas = '[]'::jsonb;
+    UPDATE tareas SET carpetas = to_jsonb(ARRAY[carpeta])
+     WHERE carpeta IS NOT NULL AND carpetas = '[]'::jsonb;
+    ALTER TABLE proyectos DROP COLUMN carpeta;
+    ALTER TABLE tareas    DROP COLUMN carpeta;
+  END IF;
+END
+$mig$;
+
+ALTER TABLE carpetas DROP COLUMN IF EXISTS padre;

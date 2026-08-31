@@ -135,36 +135,37 @@ violado o una llave foránea inexistente devuelven `400`, no `500`.
 
 ## Carpetas
 
-Una capa de orden **aparte del estado**: un proyecto puede estar en la
-carpeta "Marca empleadora" y a la vez estar en curso. Agrupan proyectos
-y también tareas sueltas.
+**Una carpeta es una etiqueta, no un cajón.** Un proyecto o una tarea
+puede llevar varias y aparece en todas.
 
-- Admiten **un nivel de subcarpeta**. Con dos, nadie recuerda dónde dejó
-  las cosas, así que el esquema y la interfaz lo impiden.
-- Una tarea **hereda la carpeta de su proyecto** salvo que tenga una
-  propia. Archivar el proyecto archiva sus doce tareas de una vez.
-- Filtrar por una carpeta madre **incluye lo que hay en sus hijas**.
-- **Borrar una carpeta no borra nada**: sus proyectos y tareas quedan sin
-  carpeta y sus subcarpetas suben al primer nivel.
+Antes cada cosa vivía en una sola carpeta y existían subcarpetas para
+cubrir el resto de casos. Eso era justo lo que se sentía raro: una
+subcarpeta no dice "esto también es de aquello", dice "esto está más
+adentro". La jerarquía se eliminó por completo.
 
-La columna `carpeta` de `tareas` y `proyectos` no lleva llave foránea a
-propósito: si alguien borra una fila de `carpetas` a mano en la base, lo
-de dentro no debe irse con ella. Las referencias muertas se limpian en
-cada arranque, en `schema.sql`.
+- **Marcar varias**: el chip de carpeta de cualquier tarjeta abre una
+  lista con casillas, y no se cierra al marcar la primera. Lo mismo en el
+  panel de detalle y en los formularios de alta.
+- Una tarea **hereda las carpetas de su proyecto** mientras no tenga
+  ninguna propia. En cuanto marcas una, deja de heredar.
+- Filtrar por cualquiera de sus carpetas la encuentra. En la vista
+  Proyectos y en el cronograma agrupado por carpeta, lo que lleva dos
+  **aparece bajo las dos cabeceras**: la suma de los grupos puede pasar
+  del total, y es lo correcto.
+- El chip muestra la primera y cuántas más: `Corporativo +1`.
+- **Borrar una carpeta** solo quita esa etiqueta. Lo que llevaba otras
+  las conserva, y no se borra ningún proyecto ni ninguna tarea.
+- El botón **Agregar** de cada carpeta añade o quita **esa** etiqueta sin
+  tocar las demás que ya tuvieran las cosas marcadas.
 
-Las carpetas se ven en **todas** las vistas, no solo en Proyectos:
+Las áreas cliente (CORPO, TALENT, CDI...) se eliminaron: hacían el mismo
+trabajo de agrupar y obligaban a mantener dos taxonomías en paralelo.
 
-| Vista | Qué muestra |
-| --- | --- |
-| Resumen | Una tarjeta por carpeta con abiertas, proyectos, subcarpetas, barra de estados y vencidas |
-| Mi trabajo | Chip de carpeta en cada fila |
-| Tablero | Chip en cada tarjeta y reparto por carpeta en la cabecera de cada columna |
-| Cronograma | Opción **Agrupar por carpeta**, con las subcarpetas colgando de su madre |
-| Calendario | Línea de color a la izquierda de cada tarea y reparto del mes |
-| Equipo | En qué carpetas trabaja cada persona |
-
-Cualquiera de esos chips filtra por su carpeta, y volver a pulsarlo quita
-el filtro.
+En la base, `carpeta text` pasó a `carpetas jsonb` y la columna `padre`
+de la tabla de carpetas desapareció. `schema.sql` migra los datos
+existentes al arrancar: la carpeta que hubiera se convierte en una
+etiqueta única. El front hace lo mismo en memoria, así que un tablero de
+la versión anterior se abre sin que nadie tenga que tocar nada.
 
 ## Completadas
 
@@ -198,6 +199,29 @@ tarea hacía que la siguiente reutilizara un código ya usado. Hoy los tres
 drivers numeran a partir del **mayor código existente**, y al cargar se
 renumera cualquier repetido que venga de esa época, conservando el
 primero para no cambiarle el código a quien ya lo tenga anotado.
+
+## Cambiar el responsable
+
+Se cambia desde tres sitios, todos con el mismo menú de personas: el
+avatar de la tarea en cualquier lista, el campo **Responsable** del panel
+de detalle y la fila del responsable dentro de **Equipo de la tarea**. Un
+colaborador se asciende con la flecha de su fila, y el que estaba pasa a
+colaborar en vez de desaparecer.
+
+Antes esto estaba roto y no era evidente: al eliminar el arrastrar y
+soltar se borró `asignarA()`, que también usaba el menú de personas. El
+menú se abría, elegías a alguien y no pasaba nada, sin ningún error en
+pantalla. `test/llamadas.js` ahora revisa que no haya ninguna función que
+se llame y no exista, para que esa clase de fallo no vuelva a pasar en
+silencio.
+
+## Volver
+
+Entrar a un proyecto, una carpeta o una persona te lleva a otra vista, y
+antes ahí se acababa el camino: para regresar había que acordarse de
+dónde saliste. Ahora aparece un botón **Volver a …** arriba del
+contenido, que deshace el salto y suelta el filtro que lo acompañaba. Si
+encadenas dos saltos, te devuelve al principio y no a medio camino.
 
 ## Todo se mueve con botones
 
@@ -244,6 +268,22 @@ solo con las dimensiones que necesitan una lista para elegir
 (responsable, carpeta, proyecto, área), y lo que se pone desde la tira
 aparece abajo como ficha con su × — todo lo activo, junto y en un solo
 estilo.
+
+**El filtro se quedaba pegado.** Entrar a una carpeta, a un proyecto o a
+una persona pone un filtro, y ese filtro era global: al salir al
+cronograma seguías viendo solo esa carpeta sin haberlo pedido. Ahora hay
+dos clases. El que pones tú desde la barra o la tira se queda hasta que
+lo quites. El que se pone solo al entrar a algo se suelta en cuanto
+cambias de vista o de pestaña, y el aviso lo dice mientras está activo
+("se suelta al cambiar de vista"). Ir de una carpeta a otra tampoco
+acumula: reemplaza.
+
+**El filtro activo no se veía.** La señal existía (borde de acento en la
+barra de arriba) pero estaba en el sitio equivocado: nadie mira una barra
+superior cuando está buscando por qué falta una tarea. Ahora hay un aviso
+**dentro del contenido**, justo encima de la lista, que dice las tres
+cosas que importan: cuántas ves de cuántas, qué está filtrando y un botón
+para quitarlo. Sale en todas las vistas y se anuncia con `role="status"`.
 
 **Filtrar te sacaba de la vista.** Tocar un estado en la tira te llevaba
 al tablero aunque estuvieras a media revisión del cronograma. Ahora solo
@@ -306,10 +346,10 @@ tareas distintas nunca chocan.
 
 | Excel | JSON |
 | --- | --- |
-| Hoja `GANTT COMMS`, filas sin estado | `proyectos` (27) |
+| Hoja `GANTT COMMS`, filas sin estado | `proyectos` (28) |
 | Hoja `GANTT COMMS`, filas con estado | `tareas` (140) |
 | Columna `ASIGNADO A` | `responsable` |
-| Columna `CLIENTE` | `area` |
+| Columna `CLIENTE` | `carpeta` |
 | Columna `PROGRESO` | `progreso` (0–1) |
 | Columna `PRIORIDAD` | `estado` |
 | Hoja `ESTATUS`, `FECHA DE ENTREGA` | `hitos` (9) |
