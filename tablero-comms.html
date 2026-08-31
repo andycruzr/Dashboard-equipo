@@ -206,8 +206,8 @@ tailwind.config = {
     background:var(--acento); color:var(--acento-tinta); font-weight:600; }
 
   .widget-cab{ display:flex; align-items:baseline; gap:8px; margin-bottom:14px; }
-  .widget-cab h2{ font-size:14.5px; font-weight:600; letter-spacing:-.012em; }
-  .widget-cab .accion-mini{ margin-left:auto; font-size:12px; color:var(--texto-3); transition:color .15s ease; }
+  .widget-cab h2{ font-size:15px; font-weight:600; letter-spacing:-.012em; }
+  .widget-cab .accion-mini{ margin-left:auto; font-size:12.5px; color:var(--texto-3); transition:color .15s ease; }
   .widget-cab .accion-mini:hover{ color:var(--texto); }
 
   /* ── Densidad ────────────────────────────────────────────────────
@@ -246,16 +246,6 @@ tailwind.config = {
           line-height:1; font-variant-numeric:tabular-nums; }
 
   /* Rejilla de acciones rápidas: icono arriba, etiqueta abajo */
-  .rapidas{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
-  @media (max-width:420px){ .rapidas{ gap:8px; } }
-  .rapida{ display:flex; flex-direction:column; align-items:center; justify-content:center;
-           gap:8px; min-height:82px; padding:14px 8px;
-           background:var(--sup); border:1px solid var(--linea); border-radius:var(--r-md);
-           box-shadow:var(--sombra); color:var(--texto-2);
-           transition:transform .16s ease, box-shadow .16s ease, color .16s ease; }
-  .rapida:hover{ transform:translateY(-2px); box-shadow:var(--sombra-alta); color:var(--texto); }
-  .rapida svg{ color:var(--acento); }
-  .rapida span{ font-size:12.5px; font-weight:500; }
 
   /* Fila de lista: círculo, título con subtítulo, valor a la derecha */
   .item{ display:flex; align-items:center; gap:12px; width:100%;
@@ -264,7 +254,7 @@ tailwind.config = {
          text-align:left; transition:background .16s ease, transform .16s ease; }
   .item:hover{ background:var(--sup-hover); transform:translateX(2px); }
   .item-t{ font-size:13.5px; font-weight:600; letter-spacing:-.01em; color:var(--texto); }
-  .item-s{ font-size:12px; color:var(--texto-3); margin-top:2px; }
+  .item-s{ font-size:12.5px; color:var(--texto-3); margin-top:2px; }
   .item-v{ font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; }
 
   /* Chip de filtro con chevron */
@@ -288,8 +278,6 @@ tailwind.config = {
 
   /* Tinte translúcido de cualquier token: sirve para las píldoras
      de estado sin tener que declarar 20 colores extra por tema. */
-  .tinte-8  { background: color-mix(in srgb, currentColor 8%,  transparent); }
-  .tinte-14 { background: color-mix(in srgb, currentColor 14%, transparent); }
 
   /* Alias que aún usan algunos componentes */
   :root{ --cyan:var(--acento); }
@@ -320,11 +308,10 @@ tailwind.config = {
   /* Compatibilidad: lo que aún usa .tape queda en caja normal */
   .tape      { font-family:'JetBrains Mono',ui-monospace,monospace; font-size:11.5px;
                letter-spacing:.01em; font-variant-numeric:tabular-nums; text-transform:none; }
-  .stencil      { font-size:17px; font-weight:600; letter-spacing:-.02em; }
   .stencil-thin { font-size:13px; font-weight:600; letter-spacing:-.006em; }
 
   /* Campos de formulario: un solo estilo, no diez variantes sueltas */
-  .campo{ width:100%; border-radius:14px; border:1px solid var(--linea);
+  .campo{ width:100%; border-radius:16px; border:1px solid var(--linea);
           background:var(--sup-alta); padding:11px 14px; font-size:13.5px;
           color:var(--texto); outline:none;
           transition:border-color .15s ease, background .15s ease, box-shadow .15s ease; }
@@ -381,7 +368,7 @@ tailwind.config = {
   .pildora{
     display:inline-flex; align-items:center; gap:6px;
     border-radius:999px; padding:4px 10px;
-    font-size:12px; font-weight:500; white-space:nowrap;
+    font-size:12.5px; font-weight:500; white-space:nowrap;
   }
 
   /* ── Fila compacta ──────────────────────────────────────────────
@@ -390,12 +377,12 @@ tailwind.config = {
      un tercio menos de alto que la fila anterior sin encoger el
      texto ni el objetivo táctil.                                  */
   .fila{ position:relative; display:flex; align-items:center; gap:10px;
-         width:100%; padding:9px 12px 9px 15px; border-radius:14px;
+         width:100%; padding:9px 12px 9px 15px; border-radius:16px;
          background:var(--sup); border:1px solid var(--linea);
          text-align:left; cursor:pointer;
          transition:background .16s ease, border-color .16s ease, transform .16s ease; }
   .fila::before{ content:''; position:absolute; left:0; top:7px; bottom:7px; width:3px;
-                 border-radius:0 3px 3px 0; background:var(--fila-color, transparent); }
+                 border-radius:0 4px 4px 0; background:var(--fila-color, transparent); }
   .fila:hover{ background:var(--sup-hover); border-color:var(--borde); transform:translateX(2px); }
   .fila.sel{ border-color:var(--acento); background:var(--acento-suave); }
   .fila-t{ font-size:13px; font-weight:600; letter-spacing:-.01em; color:var(--texto); }
@@ -434,7 +421,7 @@ tailwind.config = {
   .fbtn:hover{ color:var(--texto); border-color:var(--borde); }
   .fbtn.on{ background:var(--acento); border-color:var(--acento);
             color:var(--acento-tinta); font-weight:600; }
-  .fbtn-x{ font-size:14px; line-height:1; opacity:.8; }
+  .fbtn-x{ font-size:13.5px; line-height:1; opacity:.8; }
   .fbtn-n{ display:inline-grid; place-items:center; min-width:18px; height:18px;
            border-radius:999px; padding:0 5px; font-size:10.5px; font-weight:700;
            font-variant-numeric:tabular-nums;
@@ -449,21 +436,27 @@ tailwind.config = {
      en el menú lateral, en la cabecera del grupo y en el chip de
      cada proyecto, para reconocerla sin leer el nombre.           */
   .cabecera-carpeta{ display:flex; align-items:center; gap:10px; padding:10px 14px;
-                     border-radius:14px; background:var(--sup); border:1px solid var(--linea);
+                     border-radius:16px; background:var(--sup); border:1px solid var(--linea);
                      border-left:3px solid var(--carpeta, var(--linea)); }
-  .chip-carpeta{ display:inline-flex; align-items:center; gap:6px; border-radius:999px;
+  /* El nombre va en gris, no en el color de la carpeta: con diez
+     colores fijos y dos temas, 17 de 20 combinaciones no llegaban a
+     4.5:1 como texto. La identidad la dan el punto y el tinte del
+     fondo, que son gráficos y no tienen que cumplir contraste. */
+  .chip-carpeta{ display:inline-flex; align-items:center; gap:5px; border-radius:999px;
                  padding:3px 9px; font-size:11.5px; font-weight:600;
-                 background:color-mix(in srgb, var(--carpeta) 15%, transparent);
-                 color:var(--carpeta); }
+                 background:color-mix(in srgb, var(--carpeta) 14%, transparent);
+                 color:var(--texto-2); }
+  .chip-carpeta:hover{ color:var(--texto); }
+  .chip-carpeta .punto{ width:7px; height:7px; border-radius:999px; flex-shrink:0;
+                        background:var(--carpeta); }
   .nav-carpeta{ display:flex; align-items:center; gap:9px; width:100%;
-                border-radius:10px; padding:7px 10px; font-size:12.5px;
+                border-radius:12px; padding:7px 10px; font-size:12.5px;
                 color:var(--texto-2); text-align:left;
                 transition:background .15s ease, color .15s ease; }
   .nav-carpeta:hover{ background:var(--sup-alta); color:var(--texto); }
   .nav-carpeta.on{ background:color-mix(in srgb, var(--acento) 13%, transparent);
                    color:var(--acento); font-weight:600; }
-  .nav-carpeta.hija{ padding-left:26px; font-size:12px; }
-  .carpeta-drop{ outline:2px dashed var(--acento); outline-offset:-3px; background:var(--acento-suave); }
+  .nav-carpeta.hija{ padding-left:26px; font-size:12.5px; }
   .card.dragging{ opacity:.35; transform:rotate(-1.2deg) scale(.98); }
   .card.selected{ background:#25282D; border-color:#4B515A; }
   .card.flash{ animation:flash .6s ease; }
@@ -499,7 +492,7 @@ tailwind.config = {
   .g-dia{ position:absolute; top:0; height:20px; display:flex; align-items:center;
           justify-content:center; gap:3px; border-left:1px solid var(--linea); }
   .g-dia.finde{ background:color-mix(in srgb, var(--texto-3) 10%, transparent); }
-  .g-diaLetra{ font-size:8.5px; color:var(--texto-3); }
+  .g-diaLetra{ font-size:9px; color:var(--texto-3); }
   .g-diaNum{ font-size:10.5px; font-weight:600; color:var(--texto-2);
              font-variant-numeric:tabular-nums; }
 
@@ -518,7 +511,7 @@ tailwind.config = {
             background:color-mix(in srgb, var(--acento) 15%, transparent);
             border-left:2px solid var(--acento); border-right:2px solid var(--acento); }
   .g-cabHoy{ position:absolute; bottom:3px; z-index:4; border-radius:999px; padding:2px 9px;
-             font-size:10px; font-weight:700; letter-spacing:.04em;
+             font-size:10.5px; font-weight:700; letter-spacing:.04em;
              background:var(--acento); color:var(--acento-tinta); white-space:nowrap; }
 
   .g-row{ height:34px; display:flex; align-items:center; border-bottom:1px solid var(--linea); }
@@ -527,14 +520,14 @@ tailwind.config = {
   .g-row:hover{ background:var(--sup-hover); }
   .g-row.sel{ background:color-mix(in srgb, var(--acento) 10%, transparent); }
 
-  .g-bar{ position:absolute; z-index:2; height:16px; border-radius:5px; top:50%;
+  .g-bar{ position:absolute; z-index:2; height:16px; border-radius:4px; top:50%;
           transform:translateY(-50%); cursor:pointer;
           transition:filter .15s ease, box-shadow .15s ease; }
   .g-bar:hover{ filter:brightness(1.15); box-shadow:0 0 0 2px color-mix(in srgb, var(--texto) 22%, transparent); }
-  .g-bar.grp{ height:20px; border-radius:6px; }
-  .g-fill{ position:absolute; inset:0; border-radius:5px;
+  .g-bar.grp{ height:20px; border-radius:8px; }
+  .g-fill{ position:absolute; inset:0; border-radius:4px;
            background:color-mix(in srgb, var(--fondo) 42%, transparent); }
-  .g-fill span{ display:block; height:100%; border-radius:5px 0 0 5px; background:transparent; }
+  .g-fill span{ display:block; height:100%; border-radius:4px 0 0 5px; background:transparent; }
 
   /* Fechas del proyecto al lado de su barra */
   .g-rango{ position:absolute; top:50%; transform:translate(-100%, -50%); margin-left:-10px;
@@ -550,9 +543,14 @@ tailwind.config = {
   input[type="date"]{ font-family:'JetBrains Mono',ui-monospace,monospace; }
   input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(.55); cursor:pointer; }
 
-  .zona-drop{ transition:border-color .14s ease, background .14s ease, transform .14s ease; }
-  .drop-activo{ border-color:var(--acento) !important; background:color-mix(in srgb, var(--acento) 12%, transparent);
-                transform:scale(1.03); }
+  .transicion{ transition:border-color .14s ease, background .14s ease, color .14s ease; }
+
+  /* Botones de icono. Se ven pequeños a propósito, pero con el dedo un
+     objetivo de 20 o 24px no se acierta: en pantalla táctil crecen a
+     40px sin cambiar nada en escritorio. */
+  @media (pointer:coarse){
+    .toque{ min-width:40px; min-height:40px; }
+  }
     .fila{ background:var(--sup); border:1px solid var(--linea); border-radius:var(--r-md);
          transition:background .16s ease, border-color .16s ease, transform .16s ease; }
   .fila:hover{ background:var(--sup-hover); border-color:var(--borde); transform:translateX(2px); }
@@ -574,7 +572,7 @@ tailwind.config = {
   .modal-in{ animation:modalIn .22s cubic-bezier(.2,.7,.3,1); }
   @keyframes modalIn{ from{ opacity:0; transform:translateY(-8px) scale(.985);} to{ opacity:1; transform:none;} }
 
-  :focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; border-radius:3px; }
+  :focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; border-radius:4px; }
 
   /* En pantallas táctiles todo control llega al mínimo de 44px.
      En escritorio se deja compacto: el puntero es preciso. */
@@ -598,8 +596,8 @@ tailwind.config = {
 
   /* Safari en iOS hace zoom si el texto de un campo baja de 16px */
   @supports (-webkit-touch-callout: none){
-    input, select, textarea{ font-size:16px !important; }
-    .campo{ font-size:16px !important; }
+    input, select, textarea{ font-size:15px !important; }
+    .campo{ font-size:15px !important; }
   }
 
   /* Respeta el notch y los bordes redondeados del iPad */
@@ -608,16 +606,9 @@ tailwind.config = {
   /* Desplazamiento con inercia en las zonas que scrollean */
   .scroll-x, .g-scroll, .overflow-y-auto{ -webkit-overflow-scrolling:touch; }
 
-  /* El arrastre HTML5 no existe en Safari de iPad: allí se usan los
-     menús de asignación, que hacen lo mismo con un toque. */
-  @media (hover: none){
-    .zona-drop::after{ content:''; }
-    [draggable="true"]{ -webkit-user-drag:none; }
-  }
-
   ::-webkit-scrollbar{ width:9px; height:9px; }
   ::-webkit-scrollbar-track{ background:transparent; }
-  ::-webkit-scrollbar-thumb{ background:var(--borde); border-radius:99px; }
+  ::-webkit-scrollbar-thumb{ background:var(--borde); border-radius:999px; }
   ::-webkit-scrollbar-thumb:hover{ background:var(--texto-3); }
   .scroll-x{ scrollbar-width:thin; }
 
@@ -638,7 +629,7 @@ tailwind.config = {
            flex flex-col -translate-x-full lg:translate-x-0 transition-transform duration-300">
 
     <div class="px-5 h-[64px] flex items-center gap-3 border-b border-line">
-      <div class="flex h-7 w-7 overflow-hidden rounded-[3px]">
+      <div class="flex h-7 w-7 overflow-hidden rounded-[4px]">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
         <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
       </div>
@@ -655,7 +646,7 @@ tailwind.config = {
       <div class="flex items-center gap-2 px-2 pb-2 pt-1">
         <span class="meta">Carpetas</span>
         <button id="nuevaCarpeta" title="Nueva carpeta" aria-label="Nueva carpeta"
-          class="ml-auto grid h-6 w-6 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-ink">
+          class="toque ml-auto grid h-6 w-6 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-ink">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
         </button>
       </div>
@@ -674,17 +665,17 @@ tailwind.config = {
              class="ml-auto shrink-0 text-dim"><path d="M3 7.5 6 4.5 9 7.5"/></svg>
       </button>
       <button id="exportar"
-        class="mt-1 flex w-full items-center gap-2.5 rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-mute transition hover:bg-panel2 hover:text-ink">
+        class="mt-1 flex w-full items-center gap-2.5 rounded-[12px] px-2.5 py-2.5 text-left text-[12.5px] text-mute transition hover:bg-panel2 hover:text-ink">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 3v9M6.5 8.5 10 12l3.5-3.5M4 14.5v1.5a1 1 0 001 1h10a1 1 0 001-1v-1.5"/></svg>
         Exportar a Excel</button>
       <button id="importar"
-        class="flex w-full items-center gap-2.5 rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-mute transition hover:bg-panel2 hover:text-ink">
+        class="flex w-full items-center gap-2.5 rounded-[12px] px-2.5 py-2.5 text-left text-[12.5px] text-mute transition hover:bg-panel2 hover:text-ink">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 12.5v-9M6.5 7 10 3.5 13.5 7M4 14.5v1.5a1 1 0 001 1h10a1 1 0 001-1v-1.5"/></svg>
         Importar desde CSV</button>
       <button id="resetBoard"
-        class="w-full rounded-[11px] px-2.5 py-2.5 text-left text-[12.5px] text-dim transition hover:text-bar-red">
+        class="w-full rounded-[12px] px-2.5 py-2.5 text-left text-[12.5px] text-dim transition hover:text-bar-red">
         Restaurar datos del Excel</button>
     </div>
   </aside>
@@ -707,7 +698,7 @@ tailwind.config = {
           <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-dim" width="14" height="14" viewBox="0 0 16 16"
                fill="none" stroke="currentColor" stroke-width="1.6">
             <circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
-          <input id="search" type="text" placeholder="Buscar tarea"
+          <input id="search" aria-label="Buscar tarea, proyecto, persona o carpeta" type="text" placeholder="Buscar tarea"
             class="vidrio w-[190px] rounded-full border border-line pl-10 pr-4 py-[9px] text-[13px]
                    placeholder:text-dim focus:border-bar-cyan focus:outline-none transition" />
         </div>
@@ -723,13 +714,13 @@ tailwind.config = {
             <circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 000 14"/><circle cx="13" cy="7.5" r=".8" fill="currentColor"/><circle cx="14" cy="11" r=".8" fill="currentColor"/></svg>
         </button>
         <button id="nuevaTarea" title="Nueva tarea (N)" aria-label="Crear nueva tarea"
-          class="accion flex items-center gap-1.5 rounded-[9px] border px-3 py-2.5 transition"
+          class="accion flex items-center gap-1.5 rounded-[8px] border px-3 py-2.5 transition"
           style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
           <span class="hidden sm:inline">Nueva</span>
         </button>
         <button id="syncPill" title="Guardar ahora" aria-label="Estado de guardado. Pulsa para guardar ahora."
-          class="accion flex items-center gap-1.5 rounded-[9px] border border-line bg-panel px-3 py-2.5 text-mute hover:text-ink hover:border-dim transition">
+          class="accion flex items-center gap-1.5 rounded-[8px] border border-line bg-panel px-3 py-2.5 text-mute hover:text-ink hover:border-dim transition">
           <span id="syncDot" class="h-[6px] w-[6px] rounded-full" style="background:#E2CA6E"></span>
           <span id="syncText">Cargando</span>
         </button>
@@ -760,7 +751,7 @@ tailwind.config = {
       <aside id="rail" class="relative min-w-0 border-l-2 xl:sticky xl:top-[64px] xl:h-[calc(100vh-64px)]"
         style="border-color:var(--acento)">
         <button id="railToggle" aria-label="Ocultar el panel de edición" aria-expanded="true"
-          class="absolute -left-3 top-5 z-20 grid h-7 w-7 place-items-center rounded-full border shadow-[var(--sombra)] transition"
+          class="toque absolute -left-3 top-5 z-20 grid h-7 w-7 place-items-center rounded-full border shadow-[var(--sombra)] transition"
           style="background:var(--acento);border-color:var(--acento);color:var(--acento-tinta)">
           <svg id="railIcono" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor"
                stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg>
@@ -776,7 +767,7 @@ tailwind.config = {
 
 <div id="aparienciaModal" class="fixed inset-0 z-[78] hidden" role="dialog" aria-modal="true" aria-labelledby="apTitulo">
   <div class="absolute inset-0 z-0 bg-black/75" data-cerrarap></div>
-  <div class="modal-in vidrio-alto relative z-10 mx-auto mt-[9vh] w-[min(400px,92vw)] overflow-hidden rounded-[24px] border border-line">
+  <div class="modal-in vidrio-alto relative z-10 mx-auto mt-[9vh] w-[min(400px,92vw)] overflow-hidden rounded-[20px] border border-line">
     <div class="flex items-center gap-3 border-b border-line px-6 py-5">
       <h2 id="apTitulo" class="text-[17px] font-semibold tracking-tight">Apariencia</h2>
       <button data-cerrarap class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
@@ -806,7 +797,7 @@ tailwind.config = {
 
 <div id="proyModal" class="fixed inset-0 z-[77] hidden" role="dialog" aria-modal="true" aria-labelledby="prTitulo">
   <div class="absolute inset-0 z-0 bg-black/75" data-cerrarpr></div>
-  <div class="modal-in vidrio-alto relative z-10 mx-auto mt-[8vh] w-[min(440px,92vw)] overflow-hidden rounded-[24px] border border-line">
+  <div class="modal-in vidrio-alto relative z-10 mx-auto mt-[8vh] w-[min(440px,92vw)] overflow-hidden rounded-[20px] border border-line">
     <div class="flex items-center gap-3 border-b border-line px-6 py-5">
       <h2 id="prTitulo" class="text-[17px] font-semibold tracking-tight">Nuevo proyecto</h2>
       <button data-cerrarpr class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
@@ -825,6 +816,10 @@ tailwind.config = {
         <label class="block">
           <span class="etiqueta">Área</span>
           <select id="prArea" class="campo tapeselect"></select>
+        </label>
+        <label class="block">
+          <span class="etiqueta">Carpeta</span>
+          <select id="prCarpeta" class="campo tapeselect"></select>
         </label>
       </div>
       <div>
@@ -897,7 +892,7 @@ tailwind.config = {
     <div class="flex items-center gap-2 border-t border-line px-5 py-4">
       <button id="pBorrar" class="accion hidden rounded-[4px] border border-line px-3 py-[8px] text-dim hover:text-bar-red hover:border-bar-red transition">Quitar del equipo</button>
       <button data-cerrarp class="btn-suave ml-auto">Cancelar</button>
-      <button id="pGuardar" class="accion rounded-[9px] border px-3.5 py-2.5 transition"
+      <button id="pGuardar" class="accion rounded-[8px] border px-3.5 py-2.5 transition"
         style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 14%, transparent);color:var(--cyan)">Guardar</button>
     </div>
   </div>
@@ -907,7 +902,7 @@ tailwind.config = {
   <div class="absolute inset-0 bg-black/80"></div>
   <div class="modal-in relative z-10 mx-auto mt-[10vh] w-[min(420px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="border-b border-line px-5 py-5">
-      <div class="flex h-[18px] w-[62px] overflow-hidden rounded-[2px] mb-4">
+      <div class="flex h-[18px] w-[62px] overflow-hidden rounded-[4px] mb-4">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
         <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
       </div>
@@ -929,7 +924,7 @@ tailwind.config = {
   <div class="absolute inset-0 z-0 bg-black/70" data-close></div>
   <div class="modal-in relative z-10 mx-auto mt-[8vh] w-[min(430px,92vw)] overflow-hidden rounded-[12px] border border-line bg-panel shadow-2xl">
     <div class="flex items-center gap-3 border-b border-line px-5 py-4">
-      <div class="flex h-[18px] w-[18px] overflow-hidden rounded-[2px]">
+      <div class="flex h-[18px] w-[18px] overflow-hidden rounded-[4px]">
         <span class="flex-1 bg-bar-cyan"></span><span class="flex-1 bg-bar-yellow"></span>
         <span class="flex-1 bg-bar-magenta"></span><span class="flex-1 bg-bar-blue"></span>
       </div>
@@ -941,9 +936,9 @@ tailwind.config = {
       <div>
         <label class="etiqueta">Tipo</label>
         <div class="grid grid-cols-3 gap-2">
-          <button data-kind="tarea"  class="accion rounded-[10px] border py-2.5 transition">Tarea</button>
-          <button data-kind="hito"   class="accion rounded-[10px] border py-2.5 transition">Hito</button>
-          <button data-kind="evento" class="accion rounded-[10px] border py-2.5 transition">Evento</button>
+          <button data-kind="tarea"  class="accion rounded-[12px] border py-2.5 transition">Tarea</button>
+          <button data-kind="hito"   class="accion rounded-[12px] border py-2.5 transition">Hito</button>
+          <button data-kind="evento" class="accion rounded-[12px] border py-2.5 transition">Evento</button>
         </div>
         <p id="evAyuda" class="nota mt-2"></p>
       </div>
@@ -969,12 +964,12 @@ tailwind.config = {
         <div>
           <label for="evDate" class="etiqueta">Inicio</label>
           <input id="evDate" type="date"
-            class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
+            class="w-full rounded-[8px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
         </div>
         <div id="fieldEnd">
           <label for="evEnd" class="etiqueta">Fin</label>
           <input id="evEnd" type="date"
-            class="w-full rounded-[9px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
+            class="w-full rounded-[8px] border border-line bg-panel2 px-3.5 py-2.5 text-[13px] outline-none focus:border-bar-cyan transition" />
         </div>
       </div>
 
@@ -994,6 +989,10 @@ tailwind.config = {
           <label for="evProyecto" class="etiqueta">Proyecto</label>
           <select id="evProyecto" class="campo tapeselect"></select>
         </div>
+        <div>
+          <label for="evCarpeta" class="etiqueta">Carpeta</label>
+          <select id="evCarpeta" class="campo tapeselect"></select>
+        </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label for="evOwner" class="etiqueta">Responsable</label>
@@ -1012,7 +1011,7 @@ tailwind.config = {
     <div class="flex items-center gap-2 border-t border-line px-5 py-4">
       <span class="meta">Esc para cerrar</span>
       <button data-close class="btn-suave ml-auto">Cancelar</button>
-      <button id="evSubmit" class="accion rounded-[9px] border px-3.5 py-2.5 transition"
+      <button id="evSubmit" class="accion rounded-[8px] border px-3.5 py-2.5 transition"
         style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 14%, transparent);color:var(--cyan)">Crear tarea</button>
     </div>
   </div>
@@ -1022,7 +1021,7 @@ tailwind.config = {
   <div class="absolute inset-0 z-0 bg-black/70" data-cerrarca></div>
   <div class="modal-in relative z-10 mx-auto mt-[10vh] w-[min(430px,92vw)] overflow-hidden rounded-[20px] border border-line bg-panel shadow-2xl">
     <div class="flex items-center gap-3 border-b border-line px-5 py-4">
-      <span id="caPunto" class="h-3.5 w-3.5 shrink-0 rounded-[5px]" style="background:var(--acento)"></span>
+      <span id="caPunto" class="h-3.5 w-3.5 shrink-0 rounded-[4px]" style="background:var(--acento)"></span>
       <h2 id="caTitulo" class="subtitulo">Nueva carpeta</h2>
       <button data-cerrarca class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
     </div>
@@ -1044,9 +1043,30 @@ tailwind.config = {
   </div>
 </div>
 
+<div id="llenarModal" class="fixed inset-0 z-[78] hidden" role="dialog" aria-modal="true" aria-labelledby="llTitulo">
+  <div class="absolute inset-0 z-0 bg-black/70" data-cerrarll></div>
+  <div class="modal-in relative z-10 mx-auto mt-[7vh] flex max-h-[80vh] w-[min(520px,94vw)] flex-col overflow-hidden rounded-[20px] border border-line bg-panel shadow-2xl">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+      <span id="llPunto" class="h-3.5 w-3.5 shrink-0 rounded-[4px]"></span>
+      <h2 id="llTitulo" class="subtitulo truncate">Agregar a la carpeta</h2>
+      <button data-cerrarll class="ml-auto text-mute hover:text-ink text-xl leading-none" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="border-b border-line px-5 py-3">
+      <input id="llBuscar" type="search" aria-label="Buscar proyecto o tarea para agregar a la carpeta" placeholder="Buscar proyecto o tarea" autocomplete="off" class="campo" />
+      <p class="nota mt-2">Marca lo que va en esta carpeta y desmarca lo que sale. Las tareas de un proyecto entran con él.</p>
+    </div>
+    <div id="llLista" class="min-h-0 flex-1 overflow-y-auto px-2 py-2"></div>
+    <div class="flex items-center gap-2 border-t border-line px-5 py-4">
+      <span id="llCuenta" class="item-s !mt-0"></span>
+      <button data-cerrarll class="btn-suave ml-auto">Cancelar</button>
+      <button id="llGuardar" class="btn-principal">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div id="briefModal" class="fixed inset-0 z-[77] hidden" role="dialog" aria-modal="true" aria-labelledby="briefTitulo">
   <div class="absolute inset-0 z-0 bg-black/75" data-cerrarbrief></div>
-  <div class="modal-in relative z-10 mx-auto mt-[6vh] w-[min(470px,93vw)] overflow-hidden rounded-[22px] border border-line bg-panel shadow-2xl">
+  <div class="modal-in relative z-10 mx-auto mt-[6vh] w-[min(470px,93vw)] overflow-hidden rounded-[20px] border border-line bg-panel shadow-2xl">
     <div id="briefCuerpo" class="max-h-[72vh] overflow-y-auto"></div>
     <div class="flex items-center gap-2 border-t border-line px-5 py-4">
       <button id="briefCambiar" class="btn-suave">Cambiar de persona</button>
@@ -1059,7 +1079,7 @@ tailwind.config = {
   <div class="vidrio-alto flex items-center gap-2.5 rounded-full border border-line px-4 py-2.5 text-[12.5px] font-medium">
     <span id="toastDot" class="h-2 w-2 rounded-full bg-bar-green"></span>
     <span id="toastText" class="text-ink"></span>
-    <button id="toastUndo" class="ml-1.5 hidden rounded-full px-2.5 py-1 text-[12px] font-semibold transition"
+    <button id="toastUndo" class="ml-1.5 hidden rounded-full px-2.5 py-1 text-[12.5px] font-semibold transition"
       style="background:color-mix(in srgb, var(--acento) 16%, transparent);color:var(--acento)">Deshacer</button>
   </div>
 </div>
@@ -4156,18 +4176,6 @@ const ramaCarpeta = id => id ? [id, ...hijasDe(id).map(c => c.id)] : [];
 const tareaEnCarpeta = (t, id) => ramaCarpeta(id).includes(carpetaDe(t));
 const proyEnCarpeta  = (p, id) => ramaCarpeta(id).includes(p.carpeta || null);
 
-/* Chip de carpeta listo para pegar en cualquier vista. El nombre va
-   en gris y el color lo lleva el punto: diez colores fijos por dos
-   temas no dan contraste suficiente como texto. */
-function chipCarpeta(id, opts = {}){
-  const color = id ? colorCarpeta(id) : 'var(--texto-3)';
-  const nombre = id ? nombreCarpeta(id) : 'Sin carpeta';
-  if (opts.soloPunto) return `<span class="h-2 w-2 shrink-0 rounded-full" style="background:${color}"
-    title="Carpeta ${esc(nombre)}"></span>`;
-  return `<span class="chip-carpeta ${opts.clases || ''}" style="--carpeta:${color}"
-    title="Carpeta ${esc(nombre)}"><span class="punto"></span>${esc(nombre)}${
-    opts.n != null ? `<span class="fbtn-n ml-0.5">${opts.n}</span>` : ''}</span>`;
-}
 
 /* Lo que hay dentro, contando subcarpetas. Es lo que alimenta los
    números del menú lateral y de las cabeceras. */
@@ -4509,6 +4517,7 @@ const state = {
   seleccion:null, mes:new Date(),
   agrupar:'proyecto', zoom:9, abiertos:new Set(), tipoEvento:'hito',
   diasAbiertos:new Set(),      // días del calendario desplegados
+  listasAbiertas:new Set(),    // listas de tareas mostradas completas
   filtroEstado:null, filtroPrioridad:null, carpeta:null, atajo:null, vistaPrevia:null, railAbierto:true,
   agruparProy:'carpeta',       // cómo se agrupa la vista Proyectos
   verCompletadas:false,        // lo terminado vive en su propia pestaña
@@ -4697,9 +4706,6 @@ function completadasFiltradas(){
   return r;
 }
 
-const hayFiltros = () => !!(state.persona || state.area || state.proyecto || state.carpeta ||
-  state.filtroEstado || state.filtroPrioridad || state.atajo || state.query);
-
 function limpiarFiltros(){
   state.persona = state.area = state.proyecto = state.carpeta = null;
   state.filtroEstado = state.filtroPrioridad = state.atajo = null;
@@ -4749,7 +4755,7 @@ function renderNav(){
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
            stroke-linecap="round" stroke-linejoin="round" class="${on ? '' : 'text-dim'}"><path d="${v.icon}"/></svg>
       <span class="truncate">${v.label}</span>
-      ${c ? `<span class="ml-auto grid h-[21px] min-w-[21px] shrink-0 place-items-center rounded-full px-1.5 text-[11px] font-bold"
+      ${c ? `<span class="ml-auto grid h-[21px] min-w-[21px] shrink-0 place-items-center rounded-full px-1.5 text-[11.5px] font-bold"
         style="${c.alerta ? 'background:var(--alerta);color:#fff'
                           : 'background:var(--sup-alta);color:var(--texto-2)'}">${c.n}</span>` : ''}
     </button>`;
@@ -4759,12 +4765,17 @@ function renderNav(){
   renderCarpetasNav();
 }
 
-function bindPersonas(scope){
-  document.querySelectorAll(scope + ' [data-persona]').forEach(b =>
-    b.onclick = () => { state.persona = state.persona === b.dataset.persona ? null : b.dataset.persona; renderAll(); });
-}
 
 /* ═══ Barra de estado + indicadores ═══ */
+
+/* Filtrar no debería moverte de sitio. Antes, tocar un estado en la
+   tira te sacaba del cronograma y te dejaba en el tablero, aunque
+   estuvieras a media revisión de fechas. Ahora solo se cambia de vista
+   desde Equipo, que es la única que no muestra tareas. */
+function alFiltrar(){
+  if (state.vista === 'equipo'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
+  renderAll();
+}
 
 function renderSlate(){
   const total = TAREAS.length || 1;
@@ -4787,45 +4798,48 @@ function renderSlate(){
     ESTADOS.map(e => {
       const n = TAREAS.filter(t => t.estado === e.id).length;
       const on = state.filtroEstado === e.id;
-      return `<button data-filtroestado="${e.id}" aria-pressed="${on}"
-        class="flex items-baseline gap-1.5 rounded-[3px] px-1.5 py-1 transition ${on ? 'bg-panel2' : 'hover:bg-panel2'}"
-        title="Ver solo ${e.nombre.toLowerCase()}">
-        <span class="h-2 w-2 shrink-0 rounded-full translate-y-[-1px]" style="background:${e.relleno}"></span>
-        <span class="text-[12px] ${on ? 'text-ink font-medium' : 'text-mute'}">${e.nombre}</span>
-        <span class="meta">${n}</span></button>`;
+      // Mismo relleno de acento que la barra de abajo: "activo" se ve
+      // igual en toda la aplicación, no de dos maneras distintas.
+      return `<button data-filtroestado="${e.id}" aria-pressed="${on}" class="fbtn !py-1 !px-2.5 ${on ? 'on' : ''}"
+        title="${on ? 'Quitar el filtro de' : 'Ver solo'} ${e.nombre.toLowerCase()}">
+        <span class="h-2 w-2 shrink-0 rounded-full" style="background:${on ? 'currentColor' : e.relleno}"></span>
+        <span>${e.nombre}</span>
+        <span class="fbtn-n">${n}</span></button>`;
     }).join('') +
     PRIORIDADES.filter(x => x.id !== 'media').map(x => {
       const n = TAREAS.filter(t => t.prioridad === x.id && t.estado !== 'completado').length;
       if (!n) return '';
       const on = state.filtroPrioridad === x.id;
-      return `<button data-filtroprio="${x.id}" aria-pressed="${on}"
-        class="flex items-baseline gap-1.5 rounded-[7px] px-1.5 py-1 transition ${on ? 'bg-panel2' : 'hover:bg-panel2'}"
-        title="Ver solo prioridad ${x.nombre.toLowerCase()}">
-        <span style="color:${x.relleno};font-size:9px">${x.marca}</span>
-        <span class="text-[12px] ${on ? 'text-ink font-medium' : 'text-mute'}">${x.corto}</span>
-        <span class="dato text-dim">${n}</span></button>`;
+      return `<button data-filtroprio="${x.id}" aria-pressed="${on}" class="fbtn !py-1 !px-2.5 ${on ? 'on' : ''}"
+        title="${on ? 'Quitar el filtro de prioridad' : 'Ver solo prioridad'} ${x.nombre.toLowerCase()}">
+        <span aria-hidden="true" style="color:${on ? 'currentColor' : x.relleno};font-size:9px">${x.marca}</span>
+        <span>${x.corto}</span>
+        <span class="fbtn-n">${n}</span></button>`;
     }).join('') +
     `<span class="ml-auto flex items-center gap-2">
-      ${vencidas ? `<button data-atajo="vencidas" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--alerta)">${vencidas} vencidas</button>` : ''}
-      ${vobo ? `<button data-atajo="revision" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--est-revision)">${vobo} esperando VoBo</button>` : ''}
-      ${sinDuenio ? `<button data-atajo="sinduenio" class="dato rounded-[7px] px-2 py-1.5 transition hover:bg-panel2" style="color:var(--cyan)">${sinDuenio} sin dueño</button>` : ''}
+      ${vencidas ? `<button data-atajo="vencidas" aria-pressed="${state.atajo === 'vencidas'}"
+        class="fbtn !py-1 !px-2.5 ${state.atajo === 'vencidas' ? 'on' : ''}"
+        style="${state.atajo === 'vencidas' ? '' : 'color:var(--alerta)'}">${vencidas} vencidas</button>` : ''}
+      ${vobo ? `<button data-atajo="revision" aria-pressed="${state.atajo === 'revision'}"
+        class="fbtn !py-1 !px-2.5 ${state.atajo === 'revision' ? 'on' : ''}"
+        style="${state.atajo === 'revision' ? '' : 'color:var(--est-revision)'}">${vobo} esperando VoBo</button>` : ''}
+      ${sinDuenio ? `<button data-atajo="sinduenio" aria-pressed="${state.atajo === 'sinduenio'}"
+        class="fbtn !py-1 !px-2.5 ${state.atajo === 'sinduenio' ? 'on' : ''}"
+        style="${state.atajo === 'sinduenio' ? '' : 'color:var(--cyan)'}">${sinDuenio} sin dueño</button>` : ''}
       <span class="meta">${pct(avance_(TAREAS))}% avance</span>
     </span>`;
 
   document.querySelectorAll('[data-filtroprio]').forEach(b => b.onclick = () => {
     state.filtroPrioridad = state.filtroPrioridad === b.dataset.filtroprio ? null : b.dataset.filtroprio;
-    if (sub() !== 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
-    renderAll();
+    alFiltrar();
   });
   document.querySelectorAll('[data-filtroestado]').forEach(b => b.onclick = () => {
     state.filtroEstado = state.filtroEstado === b.dataset.filtroestado ? null : b.dataset.filtroestado;
-    if (sub() !== 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
-    renderAll();
+    alFiltrar();
   });
   document.querySelectorAll('[data-atajo]').forEach(b => b.onclick = () => {
     state.atajo = state.atajo === b.dataset.atajo ? null : b.dataset.atajo;
-    if (sub() !== 'tablero'){ state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; }
-    renderAll();
+    alFiltrar();
   });
 }
 
@@ -4998,7 +5012,7 @@ function renderGantt(){
     etiquetas += `<div class="g-row g-group cursor-pointer px-3" data-grupo="${g.id}">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.9"
            class="shrink-0 text-dim transition-transform ${abierto ? 'rotate-90' : ''}"><path d="M3 1.5 6.5 5 3 8.5"/></svg>
-      <span class="ml-2 h-[8px] w-[8px] shrink-0 rounded-[2px]" style="background:${c}"></span>
+      <span class="ml-2 h-[8px] w-[8px] shrink-0 rounded-[4px]" style="background:${c}"></span>
       <span class="ml-2 truncate text-[12.5px] font-semibold">${esc(g.nombre)}</span>
       <span class="dato ml-auto shrink-0 text-dim">${g.tareas.length}</span>
     </div>`;
@@ -5064,11 +5078,11 @@ function renderGantt(){
 
   <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
     ${ESTADOS.map(e => `<div class="flex items-center gap-2">
-      <span class="h-[8px] w-[8px] rounded-[2px]" style="background:${e.relleno}"></span>
-      <span class="text-[12px] text-mute">${e.nombre}</span></div>`).join('')}
+      <span class="h-[8px] w-[8px] rounded-[4px]" style="background:${e.relleno}"></span>
+      <span class="text-[12.5px] text-mute">${e.nombre}</span></div>`).join('')}
     <div class="flex items-center gap-2">
       <span class="h-[8px] w-[8px] rotate-45" style="background:var(--acento)"></span>
-      <span class="text-[12px] text-mute">Hito</span></div>
+      <span class="text-[12.5px] text-mute">Hito</span></div>
     <span class="item-s ml-auto ${sinFecha ? 'text-bar-yellow' : ''}">${sinFecha} tareas activas sin fecha</span>
   </div>`;
 }
@@ -5119,8 +5133,8 @@ function scrollAHoy(suave){
 function tarjeta(t){
   const e = E(t.estado), p = P(t.responsable), proy = PR(t.proyecto);
   const vd = vencida(t);
-  return `<article data-id="${t.id}" tabindex="0"
-    class="card group relative cursor-grab touch-pan-y select-none active:cursor-grabbing rounded-[12px] border border-line bg-panel
+  return `<article data-id="${t.id}" tabindex="0" role="button"
+    class="card group relative cursor-pointer rounded-[12px] border border-line bg-panel
            pl-4 pr-3 py-3 ${state.seleccion === t.id ? 'selected' : ''}">
     <span class="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[5px]" style="background:${e.color}"></span>
 
@@ -5137,7 +5151,12 @@ function tarjeta(t){
         title="Abrir ${esc(nombreProy(t.proyecto))}">${esc(nombreProy(t.proyecto))}</button>` : 'Suelta'}
       · ${esc(t.area)}
     </div>
-    ${carpetaDe(t) ? `<div class="mb-3">${chipCarpeta(carpetaDe(t))}</div>` : '<div class="mb-3"></div>'}
+    <div class="mb-3">
+      <button data-carpetatarea="${t.id}" class="chip-carpeta transition hover:brightness-110"
+        style="--carpeta:${carpetaDe(t) ? colorCarpeta(carpetaDe(t)) : 'var(--texto-3)'}"
+        title="Cambiar de carpeta"><span class="punto"></span>${
+        carpetaDe(t) ? esc(nombreCarpeta(carpetaDe(t))) : 'Sin carpeta'}</button>
+    </div>
 
     <div class="flex items-center gap-2 mb-3">
       ${sprockets(t)}
@@ -5149,7 +5168,7 @@ function tarjeta(t){
       ${botonResponsable(t)}
       <span class="text-[11.5px] text-mute truncate">${esc(p.nombre)}</span>
       <select data-estado="${t.id}" aria-label="Estado de ${esc(t.codigo)}"
-        class="tapeselect tape ml-auto shrink-0 rounded-[3px] border bg-transparent px-1.5 py-[3px] cursor-pointer"
+        class="tapeselect tape ml-auto shrink-0 rounded-[4px] border bg-transparent px-1.5 py-[3px] cursor-pointer"
         style="border-color:${tinte(e.color, 34)};color:${e.color}">
         ${ESTADOS.map(o => `<option value="${o.id}" ${o.id === t.estado ? 'selected' : ''}>${o.nombre}</option>`).join('')}
       </select>
@@ -5252,7 +5271,7 @@ function renderTablero(){
       : todas;
     return `<div class="flex min-w-[268px] flex-1 flex-col rise" style="animation-delay:${i*60}ms">
       <div class="mb-2 flex items-center gap-2 border-t-2 pt-2.5" style="border-color:${e.color}">
-        <span class="stencil-thin text-[11px]" style="color:${e.color}">${e.nombre}</span>
+        <span class="stencil-thin text-[11.5px]" style="color:${e.color}">${e.nombre}</span>
         <span class="meta">${String(todas.length).padStart(2,'0')}</span>
         ${items.filter(t => vencida(t)).length
           ? `<span class="chip-mini" style="background:${tinte('var(--alerta)', 16)};color:var(--alerta)"
@@ -5260,9 +5279,9 @@ function renderTablero(){
         <span class="nota ml-auto hidden sm:inline">${e.nota}</span>
       </div>
       ${repartoCarpetas(items)}
-      <div class="col-drop flex-1 space-y-2.5 rounded-[5px] p-1 min-h-[120px] max-h-[70vh] overflow-y-auto" data-col="${e.id}">
+      <div class="col-drop flex-1 space-y-2.5 rounded-[4px] p-1 min-h-[120px] max-h-[70vh] overflow-y-auto" data-col="${e.id}">
         ${items.map(tarjeta).join('') || `<div class="grid h-[110px] place-items-center rounded-[12px] border border-dashed border-line">
-          <span class="meta">Suelta una tarjeta aquí</span></div>`}
+          <span class="meta">Nada aquí</span></div>`}
         ${esArchivo && todas.length > items.length
           ? `<button data-ir="archivo" class="w-full rounded-[12px] border border-dashed border-line py-3 text-center transition hover:border-dim hover:bg-panel2">
               <span class="item-s !mt-0">Y ${todas.length - items.length} más · ver el archivo</span></button>` : ''}
@@ -5279,131 +5298,27 @@ function wireEstados(){
 }
 
 /* ═══════════════════════════════════════════════════
-   ARRASTRAR Y SOLTAR
+   MOVER TAREAS
    ───────────────────────────────────────────────────
-   Antes usaba el arrastre nativo de HTML5. Ese sistema
-   no existe en pantallas táctiles: en iPad y en móvil
-   las tarjetas simplemente no se movían. Se cambió por
-   eventos de puntero, que son los mismos para ratón,
-   dedo y lápiz.
+   Se quitó el arrastrar y soltar, en las dos versiones
+   que tuvo: la nativa de HTML5 no existía en táctil, y
+   la de eventos de puntero se portaba mal en uso real.
+   Un gesto que a veces agarra la tarjeta, a veces la
+   abre y a veces no hace nada es peor que no tenerlo.
 
-   Con ratón: se levanta la tarjeta a los 6px de
-   movimiento. Con el dedo: hay que mantener pulsado
-   350ms, para que deslizar la columna siga siendo
-   deslizar y no arrastrar sin querer.
-
-   El desplegable de estado de cada tarjeta sigue ahí:
-   arrastrar es el atajo, no el único camino.
+   Todo se mueve con botones: el desplegable de estado
+   de cada tarjeta, el chip de carpeta y el avatar del
+   responsable. Funcionan igual con ratón, dedo y
+   teclado, y se pueden probar de verdad.
    ═══════════════════════════════════════════════════ */
-
-let arrastre = null;
-
-function columnaEn(x, y, respaldo){
-  let col = null;
-  // elementFromPoint es lo que dice qué hay bajo el dedo, pero no
-  // está en todos los entornos: si falta, se cae al elemento del
-  // propio evento en vez de romper el arrastre entero.
-  if (typeof document.elementFromPoint === 'function'){
-    const el = document.elementFromPoint(x, y);
-    col = el && el.closest ? el.closest('[data-col]') : null;
-  }
-  return col || (respaldo && respaldo.closest ? respaldo.closest('[data-col]') : null);
-}
-
-function activarArrastre(){
-  if (!arrastre || arrastre.activo) return;
-  const { card } = arrastre;
-  arrastre.activo = true;
-
-  const r = card.getBoundingClientRect();
-  const fantasma = card.cloneNode(true);
-  fantasma.id = 'fantasmaArrastre';
-  fantasma.style.cssText = `position:fixed;left:0;top:0;width:${r.width}px;margin:0;
-    pointer-events:none;z-index:95;opacity:.92;transform:rotate(-1.5deg);
-    box-shadow:var(--sombra-alta);will-change:transform`;
-  document.body.appendChild(fantasma);
-  arrastre.fantasma = fantasma;
-  arrastre.dx = arrastre.x0 - r.left;
-  arrastre.dy = arrastre.y0 - r.top;
-  moverFantasma(arrastre.x0, arrastre.y0);
-
-  card.classList.add('dragging');
-  card.style.touchAction = 'none';
-  document.body.style.userSelect = 'none';
-}
-
-function moverFantasma(x, y){
-  if (!arrastre || !arrastre.fantasma) return;
-  arrastre.fantasma.style.transform =
-    `translate(${x - arrastre.dx}px, ${y - arrastre.dy}px) rotate(-1.5deg)`;
-}
-
-function resaltarColumna(col){
-  document.querySelectorAll('[data-col]').forEach(c => c.classList.toggle('over', c === col));
-}
-
-function terminarArrastre(){
-  if (!arrastre) return;
-  clearTimeout(arrastre.timer);
-  if (arrastre.fantasma) arrastre.fantasma.remove();
-  arrastre.card.classList.remove('dragging');
-  arrastre.card.style.touchAction = '';
-  document.body.style.userSelect = '';
-  resaltarColumna(null);
-  arrastre = null;
-  document.removeEventListener('pointermove', alMover);
-  document.removeEventListener('pointerup', alSoltar);
-  document.removeEventListener('pointercancel', terminarArrastre);
-}
-
-function alMover(ev){
-  if (!arrastre) return;
-  const dx = ev.clientX - arrastre.x0, dy = ev.clientY - arrastre.y0;
-
-  if (!arrastre.activo){
-    const dist = Math.hypot(dx, dy);
-    // Con el dedo, moverse antes del tiempo de espera es desplazar
-    if (arrastre.tactil){ if (dist > 12) terminarArrastre(); return; }
-    if (dist > 6) activarArrastre(); else return;
-  }
-
-  ev.preventDefault();
-  moverFantasma(ev.clientX, ev.clientY);
-  resaltarColumna(columnaEn(ev.clientX, ev.clientY, ev.target));
-}
-
-function alSoltar(ev){
-  if (!arrastre) return;
-  const { id, activo } = arrastre;
-  const col = activo ? columnaEn(ev.clientX, ev.clientY, ev.target) : null;
-  terminarArrastre();
-  if (col && T(id) && T(id).estado !== col.dataset.col) moverTarea(id, col.dataset.col);
-}
-
-function empezarArrastre(ev){
-  // Solo botón principal, y nunca desde un control de la tarjeta
-  if (ev.button != null && ev.button > 0) return;
-  if (ev.target.closest && ev.target.closest('select, button, a, input, textarea')) return;
-  const card = ev.currentTarget;
-  terminarArrastre();
-
-  arrastre = {
-    id: card.dataset.id, card, activo:false,
-    x0: ev.clientX || 0, y0: ev.clientY || 0,
-    tactil: ev.pointerType === 'touch' || ev.pointerType === 'pen'
-  };
-  // Tocar una tarjeta la abre en el panel, se arrastre o no
-  seleccionar(card.dataset.id);
-  if (arrastre.tactil) arrastre.timer = setTimeout(activarArrastre, 350);
-
-  document.addEventListener('pointermove', alMover, { passive:false });
-  document.addEventListener('pointerup', alSoltar);
-  document.addEventListener('pointercancel', terminarArrastre);
-}
 
 function wireTablero(){
   document.querySelectorAll('[data-id]').forEach(card => {
-    card.addEventListener('pointerdown', empezarArrastre);
+    card.onclick = ev => {
+      // Los controles de la tarjeta hacen lo suyo, no abren el panel
+      if (ev.target.closest('select, button, a, input, textarea')) return;
+      seleccionar(card.dataset.id);
+    };
     card.addEventListener('keydown', ev => {
       if (ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); seleccionar(card.dataset.id); }
     });
@@ -5457,9 +5372,9 @@ function renderCalendario(){
   const barra = `
     <div class="mb-4 flex flex-wrap items-center gap-3">
       <div class="flex items-center gap-1">
-        <button data-cal="prev" aria-label="Mes anterior" class="grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
+        <button data-cal="prev" aria-label="Mes anterior" class="toque grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 5 8l5 5"/></svg></button>
-        <button data-cal="next" aria-label="Mes siguiente" class="grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
+        <button data-cal="next" aria-label="Mes siguiente" class="toque grid h-[30px] w-[30px] place-items-center rounded-[4px] border border-line bg-panel text-mute hover:text-ink hover:border-dim transition">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"/></svg></button>
       </div>
       <div class="min-w-0">
@@ -5467,7 +5382,7 @@ function renderCalendario(){
         <div class="tape text-dim mt-[6px]">${nMes} entregas · ${nHi} hitos</div>
       </div>
       <button data-cal="hoy" class="btn-suave">Hoy</button>
-      <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[9px] border px-3.5 py-2.5 transition"
+      <button id="addEvent" class="accion ml-auto flex items-center gap-1.5 rounded-[8px] border px-3.5 py-2.5 transition"
         style="border-color:color-mix(in srgb, var(--acento) 45%, transparent);background:color-mix(in srgb, var(--acento) 12%, transparent);color:var(--cyan)">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
         Nueva tarea</button>
@@ -5496,15 +5411,15 @@ function renderCalendario(){
     const chips = mostrar.map(it => {
       if (it.h){
         const h = it.h;
-        return `<div class="cal-chip group/h flex items-center gap-1.5 rounded-[3px] px-1.5 py-[3px]"
+        return `<div class="cal-chip group/h flex items-center gap-1.5 rounded-[4px] px-1.5 py-[3px]"
           style="background:color-mix(in srgb, var(--acento) 14%, transparent)" title="Hito · ${esc(h.titulo)}">
           <span class="h-[6px] w-[6px] shrink-0 rotate-45" style="background:var(--cyan)"></span>
           <span class="truncate text-[10.5px] leading-tight" style="color:var(--cyan)">${esc(h.titulo)}</span>
-          ${h.fijo ? '' : `<button data-delh="${h.id}" title="Quitar" class="ml-auto hidden shrink-0 group-hover/h:block text-[11px] leading-none" style="color:var(--cyan)">&times;</button>`}
+          ${h.fijo ? '' : `<button data-delh="${h.id}" title="Quitar" class="ml-auto hidden shrink-0 group-hover/h:block text-[11.5px] leading-none" style="color:var(--cyan)">&times;</button>`}
         </div>`;
       }
       const t = it.t, e = E(t.estado), cp = carpetaDe(t);
-      return `<button data-abrir="${t.id}" class="cal-chip flex w-full items-center gap-1.5 rounded-[3px] border-l-2 px-1.5 py-[3px] text-left hover:bg-panel2"
+      return `<button data-abrir="${t.id}" class="cal-chip flex w-full items-center gap-1.5 rounded-[4px] border-l-2 px-1.5 py-[3px] text-left hover:bg-panel2"
         style="border-color:${cp ? colorCarpeta(cp) : 'transparent'}"
         title="${esc(t.codigo)} · ${esc(t.titulo)} · ${e.nombre}${cp ? ' · ' + esc(nombreCarpeta(cp)) : ''}">
         <span class="h-[6px] w-[6px] shrink-0 rounded-full" style="background:${e.color}"></span>
@@ -5569,25 +5484,6 @@ function wireCalendario(){
 
 
 
-/* ═══════════════════════════════════════════════════
-   RESUMEN
-   La primera pantalla. Responde cuatro preguntas en un
-   vistazo: cómo va el tráfico, qué se vence, quién está
-   cargado y qué pasa esta semana.
-   ═══════════════════════════════════════════════════ */
-
-function tarjetaCifra(etiqueta, valor, pie, color, accion){
-  return `<button ${accion ? `data-ir="${accion}"` : ''} class="caja p-5 text-left transition hover:-translate-y-0.5"
-    style="box-shadow:var(--sombra)">
-    <div class="flex items-start gap-2">
-      <span class="item-s">${etiqueta}</span>
-      ${accion ? `<svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"
-        stroke-linecap="round" class="ml-auto shrink-0 text-dim"><path d="M6.5 13.5 13.5 6.5M7.5 6.5h6v6"/></svg>` : ''}
-    </div>
-    <div class="cifra mt-3 text-[34px] leading-none" style="color:${color || 'var(--texto)'}">${valor}</div>
-    <div class="item-s mt-2">${pie}</div>
-  </button>`;
-}
 
 function renderResumen(){
   const activas   = TAREAS.filter(t => t.estado !== 'completado');
@@ -5646,7 +5542,7 @@ function renderResumen(){
         <span class="accion-mini">${semana.reduce((a, b) => a + b.n, 0)} en total</span>
       </div>
       <div class="flex items-end gap-1.5" style="height:158px">
-        ${semana.map(x => `<button data-dia="${x.iso}" class="flex flex-1 flex-col items-center justify-end gap-2 rounded-[10px] py-1 transition hover:bg-panel2"
+        ${semana.map(x => `<button data-dia="${x.iso}" class="flex flex-1 flex-col items-center justify-end gap-2 rounded-[12px] py-1 transition hover:bg-panel2"
             title="${x.n} ${x.n === 1 ? 'entrega' : 'entregas'} el ${fecha(x.iso)}">
             <span class="item-s">${x.n || ''}</span>
             <span class="w-full rounded-t-[8px] transition-[height] duration-500"
@@ -5702,9 +5598,9 @@ function renderResumen(){
           const suyas = TAREAS.filter(t => t.responsable === x.id && t.estado !== 'completado');
           const enCurso1 = suyas.find(t => t.estado === 'proceso') || suyas[0];
           const d = dispHoy(x);
-          return `<button data-verpersona="${x.id}" data-soltar="${x.id}"
+          return `<button data-verpersona="${x.id}"
             title="Ver todo el trabajo de ${esc(x.nombre)}"
-            class="zona-drop flex w-full items-center gap-3 rounded-[12px] p-2 text-left transition hover:bg-panel2">
+            class="transicion flex w-full items-center gap-3 rounded-[12px] p-2 text-left transition hover:bg-panel2">
             ${avatar(x.id, 34)}
             <span class="min-w-0 flex-1">
               <span class="block truncate text-[13px] font-medium">${esc(x.nombre)}</span>
@@ -5735,7 +5631,7 @@ function renderResumen(){
           const ts = TAREAS.filter(t => ids.includes(carpetaDe(t)));
           const subs = hijasDe(c.id);
           return `<button data-vercarpeta="${c.id}"
-            class="rounded-[14px] border border-line p-4 text-left transition hover:border-dim hover:bg-panel2"
+            class="rounded-[16px] border border-line p-4 text-left transition hover:border-dim hover:bg-panel2"
             style="border-left:3px solid ${c.color}">
             <span class="flex items-baseline gap-2">
               <span class="text-[13px] font-semibold truncate">${esc(c.nombre)}</span>
@@ -5751,7 +5647,7 @@ function renderResumen(){
           const sin = TAREAS.filter(t => !carpetaDe(t));
           const sp = PROYECTOS.filter(p => !p.carpeta).length;
           if (!sin.length && !sp) return '';
-          return `<button data-vercarpeta="" class="rounded-[14px] border border-dashed border-line p-4 text-left transition hover:border-dim hover:bg-panel2">
+          return `<button data-vercarpeta="" class="rounded-[16px] border border-dashed border-line p-4 text-left transition hover:border-dim hover:bg-panel2">
             <span class="flex items-baseline gap-2">
               <span class="text-[13px] font-semibold text-dim">Sin carpeta</span>
               <span class="item-v ml-auto">${sin.filter(t => t.estado !== 'completado').length}</span>
@@ -5774,7 +5670,7 @@ function renderResumen(){
           const ts = TAREAS.filter(t => t.area === a);
           if (!ps.length && !ts.length) return '';
           const ab = ts.filter(t => t.estado !== 'completado').length;
-          return `<button data-area="${esc(a)}" class="rounded-[14px] border border-line p-4 text-left transition hover:border-dim hover:bg-panel2">
+          return `<button data-area="${esc(a)}" class="rounded-[16px] border border-line p-4 text-left transition hover:border-dim hover:bg-panel2">
             <span class="flex items-baseline gap-2">
               <span class="text-[13px] font-semibold">${esc(a)}</span>
               <span class="item-v ml-auto">${ab}</span>
@@ -5931,7 +5827,7 @@ function filaTarea(t, opts = {}){
   return `<div data-abrir="${t.id}" class="fila ${state.seleccion === t.id ? 'sel' : ''}"
     style="--fila-color:${pr.relleno}" title="Prioridad ${pr.nombre.toLowerCase()}">
     ${botonResponsable(t, 28)}
-    ${otros ? `<span class="grid h-[22px] min-w-[22px] shrink-0 place-items-center rounded-full px-1 text-[10px] font-semibold"
+    ${otros ? `<span class="grid h-[22px] min-w-[22px] shrink-0 place-items-center rounded-full px-1 text-[10.5px] font-semibold"
       style="background:var(--sup-alta);color:var(--texto-3)" title="${otros} ${otros === 1 ? 'colaborador' : 'colaboradores'}">+${otros}</span>` : ''}
 
     <span class="min-w-0 flex-1">
@@ -5944,16 +5840,18 @@ function filaTarea(t, opts = {}){
     </span>
 
     <span class="fila-der">
-      ${carp ? `<span class="chip-carpeta hidden lg:inline-flex" style="--carpeta:${colorCarpeta(carp)}"
-        title="Carpeta ${esc(nombreCarpeta(carp))}">${esc(nombreCarpeta(carp))}</span>` : ''}
+      <button data-carpetatarea="${t.id}" class="chip-carpeta hidden transition hover:brightness-110 lg:inline-flex"
+        style="--carpeta:${carp ? colorCarpeta(carp) : 'var(--texto-3)'}"
+        title="Cambiar de carpeta"><span class="punto"></span>${
+        carp ? esc(nombreCarpeta(carp)) : 'Sin carpeta'}</button>
       <span class="chip-mini" style="background:${vd || urgente ? tinte(colFecha, 14) : 'transparent'};color:${colFecha}">
         ${vd ? '<span aria-hidden="true">⚠</span>' : ''}${cuando}</span>
       <span class="chip-mini" style="background:${tinte(e.relleno, 14)};color:${e.color}">
         <span class="h-1.5 w-1.5 rounded-full" style="background:${e.relleno}"></span>
         <span class="hidden sm:inline">${e.nombre}</span></span>
       ${botonPrioridad(t, true)}
-      ${opts.tomar ? `<button data-tomar="${t.id}" class="btn-principal !px-3.5 !py-1.5 !text-[12px]">Tomarla</button>` : ''}
-      ${opts.reabrir ? `<button data-reabrir="${t.id}" class="btn-suave !px-3 !py-1.5 !text-[12px]">Reabrir</button>` : ''}
+      ${opts.tomar ? `<button data-tomar="${t.id}" class="btn-principal !px-3.5 !py-1.5 !text-[12.5px]">Tomarla</button>` : ''}
+      ${opts.reabrir ? `<button data-reabrir="${t.id}" class="btn-suave !px-3 !py-1.5 !text-[12.5px]">Reabrir</button>` : ''}
     </span>
   </div>`;
 }
@@ -6103,8 +6001,8 @@ function renderMiTrabajo(){
     ${seccion('Entregadas, esperando visto bueno', revision, { color:'var(--est-revision)', nota:'ya no dependen de ti' })}
     ${huerfanas.length && !filtrando ? seccion('Sin dueño — puedes tomarlas', huerfanas, { color:'var(--acento)', tomar:true }) : ''}
     ${cerradas.length ? `<button data-ir="archivo"
-      class="mt-2 flex w-full items-center gap-3 rounded-[14px] border border-dashed border-line px-4 py-3.5 text-left transition hover:border-dim hover:bg-panel2">
-      <span class="grid h-9 min-w-[36px] place-items-center rounded-[11px] px-2 text-[15px] font-bold"
+      class="mt-2 flex w-full items-center gap-3 rounded-[16px] border border-dashed border-line px-4 py-3.5 text-left transition hover:border-dim hover:bg-panel2">
+      <span class="grid h-9 min-w-[36px] place-items-center rounded-[12px] px-2 text-[15px] font-bold"
         style="background:${tinte('var(--est-completado)', 14)};color:var(--est-completado)">${cerradas.length}</span>
       <span>
         <span class="block text-[13px] font-medium">Completadas</span>
@@ -6134,6 +6032,15 @@ function wireProyectos(){
   document.querySelectorAll('[data-editarc]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); abrirCarpeta(b.dataset.editarc);
   });
+  document.querySelectorAll('[data-verlista]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const k = b.dataset.verlista;
+    state.listasAbiertas.has(k) ? state.listasAbiertas.delete(k) : state.listasAbiertas.add(k);
+    renderViewBody();
+  });
+  document.querySelectorAll('[data-llenar]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); abrirLlenar(b.dataset.llenar);
+  });
   document.querySelectorAll('[data-subcarpeta]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); abrirCarpeta(null, b.dataset.subcarpeta);
   });
@@ -6145,16 +6052,7 @@ function wireProyectos(){
   document.querySelectorAll('[data-carpetaproy]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); menuCarpetaDe(PR(b.dataset.carpetaproy), b, 'proyecto');
   });
-  /* Arrastrar la tarjeta hasta una carpeta del menú lateral */
-  document.querySelectorAll('[data-arrastraproy]').forEach(el => {
-    el.addEventListener('dragstart', ev => {
-      arrastrandoProyecto = el.dataset.arrastraproy;
-      ev.dataTransfer.effectAllowed = 'move';
-      ev.dataTransfer.setData('text/plain', 'proy:' + arrastrandoProyecto);
-      el.style.opacity = '.45';
-    });
-    el.addEventListener('dragend', () => { el.style.opacity = ''; arrastrandoProyecto = null; });
-  });
+
   document.querySelectorAll('[data-editarproy]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); abrirProyecto(b.dataset.editarproy);
   });
@@ -6242,7 +6140,7 @@ function bloqueAreas(){
         return `<span class="chip group !py-2 !pl-3.5 !pr-2">
           ${esc(a)} <span class="meta">${n}</span>
           <button data-quitararea="${esc(a)}" aria-label="Quitar área ${esc(a)}"
-            class="ml-1 grid h-5 w-5 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-bar-red">&times;</button>
+            class="toque ml-1 grid h-6 w-6 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-bar-red">&times;</button>
         </span>`;
       }).join('')}
       ${!AREAS.length ? `<span class="nota">Sin áreas todavía.</span>` : ''}
@@ -6371,7 +6269,7 @@ function menuEncargado(p, ancla){
   const r = ancla.getBoundingClientRect();
   const m = document.createElement('div');
   m.id = 'menuAsignar'; anclaMenu = ancla;
-  m.className = 'vidrio-alto modal-in fixed z-[80] w-[230px] overflow-hidden rounded-[18px] border border-line';
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[230px] overflow-hidden rounded-[20px] border border-line';
   m.style.top  = Math.min(window.innerHeight - 340, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 242, Math.max(8, r.left)) + 'px';
   m.innerHTML = `<div class="etiqueta border-b border-line px-3.5 py-3 !mb-0">Encargado del proyecto</div>
@@ -6399,7 +6297,7 @@ function menuEquipoProyecto(p, ancla){
   const r = ancla.getBoundingClientRect();
   const m = document.createElement('div');
   m.id = 'menuAsignar'; anclaMenu = ancla;
-  m.className = 'vidrio-alto modal-in fixed z-[80] w-[260px] overflow-hidden rounded-[18px] border border-line';
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[260px] overflow-hidden rounded-[20px] border border-line';
   m.style.top  = Math.min(window.innerHeight - 380, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 272, Math.max(8, r.left - 140)) + 'px';
 
@@ -6413,10 +6311,10 @@ function menuEquipoProyecto(p, ancla){
           ${avatar(x.id, 26)}
           <span class="min-w-0 flex-1 truncate text-[12.5px] ${c ? 'text-ink' : 'text-mute'}">${esc(x.nombre)}</span>
           ${c
-            ? `<select data-rolproy="${x.id}" class="tapeselect rounded-full border border-line bg-transparent px-2 py-[3px] text-[11px] text-mute">
+            ? `<select data-rolproy="${x.id}" class="tapeselect rounded-full border border-line bg-transparent px-2 py-[3px] text-[11.5px] text-mute">
                  ${ROLES.map(rr => `<option value="${rr}" ${rr === c.rol ? 'selected' : ''}>${rr}</option>`).join('')}
                </select>
-               <button data-quitaproy="${x.id}" aria-label="Quitar" class="grid h-6 w-6 shrink-0 place-items-center rounded-full text-dim hover:text-bar-red">&times;</button>`
+               <button data-quitaproy="${x.id}" aria-label="Quitar" class="toque grid h-6 w-6 shrink-0 place-items-center rounded-full text-dim hover:text-bar-red">&times;</button>`
             : `<button data-sumaproy="${x.id}" class="btn-suave !py-1 !px-2.5 !text-[11.5px]">Sumar</button>`}
         </div>`;
       }).join('')}
@@ -6452,7 +6350,7 @@ function menuColaborador(x, ancla){
   const r = ancla.getBoundingClientRect();
   const m = document.createElement('div');
   m.id = 'menuAsignar'; anclaMenu = ancla;
-  m.className = 'vidrio-alto modal-in fixed z-[80] w-[250px] overflow-hidden rounded-[18px] border border-line';
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[250px] overflow-hidden rounded-[20px] border border-line';
   m.style.top  = Math.min(window.innerHeight - 360, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 262, Math.max(8, r.left - 130)) + 'px';
   m.innerHTML = `
@@ -6494,77 +6392,7 @@ function wireAsignar(){
 
 
 
-/* ═══════════════════════════════════════════════════
-   HOY EN EL EQUIPO
-   Franja compacta: quién está, quién no, y a quién le
-   puedes soltar una tarea encima. Es también la zona de
-   drop: arrastras una tarjeta a una persona y queda suya.
-   ═══════════════════════════════════════════════════ */
 
-function franjaEquipo(){
-  const gente = PERSONAS.filter(p => !esSistema(p.id));
-  const fuera = gente.filter(p => !dispHoy(p).disponible);
-
-  return `<div class="mb-6 tarjeta px-5 py-4">
-    <div class="mb-3 flex items-baseline gap-2">
-      <h2 class="seccion">Hoy en el equipo</h2>
-      <span class="nota">${gente.length - fuera.length} de ${gente.length} disponibles${fuera.length ? ' · ' + fuera.map(p => p.nombre.split(' ')[0]).join(', ') + ' no' : ''}</span>
-      <button data-vista="equipo" class="nota ml-auto shrink-0 text-dim hover:text-ink transition">Gestionar equipo</button>
-    </div>
-    <div class="flex flex-wrap gap-2">
-      ${gente.map(p => {
-        const d = dispHoy(p);
-        const abiertas = TAREAS.filter(t => t.responsable === p.id && t.estado !== 'completado').length;
-        const cargado = abiertas > p.capacidad;
-        return `<button data-persona="${p.id}" data-soltar="${p.id}"
-          class="zona-drop flex min-h-[52px] items-center gap-2.5 rounded-full border px-3 py-2 text-left transition
-                 ${state.persona === p.id ? 'border-dim bg-panel2' : 'border-line hover:border-dim'}"
-          title="${esc(p.nombre)} · ${esc(textoAusencia(p))} · ${abiertas} abiertas. Arrastra una tarea aquí para asignársela.">
-          ${avatar(p.id, 26)}
-          <span class="min-w-0">
-            <span class="block truncate text-[12.5px] leading-tight ${d.disponible ? 'text-ink' : 'text-dim'}">${esc(p.nombre)}</span>
-            <span class="tape block leading-tight mt-[3px] ${cargado ? 'text-bar-red' : 'text-dim'}">${d.disponible ? abiertas + ' abiertas' : esc(d.corto)}</span>
-          </span>
-        </button>`;
-      }).join('')}
-    </div>
-  </div>`;
-}
-
-/* ── Arrastrar una tarea sobre una persona ─────────────────────── */
-
-function wireSoltar(){
-  document.querySelectorAll('[data-soltar]').forEach(z => {
-    z.addEventListener('dragover', ev => {
-      if (!arrastrando) return;
-      ev.preventDefault(); z.classList.add('drop-activo');
-    });
-    z.addEventListener('dragleave', () => z.classList.remove('drop-activo'));
-    z.addEventListener('drop', ev => {
-      ev.preventDefault(); ev.stopPropagation();
-      z.classList.remove('drop-activo');
-      if (!arrastrando) return;
-      asignarA(arrastrando, z.dataset.soltar);
-      arrastrando = null;
-    });
-  });
-}
-
-/* Asigna avisando si la persona no está disponible. No lo impide:
-   a veces sí quieres dejarle algo listo para cuando vuelva. */
-function asignarA(tareaId, personaId){
-  const t = T(tareaId); if (!t) return;
-  const p = P(personaId);
-  if (t.responsable === personaId){ toast('Ya era de ' + p.nombre, p.color); return; }
-
-  const d = dispHoy(p);
-  if (!d.disponible && !confirm(
-      `${p.nombre} está ${textoAusencia(p).toLowerCase()}.\n\n¿Asignarle "${t.titulo}" de todos modos?`)) return;
-
-  t.responsable = personaId;
-  toast(t.titulo + ' → ' + p.nombre, p.color);
-  renderAll();
-}
 
 /* ═══════════════════════════════════════════════════
    EQUIPO — alta, edición y baja de personas
@@ -6617,7 +6445,7 @@ function pintarColores(activo){
 
 function pintarAvatarModal(nombre, color){
   const ini = iniciales(nombre || '?');
-  $('#pAvatar').innerHTML = `<span class="grid h-8 w-8 place-items-center rounded-full text-[12px] font-semibold"
+  $('#pAvatar').innerHTML = `<span class="grid h-8 w-8 place-items-center rounded-full text-[12.5px] font-semibold"
     style="background:${color}22;color:${color}">${esc(ini)}</span>`;
 }
 
@@ -6749,8 +6577,8 @@ function abrirBrief(){
   else titular = 'Nada vencido ni para hoy.';
 
   const linea = (n, etiqueta, color, clave, nota) => `<button data-brief="${clave}" ${n ? '' : 'disabled'}
-    class="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left transition ${n ? 'hover:bg-panel2' : 'opacity-45'}">
-    <span class="grid h-9 min-w-[36px] place-items-center rounded-[11px] px-2 text-[15px] font-bold"
+    class="flex w-full items-center gap-3 rounded-[16px] px-3 py-3 text-left transition ${n ? 'hover:bg-panel2' : 'opacity-45'}">
+    <span class="grid h-9 min-w-[36px] place-items-center rounded-[12px] px-2 text-[15px] font-bold"
       style="background:${tinte(color, 14)};color:${color}">${n}</span>
     <span class="min-w-0">
       <span class="block text-[13px] font-medium">${etiqueta}</span>
@@ -6848,7 +6676,9 @@ function abrirProyecto(id){
   focoPrevio = document.activeElement;
   proyEditando = id || null;
   const p = id ? PR(id) : { nombre:'', seccion:'PROYECTOS', area:AREAS[0], estado:'pendiente',
-                            responsable:'u-sin', nota:'', inicio:null, fin:null };
+                            responsable:'u-sin', nota:'', inicio:null, fin:null,
+                            // Un proyecto nuevo nace en la carpeta que estés viendo
+                            carpeta: state.carpeta || null };
   const areas = [...new Set([...AREAS, ...PROYECTOS.map(x => x.area)])].filter(Boolean);
 
   $('#prTitulo').textContent = id ? 'Editar proyecto' : 'Nuevo proyecto';
@@ -6863,6 +6693,7 @@ function abrirProyecto(id){
   $('#prEstado').innerHTML  = ESTADOS.map(x => `<option value="${x.id}" ${x.id === p.estado ? 'selected' : ''}>${x.nombre}</option>`).join('');
   $('#prResp').innerHTML    = PERSONAS.map(x =>
     `<option value="${x.id}" ${x.id === (p.responsable || 'u-sin') ? 'selected' : ''}>${esc(x.nombre)}</option>`).join('');
+  $('#prCarpeta').innerHTML = opcionesCarpeta(p.carpeta || null, 'Sin carpeta');
   $('#prError').textContent = '';
   $('#prBorrar').classList.toggle('hidden', !id);
   $('#proyModal').classList.remove('hidden');
@@ -6902,6 +6733,7 @@ function guardarProyecto(){
     nombre,
     seccion: $('#prSeccion').value,
     area:    $('#prArea').value,
+    carpeta: $('#prCarpeta').value || null,
     estado:  $('#prEstado').value,
     responsable: $('#prResp').value,
     inicio:  ini,
@@ -6922,7 +6754,7 @@ function guardarProyecto(){
       : 'Proyecto actualizado: ' + nombre, E(p.estado).color);
   } else {
     const id = 'p-' + (++uid);
-    PROYECTOS.push({ id, ...datos, equipo:[], nTareas:0 });
+    PROYECTOS.push({ id, ...datos, equipo:[] });
     toast('Proyecto creado: ' + nombre, E(datos.estado).color);
   }
   cerrarProyecto();
@@ -6987,10 +6819,22 @@ function pintarColoresCarpeta(activo){
   $('#caPunto').style.background = activo;
   $('#caColores').innerHTML = COLORES_CARPETA.map(c => `<button data-color="${c}"
     aria-label="Color ${c}" aria-pressed="${c === activo}"
-    class="h-8 w-8 rounded-[10px] transition hover:scale-110"
+    class="h-8 w-8 rounded-[12px] transition hover:scale-110"
     style="background:${c};${c === activo ? 'box-shadow:0 0 0 2px var(--sup),0 0 0 4px ' + c : ''}"></button>`).join('');
   $('#caColores').querySelectorAll('[data-color]').forEach(b =>
     b.onclick = () => pintarColoresCarpeta(b.dataset.color));
+}
+
+/* El desplegable de carpetas, con las subcarpetas sangradas. Lo usan
+   el alta de tarea, el alta de proyecto y el panel de detalle: una
+   sola forma de elegir carpeta en toda la aplicación. */
+function opcionesCarpeta(actual, textoVacio){
+  return `<option value="" ${!actual ? 'selected' : ''}>${esc(textoVacio || 'Sin carpeta')}</option>` +
+    raizCarpetas().map(c =>
+      `<option value="${c.id}" ${c.id === actual ? 'selected' : ''}>${esc(c.nombre)}</option>` +
+      hijasDe(c.id).map(h =>
+        `<option value="${h.id}" ${h.id === actual ? 'selected' : ''}>&nbsp;&nbsp;&nbsp;${esc(h.nombre)}</option>`).join('')
+    ).join('');
 }
 
 function abrirCarpeta(id, padreSugerido){
@@ -7072,13 +6916,117 @@ function borrarCarpeta(){
   renderAll();
 }
 
+/* ── Llenar una carpeta de una sentada ───────────────────────────
+   Ir tarjeta por tarjeta funciona para mover una cosa, no para
+   ordenar veinte. Esto abre la lista completa de proyectos y de
+   tareas sueltas con una casilla cada uno: marcas lo que va en la
+   carpeta, desmarcas lo que sale, y se aplica todo junto.        */
+
+let llenando = null;      // id de la carpeta que se está llenando
+let llSeleccion = null;   // Set con lo marcado ahora mismo
+
+function abrirLlenar(id){
+  const c = C(id);
+  if (!c) return;
+  focoPrevio = document.activeElement;
+  llenando = id;
+  llSeleccion = new Set([
+    ...PROYECTOS.filter(p => p.carpeta === id).map(p => 'p:' + p.id),
+    ...TAREAS.filter(t => t.carpeta === id && !t.proyecto).map(t => 't:' + t.id)
+  ]);
+  $('#llTitulo').textContent = 'Qué va en ' + c.nombre;
+  $('#llPunto').style.background = c.color;
+  $('#llBuscar').value = '';
+  pintarLlenar();
+  $('#llenarModal').classList.remove('hidden');
+  setTimeout(() => $('#llBuscar').focus(), 40);
+}
+
+function cerrarLlenar(){
+  $('#llenarModal').classList.add('hidden');
+  llenando = null; llSeleccion = null;
+  if (focoPrevio && document.body.contains(focoPrevio)) focoPrevio.focus();
+  focoPrevio = null;
+}
+
+function pintarLlenar(){
+  const q = sinTildes($('#llBuscar').value.trim());
+  const coincide = txt => !q || sinTildes(txt).includes(q);
+
+  const linea = (clave, titulo, meta, carpetaActual, color) => {
+    const on = llSeleccion.has(clave);
+    // Lo que ya está en OTRA carpeta se avisa: marcarlo lo mueve aquí
+    const otra = !on && carpetaActual && carpetaActual !== llenando;
+    return `<button data-ll="${clave}" role="checkbox" aria-checked="${on}"
+      class="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-left transition hover:bg-panel2">
+      <span class="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[4px] border transition"
+        style="${on ? `background:var(--acento);border-color:var(--acento)` : 'border-color:var(--borde)'}">
+        ${on ? `<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="var(--acento-tinta)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.2 4.8 8.5 9.5 3.5"/></svg>` : ''}
+      </span>
+      <span class="h-2 w-2 shrink-0 rounded-full" style="background:${color}"></span>
+      <span class="min-w-0 flex-1">
+        <span class="block truncate text-[13px] font-medium">${esc(titulo)}</span>
+        <span class="item-s block !mt-0 truncate">${esc(meta)}${
+          otra ? ` · ahora en ${esc(nombreCarpeta(carpetaActual))}` : ''}</span>
+      </span>
+    </button>`;
+  };
+
+  const ps = PROYECTOS.filter(p => coincide(p.nombre + ' ' + p.area));
+  const ts = TAREAS.filter(t => !t.proyecto && t.estado !== 'completado'
+                                && coincide(t.titulo + ' ' + t.codigo + ' ' + t.area));
+
+  $('#llLista').innerHTML =
+    (ps.length ? `<p class="etiqueta px-3 pt-2">Proyectos</p>` +
+      ps.map(p => linea('p:' + p.id, p.nombre,
+        `${tareasDe(p.id, 'proyecto').length} tareas · ${p.area}`,
+        p.carpeta, E(p.estado).relleno)).join('') : '') +
+    (ts.length ? `<p class="etiqueta px-3 pt-3">Tareas sueltas</p>` +
+      ts.map(t => linea('t:' + t.id, t.titulo, `${t.codigo} · ${t.area}`,
+        t.carpeta, E(t.estado).relleno)).join('') : '') +
+    (!ps.length && !ts.length ? `<p class="nota px-3 py-6 text-center">Nada coincide con la búsqueda.</p>` : '');
+
+  $('#llCuenta').textContent = `${llSeleccion.size} marcados`;
+
+  $('#llLista').querySelectorAll('[data-ll]').forEach(b => b.onclick = () => {
+    const k = b.dataset.ll;
+    llSeleccion.has(k) ? llSeleccion.delete(k) : llSeleccion.add(k);
+    pintarLlenar();
+  });
+}
+
+function guardarLlenar(){
+  if (!llenando) return;
+  const c = C(llenando);
+  recordar('llenar carpeta ' + c.nombre);
+  let entran = 0, salen = 0;
+
+  PROYECTOS.forEach(p => {
+    const marcado = llSeleccion.has('p:' + p.id);
+    if (marcado && p.carpeta !== llenando){ p.carpeta = llenando; entran++; }
+    else if (!marcado && p.carpeta === llenando){ p.carpeta = null; salen++; }
+  });
+  TAREAS.forEach(t => {
+    if (t.proyecto) return;              // esas siguen a su proyecto
+    const marcado = llSeleccion.has('t:' + t.id);
+    if (marcado && t.carpeta !== llenando){ t.carpeta = llenando; entran++; }
+    else if (!marcado && t.carpeta === llenando){ t.carpeta = null; salen++; }
+  });
+
+  cerrarLlenar();
+  toast(entran || salen
+    ? `${c.nombre}: ${entran} ${entran === 1 ? 'entra' : 'entran'}, ${salen} ${salen === 1 ? 'sale' : 'salen'}`
+    : 'Sin cambios en ' + c.nombre, c.color);
+  renderAll();
+}
+
 /* Mover algo de carpeta desde su propia tarjeta, sin abrir nada */
 function menuCarpetaDe(x, ancla, tipo){
   cerrarMenu();
   const r = ancla.getBoundingClientRect();
   const m = document.createElement('div');
   m.id = 'menuAsignar'; anclaMenu = ancla;
-  m.className = 'vidrio-alto modal-in fixed z-[80] w-[250px] overflow-hidden rounded-[18px] border border-line';
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[250px] overflow-hidden rounded-[20px] border border-line';
   m.style.top  = Math.min(window.innerHeight - 320, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 262, Math.max(8, r.left - 80)) + 'px';
 
@@ -7126,7 +7074,7 @@ function renderCarpetasNav(){
     const on = state.carpeta === id;
     return `<button data-carpeta="${id === null ? '' : id}" class="nav-carpeta ${on ? 'on' : ''} ${hija ? 'hija' : ''}"
       title="${esc(nombre)}: ${cn.proyectos} proyectos, ${cn.abiertas} tareas abiertas">
-      <span class="h-2.5 w-2.5 shrink-0 rounded-[3px]" style="background:${color}"></span>
+      <span class="h-2.5 w-2.5 shrink-0 rounded-[4px]" style="background:${color}"></span>
       <span class="min-w-0 flex-1 truncate">${esc(nombre)}</span>
       ${cn.vencidas ? `<span class="fbtn-n" style="background:var(--alerta);color:#fff">${cn.vencidas}</span>` : ''}
       <span class="fbtn-n">${cn.proyectos || cn.abiertas}</span>
@@ -7135,7 +7083,7 @@ function renderCarpetasNav(){
 
   caja.innerHTML =
     `<button data-carpeta="" class="nav-carpeta ${!state.carpeta ? 'on' : ''}">
-      <span class="h-2.5 w-2.5 shrink-0 rounded-[3px]" style="background:var(--texto-3)"></span>
+      <span class="h-2.5 w-2.5 shrink-0 rounded-[4px]" style="background:var(--texto-3)"></span>
       <span class="min-w-0 flex-1 truncate">Todo</span>
       <span class="fbtn-n">${PROYECTOS.length}</span></button>` +
     raizCarpetas().map(c =>
@@ -7153,28 +7101,9 @@ function renderCarpetasNav(){
       cerrarNav();
       renderAll();
     };
-    /* Soltar un proyecto encima lo archiva ahí */
-    b.addEventListener('dragover', ev => {
-      if (!arrastrandoProyecto) return;
-      ev.preventDefault(); b.classList.add('carpeta-drop');
-    });
-    b.addEventListener('dragleave', () => b.classList.remove('carpeta-drop'));
-    b.addEventListener('drop', ev => {
-      b.classList.remove('carpeta-drop');
-      if (!arrastrandoProyecto) return;
-      ev.preventDefault();
-      const p = PR(arrastrandoProyecto);
-      arrastrandoProyecto = null;
-      if (!p) return;
-      p.carpeta = b.dataset.carpeta || null;
-      toast(p.nombre + ' → ' + (p.carpeta ? nombreCarpeta(p.carpeta) : 'sin carpeta'),
-            p.carpeta ? colorCarpeta(p.carpeta) : 'var(--texto-2)');
-      renderAll();
-    });
+
   });
 }
-
-let arrastrandoProyecto = null;
 
 /* ═══════════════════════════════════════════════════
    PROYECTOS — la vista
@@ -7201,7 +7130,7 @@ function tarjetaProyecto(p, i){
   const abiertas = ts.filter(t => t.estado !== 'completado').length;
   const carp = p.carpeta;
 
-  return `<div class="rise caja p-5" data-arrastraproy="${p.id}" draggable="true" style="animation-delay:${i*35}ms">
+  return `<div class="rise caja p-5" style="animation-delay:${i*35}ms">
     <div data-proyecto="${p.id}" class="cursor-pointer">
       <div class="flex items-start gap-4">
         <div class="min-w-0 flex-1">
@@ -7219,7 +7148,7 @@ function tarjetaProyecto(p, i){
         </div>
         <div class="relative grid shrink-0 place-items-center">
           ${anillo(av, e.relleno, 52)}
-          <span class="absolute item-v" style="font-size:12px">${av}%</span>
+          <span class="absolute item-v" style="font-size:12.5px">${av}%</span>
         </div>
       </div>
 
@@ -7248,7 +7177,7 @@ function tarjetaProyecto(p, i){
         ${[...new Set([...colaboradores(p).map(c => c.persona), ...duenios(ts)])].slice(0, 5)
           .map(id => avatar(id, 26)).join('') || `<span class="item-s !mt-0">Sin equipo</span>`}
       </span>
-      <button data-equipoproy="${p.id}" class="btn-suave !py-1.5 !px-3 !text-[12px]">Equipo</button>
+      <button data-equipoproy="${p.id}" class="btn-suave !py-1.5 !px-3 !text-[12.5px]">Equipo</button>
       <span class="ml-auto flex gap-2">
         <button data-asignarproy="${p.id}" class="btn-suave !py-2 !px-3.5 !text-[12.5px]">Reasignar</button>
         <button data-editarproy="${p.id}" aria-label="Editar ${esc(p.nombre)}"
@@ -7266,10 +7195,33 @@ function rejilla(ps, desde = 0){
     ${ps.map((p, i) => tarjetaProyecto(p, desde + i)).join('')}</div>`;
 }
 
+/* Recorta una lista larga, pero SIEMPRE con un botón para ver el
+   resto. Antes decía "y 16 más en el cronograma" en texto plano: te
+   informaba de que existían 16 tareas y te dejaba sin manera de
+   verlas, mandándote a otra vista a buscarlas a mano. */
+function listaRecortada(clave, ts, tope = 6){
+  const abierta = state.listasAbiertas.has(clave);
+  const visibles_ = abierta ? ts : ts.slice(0, tope);
+  const resto = ts.length - visibles_.length;
+
+  return `<div class="space-y-2">${visibles_.map(t => filaTarea(t)).join('')}</div>
+    ${ts.length > tope ? `<button data-verlista="${esc(clave)}"
+      class="mt-3 flex w-full items-center justify-center gap-2 rounded-[12px] border border-dashed border-line py-2.5 transition hover:border-dim hover:bg-panel2">
+      <span class="item-s !mt-0">${abierta ? 'Ver solo las primeras ' + tope : 'Ver las ' + ts.length + ' tareas'}</span>
+      ${resto ? `<span class="fbtn-n">+${resto}</span>` : ''}
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round" stroke-linejoin="round" class="text-dim transition"
+        style="transform:rotate(${abierta ? 180 : 0}deg)"><path d="M4 6.5 8 10.5 12 6.5"/></svg>
+    </button>` : ''}`;
+}
+
 /* Tareas archivadas directamente en una carpeta, sin pasar por un
    proyecto. Es el caso de los pendientes sueltos que igual hay que
    tener ordenados. */
-const tareasDirectas = id => TAREAS.filter(t => t.carpeta === id && !t.proyecto);
+/* Pasan por los mismos filtros que el resto: si no, esta lista era la
+   única del tablero que seguía mostrando tareas completadas y se saltaba
+   lo que hubieras filtrado arriba. */
+const tareasDirectas = id => TAREAS.filter(t => t.carpeta === id && !t.proyecto && pasaFiltros(t));
 
 function bloqueCarpeta(c, hija = false){
   const ps = PROYECTOS.filter(p => (p.carpeta || null) === c.id);
@@ -7288,7 +7240,10 @@ function bloqueCarpeta(c, hija = false){
       <span class="chip-mini" style="background:var(--sup-alta);color:var(--texto-2)">${cn.abiertas} abiertas</span>
       ${cn.vencidas ? `<span class="chip-mini" style="background:${tinte('var(--alerta)', 16)};color:var(--alerta)"><span aria-hidden="true">⚠</span>${cn.vencidas}</span>` : ''}
       <span class="ml-auto flex shrink-0 gap-1.5">
-        ${hija ? '' : `<button data-subcarpeta="${c.id}" class="btn-suave !py-1.5 !px-3 !text-[12px]" title="Crear una subcarpeta aquí">Subcarpeta</button>`}
+        <button data-llenar="${c.id}" class="btn-principal !py-1.5 !px-3 !text-[12.5px]" title="Elegir qué proyectos y tareas van en ${esc(c.nombre)}">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          Agregar</button>
+        ${hija ? '' : `<button data-subcarpeta="${c.id}" class="btn-suave !py-1.5 !px-3 !text-[12.5px]" title="Crear una subcarpeta aquí">Subcarpeta</button>`}
         <button data-editarc="${c.id}" aria-label="Editar carpeta ${esc(c.nombre)}"
           class="grid h-[32px] w-[32px] shrink-0 place-items-center rounded-full border border-line text-dim transition hover:border-dim hover:text-ink">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -7296,12 +7251,14 @@ function bloqueCarpeta(c, hija = false){
       </span>
     </div>
 
-    ${vacia ? `<p class="nota mb-3 rounded-[14px] border border-dashed border-line px-4 py-5 text-center">
-        Carpeta vacía. Arrastra un proyecto aquí desde la lista, o usa el chip de carpeta de cada tarjeta.</p>` : ''}
+    ${vacia ? `<div class="mb-3 rounded-[16px] border border-dashed border-line px-4 py-6 text-center">
+        <p class="nota">Carpeta vacía.</p>
+        <button data-llenar="${c.id}" class="btn-principal mx-auto mt-3">Agregar proyectos y tareas</button>
+      </div>` : ''}
     ${rejilla(ps)}
     ${td.length ? `<div class="mt-3 rounded-[16px] border border-dashed border-line p-4">
       <p class="item-s mb-3 !mt-0">${td.length} ${td.length === 1 ? 'tarea suelta guardada aquí' : 'tareas sueltas guardadas aquí'}</p>
-      <div class="space-y-2">${ordenarPorUrgencia(td).slice(0, 8).map(t => filaTarea(t)).join('')}</div>
+      ${listaRecortada('carpeta:' + c.id, ordenarPorUrgencia(td), 8)}
     </div>` : ''}
     ${subs.length ? `<div class="mt-4 space-y-4 border-l-2 pl-4" style="border-color:${tinte(c.color, 40)}">
       ${subs.map(h => bloqueCarpeta(h, true)).join('')}</div>` : ''}
@@ -7309,7 +7266,7 @@ function bloqueCarpeta(c, hija = false){
 }
 
 function renderProyectos(){
-  const sueltas = TAREAS.filter(t => (!t.proyecto || !PR(t.proyecto)) && !t.carpeta);
+  const sueltas = TAREAS.filter(t => (!t.proyecto || !PR(t.proyecto)) && !t.carpeta && pasaFiltros(t));
   const enFoco = state.carpeta ? ramaCarpeta(state.carpeta) : null;
   const visiblesP = p => !enFoco || enFoco.includes(p.carpeta || null);
 
@@ -7334,8 +7291,7 @@ function renderProyectos(){
     <h2 class="seccion mb-3">Tareas sueltas</h2>
     <div class="rounded-[16px] border border-dashed border-line bg-panel p-5">
       <p class="nota mb-4">${sueltas.length} ${sueltas.length === 1 ? 'tarea no pertenece' : 'tareas no pertenecen'} a ningún proyecto ni carpeta. Sirven para pendientes que no valen un proyecto entero.</p>
-      <div class="space-y-2">${ordenarPorUrgencia(sueltas).slice(0, 6).map(t => filaTarea(t)).join('')}</div>
-      ${sueltas.length > 6 ? `<p class="meta mt-3">y ${sueltas.length - 6} más en el cronograma</p>` : ''}
+      ${listaRecortada('sueltas', ordenarPorUrgencia(sueltas))}
     </div></div>` : '';
 
   let cuerpo;
@@ -7350,7 +7306,7 @@ function renderProyectos(){
           <span class="h-3 w-3 shrink-0 rounded-[4px]" style="background:var(--texto-3)"></span>
           <span class="subtitulo">Sin carpeta</span>
           <span class="chip-mini" style="background:var(--sup-alta);color:var(--texto-2)">${huerfanos.length} proy</span>
-          <span class="item-s ml-auto !mt-0">arrástralos a una carpeta del menú</span>
+          <span class="item-s ml-auto !mt-0">usa el chip de carpeta de cada tarjeta</span>
         </div>
         ${rejilla(huerfanos)}</section>` : '') +
       (!CARPETAS.length ? `<div class="mb-7 rounded-[16px] border border-dashed border-line px-5 py-6 text-center">
@@ -7400,7 +7356,7 @@ function renderEquipo(){
               <div class="meta mt-1">${abiertas.length === 1 ? 'tarea' : 'tareas'}</div>
             </div>
             ${esSistema(p.id) ? '' : `<button data-editarp="${p.id}" title="Editar a ${esc(p.nombre)}"
-              class="grid h-7 w-7 shrink-0 place-items-center rounded-[4px] border border-line text-dim hover:text-ink hover:border-dim transition">
+              class="toque grid h-7 w-7 shrink-0 place-items-center rounded-[4px] border border-line text-dim hover:text-ink hover:border-dim transition">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11.2 2.3a1.6 1.6 0 012.3 2.3L5.6 12.5l-3 .9.9-3z"/></svg></button>`}
           </div>
@@ -7436,9 +7392,9 @@ function renderEquipo(){
         ${CARPETAS.length ? repartoCarpetas(abiertas, { tope:3 }).replace('mb-3', 'mt-3') : ''}
         <div class="mt-4 space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
           ${abiertas.length ? abiertas.map(t => `
-            <button data-abrir="${t.id}" class="flex w-full items-center gap-2 rounded-[3px] px-2 py-1.5 text-left hover:bg-panel2 transition">
+            <button data-abrir="${t.id}" class="flex w-full items-center gap-2 rounded-[4px] px-2 py-1.5 text-left hover:bg-panel2 transition">
               <span class="h-1.5 w-1.5 shrink-0 rounded-full" style="background:${E(t.estado).color}"></span>
-              <span class="text-[12px] text-mute truncate">${esc(t.titulo)}</span>
+              <span class="text-[12.5px] text-mute truncate">${esc(t.titulo)}</span>
               <span class="tape ml-auto shrink-0 text-dim">${t.fin ? fecha(t.fin) : '—'}</span>
             </button>`).join('') : `<div class="tape px-2 py-1.5 text-dim">Sin tareas abiertas</div>`}
         </div>
@@ -7450,7 +7406,7 @@ function renderEquipo(){
 /* Una pantalla vacía es una invitación a hacer algo, no un cartel de
    "no hay nada". Cada una dice cuál es el siguiente paso. */
 function vacio(titulo, msg, accion){
-  return `<div class="grid place-items-center rounded-[6px] border border-dashed border-line px-6 py-14 text-center">
+  return `<div class="grid place-items-center rounded-[8px] border border-dashed border-line px-6 py-14 text-center">
     <div class="max-w-[380px]">
       <div class="seccion">${esc(titulo)}</div>
       <p class="nota mt-2.5">${esc(msg)}</p>
@@ -7542,8 +7498,8 @@ function renderRailDetalle(){
           const tope = Math.max(1, ...PERSONAS.filter(z => !esSistema(z.id))
             .map(z => TAREAS.filter(y => y.responsable === z.id && y.estado !== 'completado').length));
           const carga = Math.round(ab / tope * 100);
-          return `<button data-verpersona="${x.id}" data-soltar="${x.id}"
-            class="zona-drop item w-full ${state.persona === x.id ? 'sel' : ''}"
+          return `<button data-verpersona="${x.id}"
+            class="transicion item w-full ${state.persona === x.id ? 'sel' : ''}"
             title="Ver el trabajo de ${esc(x.nombre)} · ${esc(textoAusencia(x))}. Suelta una tarea aquí para asignársela.">
             ${avatar(x.id, 36)}
             <span class="min-w-0 flex-1">
@@ -7567,7 +7523,6 @@ function renderRailDetalle(){
     box.querySelectorAll('[data-verpersona]').forEach(b => b.onclick = ev => {
       ev.stopPropagation(); verPersona(b.dataset.verpersona);
     });
-    wireSoltar();
     box.querySelectorAll('[data-vista]').forEach(b => b.onclick = () => { state.vista = b.dataset.vista; renderAll(); });
     box.querySelectorAll('[data-atajo]').forEach(b => b.onclick = () => {
       state.atajo = 'sinduenio'; state.vista = 'dashboard'; state.sub.dashboard = 'tablero'; renderAll();
@@ -7580,7 +7535,7 @@ function renderRailDetalle(){
   box.innerHTML = `
     <div class="flex items-center gap-2 mb-3">
       <h3 class="seccion">Detalle</h3>
-      <span class="tape ml-auto rounded-[2px] px-2 py-[3px]" style="background:${tinte(e.color, 12)};color:${e.color}">${e.nombre}</span>
+      <span class="tape ml-auto rounded-[4px] px-2 py-[3px]" style="background:${tinte(e.color, 12)};color:${e.color}">${e.nombre}</span>
     </div>
 
     <div class="tarjeta p-5">
@@ -7591,7 +7546,7 @@ function renderRailDetalle(){
 
       <textarea data-campo="titulo" rows="2"
         class="w-full resize-none rounded-[4px] border border-transparent bg-transparent px-2 py-1.5 -mx-2
-               text-[14px] leading-snug outline-none hover:border-line focus:border-bar-cyan focus:bg-panel2 transition">${esc(t.titulo)}</textarea>
+               text-[13.5px] leading-snug outline-none hover:border-line focus:border-bar-cyan focus:bg-panel2 transition">${esc(t.titulo)}</textarea>
 
       <div class="mt-3 space-y-2.5">
         <label class="block"><span class="etiqueta">Responsable</span>
@@ -7607,9 +7562,7 @@ function renderRailDetalle(){
 
         <label class="block"><span class="etiqueta">Carpeta</span>
           <select data-campo="carpeta" class="campo tapeselect">
-            <option value="" ${!t.carpeta ? 'selected' : ''}>${t.proyecto ? 'La del proyecto — ' + esc(nombreCarpeta(carpetaDe(t))) : 'Sin carpeta'}</option>
-            ${raizCarpetas().map(c => `<option value="${c.id}" ${c.id === t.carpeta ? 'selected' : ''}>${esc(c.nombre)}</option>` +
-              hijasDe(c.id).map(h => `<option value="${h.id}" ${h.id === t.carpeta ? 'selected' : ''}>&nbsp;&nbsp;&nbsp;${esc(h.nombre)}</option>`).join('')).join('')}
+            ${opcionesCarpeta(t.carpeta, t.proyecto ? 'La del proyecto — ' + nombreCarpeta(carpetaDe(t)) : 'Sin carpeta')}
           </select>
           ${t.proyecto ? `<p class="nota mt-2">Si la dejas vacía, esta tarea sigue a su proyecto cuando lo cambies de carpeta.</p>` : ''}</label>
 
@@ -7646,7 +7599,7 @@ function renderRailDetalle(){
     <div class="mt-6">
       <div class="mb-3 flex items-baseline gap-2">
         <h3 class="seccion">Equipo de la tarea</h3>
-        <button data-addcolab="${t.id}" class="btn-suave ml-auto !py-1.5 !px-3 !text-[12px]">Agregar</button>
+        <button data-addcolab="${t.id}" class="btn-suave ml-auto !py-1.5 !px-3 !text-[12.5px]">Agregar</button>
       </div>
       <div class="space-y-2">
         ${implicados(t).map((c, i) => `
@@ -7662,7 +7615,7 @@ function renderRailDetalle(){
                    </select>`}
             </span>
             ${i > 0 ? `<button data-delcolab="${c.persona}" aria-label="Quitar a ${esc(P(c.persona).nombre)}"
-              class="grid h-7 w-7 shrink-0 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-bar-red">&times;</button>` : ''}
+              class="toque grid h-7 w-7 shrink-0 place-items-center rounded-full text-dim transition hover:bg-panel2 hover:text-bar-red">&times;</button>` : ''}
           </div>`).join('')}
       </div>
       ${colaboradores(t).length ? '' : `<p class="nota mt-2">Solo ${esc(P(t.responsable).nombre)}. Agrega a quien apoye, revise o apruebe.</p>`}
@@ -7683,7 +7636,7 @@ function renderRailDetalle(){
     </div>
 
     ${t.notas ? `<div class="mt-6">
-      <h3 class="stencil-thin text-[11px] text-mute mb-2">Notas del Excel</h3>
+      <h3 class="stencil-thin text-[11.5px] text-mute mb-2">Notas del Excel</h3>
       <p class="rounded-[4px] border border-line bg-panel px-3 py-2.5 text-[12.5px] leading-relaxed text-mute">${esc(t.notas)}</p>
     </div>` : ''}
 
@@ -7697,7 +7650,7 @@ function renderRailDetalle(){
           <div class="flex gap-2.5">${avatar(c.por, 24)}
             <div class="min-w-0">
               <div class="flex items-baseline gap-2">
-                <span class="text-[12px] font-medium">${esc(P(c.por).nombre)}</span>
+                <span class="text-[12.5px] font-medium">${esc(P(c.por).nombre)}</span>
                 <span class="meta">${esc(c.cuando)}</span>
               </div>
               <p class="mt-1 text-[12.5px] leading-relaxed text-mute">${esc(c.texto)}</p>
@@ -7705,7 +7658,7 @@ function renderRailDetalle(){
         : `<p class="text-[12.5px] text-dim">Sin comentarios todavía.</p>`}
       </div>
       <div class="mt-3 tarjeta p-3 focus-within:border-bar-cyan transition">
-        <textarea id="commentBox" rows="2" placeholder="Escribe una nota para el equipo…"
+        <textarea id="commentBox" rows="2" aria-label="Escribir un comentario en esta tarea" placeholder="Escribe una nota para el equipo…"
           class="w-full resize-none bg-transparent text-[12.5px] leading-relaxed outline-none"></textarea>
         <div class="flex items-center gap-2 pt-2 border-t border-line">
           <span class="meta">Enter para enviar</span>
@@ -7837,6 +7790,9 @@ function abrirModal(iso, tipo = 'tarea'){
   $('#evProyecto').innerHTML =
     `<option value="">Ninguno — tarea suelta</option>` +
     PROYECTOS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  /* Se precarga la carpeta en la que estás parado: si entraste a
+     "Marca empleadora" y creas una tarea, lo normal es que sea de ahí. */
+  $('#evCarpeta').innerHTML = opcionesCarpeta(state.carpeta, 'Ninguna — la del proyecto');
   $('#evOwner').innerHTML = PERSONAS.map(p =>
     `<option value="${p.id}" ${p.id === (state.yo || 'u-sin') ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('');
   $('#evStatus').innerHTML = ESTADOS.map(e => `<option value="${e.id}">${e.nombre}</option>`).join('');
@@ -7900,6 +7856,7 @@ function guardarEvento(){
       id:'t' + (++uid), codigo:siguienteCodigo(),
       titulo, proyecto, area:(PR(proyecto) || {}).area || 'GENERAL',
       responsable:$('#evOwner').value, progreso:0, estado:$('#evStatus').value,
+      carpeta: $('#evCarpeta').value || null,
       notas:null, inicio, fin: fin < inicio ? inicio : fin, comentarios:[],
       equipo: proyecto ? colaboradores(PR(proyecto)).map(c => ({ ...c })) : []
     };
@@ -8262,6 +8219,13 @@ function wireProyectoRapido(raiz = document){
   });
   /* Cualquier chip de carpeta, en la vista que sea, filtra por ella.
      Volver a pulsar el mismo quita el filtro. */
+  /* El chip de carpeta de una tarea abre el menú para moverla, en la
+     vista que sea: tablero, Mi trabajo, archivo o dentro de una carpeta. */
+  raiz.querySelectorAll('[data-carpetatarea]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const t = T(b.dataset.carpetatarea);
+    if (t) menuCarpetaDe(t, b, 'tarea');
+  });
   raiz.querySelectorAll('[data-vercarpeta]').forEach(b => b.onclick = ev => {
     ev.stopPropagation();
     const id = b.dataset.vercarpeta || null;
@@ -8322,13 +8286,12 @@ function accionable(el, accion){
    tareas quedarían: filtrar deja de ser a ciegas.
    ═══════════════════════════════════════════════════ */
 
+/* Estado, prioridad y atajos NO están aquí a propósito: ya viven en la
+   tira de arriba, con sus cifras a la vista y a un solo clic. Tenerlos
+   en los dos sitios significaba dos maneras distintas de poner el mismo
+   filtro, con dos aspectos distintos de "activo". Aquí quedan solo las
+   dimensiones que necesitan una lista para elegir. */
 const FILTROS = [
-  { k:'filtroEstado', etiqueta:'Estado',
-    valor: v => E(v).nombre,
-    opciones: () => ESTADOS.map(e => [e.id, e.nombre, e.relleno]) },
-  { k:'filtroPrioridad', etiqueta:'Prioridad',
-    valor: v => PRI(v).nombre,
-    opciones: () => PRIORIDADES.map(x => [x.id, x.nombre, x.relleno]) },
   { k:'persona', etiqueta:'Responsable',
     valor: v => P(v).nombre,
     opciones: () => PERSONAS.map(x => [x.id, x.nombre, x.color]) },
@@ -8344,12 +8307,16 @@ const FILTROS = [
         .map(x => [x.id, x.nombre, E(x.estado).relleno])] },
   { k:'area', etiqueta:'Área',
     valor: v => v,
-    opciones: () => AREAS.map(a => [a, a, null]) },
-  { k:'atajo', etiqueta:'Atajos',
-    valor: v => ({ vencidas:'Solo vencidas', revision:'Esperando VoBo', sinduenio:'Sin dueño' })[v] || v,
-    opciones: () => [['vencidas','Solo vencidas','var(--alerta)'],
-                     ['revision','Esperando VoBo','var(--g-revision)'],
-                     ['sinduenio','Sin dueño','var(--acento)']] }
+    opciones: () => AREAS.map(a => [a, a, null]) }
+];
+
+/* Los filtros que se ponen desde la tira de arriba también se pueden
+   quitar desde la barra: lo activo se ve y se quita en un solo sitio. */
+const FILTROS_TIRA = [
+  { k:'filtroEstado',    etiqueta:'Estado',     valor: v => E(v).nombre },
+  { k:'filtroPrioridad', etiqueta:'Prioridad',  valor: v => PRI(v).nombre },
+  { k:'atajo', etiqueta:'Atajo',
+    valor: v => ({ vencidas:'Vencidas', revision:'Esperando VoBo', sinduenio:'Sin dueño' })[v] || v }
 ];
 
 /* Cuántas tareas quedarían si además pusieras ESTE valor. Se calcula
@@ -8369,7 +8336,7 @@ function menuFiltro(clave, ancla){
   const r = ancla.getBoundingClientRect();
   const m = document.createElement('div');
   m.id = 'menuAsignar'; anclaMenu = ancla;
-  m.className = 'vidrio-alto modal-in fixed z-[80] w-[262px] overflow-hidden rounded-[18px] border border-line';
+  m.className = 'vidrio-alto modal-in fixed z-[80] w-[262px] overflow-hidden rounded-[20px] border border-line';
   m.style.top  = Math.min(window.innerHeight - 320, r.bottom + 6) + 'px';
   m.style.left = Math.min(window.innerWidth - 274, Math.max(8, r.left)) + 'px';
 
@@ -8407,7 +8374,7 @@ function renderFiltros(){
   bar.classList.toggle('flex', !fuera);
   if (fuera){ bar.innerHTML = ''; return; }
 
-  const activos = FILTROS.filter(f => state[f.k]).length + (state.query ? 1 : 0);
+  const activos = [...FILTROS, ...FILTROS_TIRA].filter(f => state[f.k]).length + (state.query ? 1 : 0);
   bar.classList.toggle('activa', activos > 0);
 
   const botones = FILTROS.map(f => {
@@ -8420,13 +8387,18 @@ function renderFiltros(){
     </button>`;
   }).join('');
 
+  /* Lo puesto desde la tira de arriba aparece aquí como ficha con su ×,
+     para que todo lo activo esté junto y se pueda soltar de un toque. */
+  const desdeArriba = FILTROS_TIRA.filter(f => state[f.k]).map(f => `<button data-quitar="${f.k}" class="fbtn on">
+      <span>${f.etiqueta}: ${esc(f.valor(state[f.k]))}</span><span class="fbtn-x">&times;</span></button>`).join('');
+
   const n = visibles().length;
   const total = TAREAS.length;
   const cuenta = activos
     ? `<span class="dato" style="color:var(--acento)">${n} de ${total} tareas</span>`
     : `<span class="meta">${total} tareas</span>`;
 
-  bar.innerHTML = `${botones}
+  bar.innerHTML = `${botones}${desdeArriba}
     ${state.query ? `<button data-quitar="query" class="fbtn on">
         <span>Busca: ${esc(state.query)}</span><span class="fbtn-x">&times;</span></button>` : ''}
     <button data-completadas class="fbtn ${state.verCompletadas ? 'on' : ''}"
@@ -8475,7 +8447,7 @@ function renderViewBody(){
   const AYUDAS = {
     resumen:'Cómo va el tráfico hoy. Toca cualquier cifra para ir al detalle.',
     mias:'Lo tuyo, ordenado por lo que vence primero. Abajo están las tareas que nadie ha tomado.',
-    tablero:'Arrastra una tarjeta entre columnas para cambiar su estado, o suéltala sobre una persona.',
+    tablero:'Cambia el estado con el desplegable de cada tarjeta, el responsable con su avatar y la carpeta con su chip.',
     archivo:'Lo que ya está hecho, guardado por mes. No aparece en el tablero ni en tu día, pero se puede reabrir.',
     gantt:'De cuándo a cuándo va cada proyecto. Toca una fila para abrir sus tareas.',
     calendario:'Cada tarea cae en su fecha de entrega. Los rombos son hitos: fechas que no se mueven.',
@@ -8501,9 +8473,7 @@ function renderViewBody(){
   else if (!lista.length)      inner = vacio('Sin resultados', 'Ninguna tarea coincide con los filtros o la búsqueda.', { id:'limpiar', texto:'Quitar filtros' });
   else                       { inner = renderTablero(); esTablero = true; }
 
-  const conFranja = false;   // el equipo vive en el panel derecho
-
-  body.innerHTML = `${conFranja ? franjaEquipo() : ''}
+  body.innerHTML = `
     <div class="mb-4">
       <h2 class="titulo">${titulo}</h2>
       <p class="nota mt-1.5">${ayuda}</p>
@@ -8513,7 +8483,7 @@ function renderViewBody(){
     state.sub[state.vista] = b.dataset.sub; renderAll();
   });
 
-  if (sv === 'resumen'){ wireResumen(); wireSoltar(); }
+  if (sv === 'resumen') wireResumen();
   if (sv === 'gantt') wireGantt();
   if (sv === 'calendario') wireCalendario();
   /* Se conecta por lo que se pintó, no por lo que dice el estado:
@@ -8524,7 +8494,6 @@ function renderViewBody(){
   if (v === 'equipo') wireEquipo();
   if (v === 'proyectos') wireProyectos();
   wireAsignar();
-  wireSoltar();
   wireProyectoRapido(body);
   wirePrioridad(body);
   body.querySelectorAll('[data-vista]').forEach(b => b.onclick = () => { state.vista = b.dataset.vista; renderAll(); });
@@ -8587,7 +8556,7 @@ function renderYo(){
   const inv = soyInvitado();
   const p = YO();
   document.getElementById('yoAvatar').innerHTML = inv
-    ? `<span class="grid h-8 w-8 place-items-center rounded-full text-[11px] font-semibold" style="background:var(--borde);color:var(--texto-2)">?</span>`
+    ? `<span class="grid h-8 w-8 place-items-center rounded-full text-[11.5px] font-semibold" style="background:var(--borde);color:var(--texto-2)">?</span>`
     : avatar(p.id, 32);
   document.getElementById('yoNombre').textContent = inv ? 'Elige tu nombre' : p.nombre;
   document.getElementById('yoRol').textContent    = inv ? 'Estás como invitado' : p.rol;
@@ -8646,6 +8615,9 @@ document.querySelectorAll('#briefModal [data-cerrarbrief]').forEach(b => b.oncli
 
 $('#nuevaCarpeta').onclick = () => abrirCarpeta(null);
 $('#caGuardar').onclick = guardarCarpeta;
+$('#llGuardar').onclick = guardarLlenar;
+$('#llBuscar').addEventListener('input', pintarLlenar);
+document.querySelectorAll('#llenarModal [data-cerrarll]').forEach(b => b.onclick = cerrarLlenar);
 $('#caBorrar').onclick  = borrarCarpeta;
 $('#caNombre').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarCarpeta(); });
 document.querySelectorAll('#carpetaModal [data-cerrarca]').forEach(b => b.onclick = cerrarCarpetaModal);
@@ -8666,8 +8638,9 @@ $('#evSubmit').onclick = guardarEvento;
 $('#evTitle').addEventListener('keydown', ev => { if (ev.key === 'Enter') guardarEvento(); });
 
 document.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape'){ terminarArrastre(); cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarProyecto();
-                            cerrarCarpetaModal(); cerrarBrief(); cerrarApariencia(); cerrarNav(); }
+  if (ev.key === 'Escape'){ cerrarMenu(); cerrarModal(); cerrarPersona(); cerrarProyecto();
+                            cerrarCarpetaModal(); cerrarLlenar(); cerrarBrief();
+                            cerrarApariencia(); cerrarNav(); }
   if (ev.key.toLowerCase() === 'n' && !ev.metaKey && !ev.ctrlKey &&
       !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)){
     ev.preventDefault(); abrirModal(HOY, 'tarea');

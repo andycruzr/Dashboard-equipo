@@ -199,14 +199,82 @@ drivers numeran a partir del **mayor código existente**, y al cargar se
 renumera cualquier repetido que venga de esa época, conservando el
 primero para no cambiarle el código a quien ya lo tenga anotado.
 
-## Arrastrar y soltar
+## Todo se mueve con botones
 
-El tablero usa **eventos de puntero**, no el arrastre nativo de HTML5.
-El nativo no existe en pantallas táctiles: en iPad las tarjetas no se
-movían. Con ratón la tarjeta se levanta a los 6px de movimiento; con el
-dedo hay que mantener pulsado 350ms, para que deslizar la columna siga
-siendo deslizar. El desplegable de estado de cada tarjeta sigue estando:
-arrastrar es el atajo, no el único camino.
+**No hay arrastrar y soltar.** Tuvo dos versiones y las dos fallaron: la
+nativa de HTML5 no existe en pantallas táctiles, y la de eventos de
+puntero se portaba mal en uso real. Un gesto que a veces agarra la
+tarjeta, a veces la abre y a veces no hace nada es peor que no tenerlo.
+
+| Qué mover | Cómo |
+| --- | --- |
+| Estado de una tarea | Desplegable en la propia tarjeta, o el campo del panel |
+| Responsable | Avatar de la tarea, que abre el menú de personas |
+| Carpeta de una tarea | Chip de carpeta de la tarjeta, o el campo del panel |
+| Carpeta de un proyecto | Chip de carpeta de su tarjeta, o el campo del formulario |
+| Llenar una carpeta entera | Botón **Agregar** en la cabecera de la carpeta |
+
+Son controles que funcionan igual con ratón, dedo y teclado, y que se
+pueden probar de verdad en la batería automática. El arrastre no: jsdom
+no tiene disposición ni `elementFromPoint`, así que las pruebas lo daban
+por bueno mientras en el navegador estaba roto.
+
+### Cuatro formas de meter algo en una carpeta
+
+1. **Al crear la tarea.** El alta trae un selector de carpeta, precargado
+   con la carpeta en la que estés parado.
+2. **Al crear o editar el proyecto.** Mismo selector en su formulario.
+3. **Desde la tarjeta.** El chip de carpeta de cualquier tarea o proyecto
+   abre el menú para moverlo, en la vista que sea.
+4. **Desde la carpeta.** El botón **Agregar** de su cabecera abre la
+   lista completa de proyectos y tareas sueltas con una casilla cada uno:
+   marcas lo que entra, desmarcas lo que sale, y se aplica todo junto.
+   Desmarcar nunca borra nada, solo saca de la carpeta.
+
+## Auditoría
+
+Repaso completo de usabilidad, accesibilidad, código y diseño. Lo que se
+quitó y por qué:
+
+**Dos barras de filtros haciendo lo mismo.** La tira de arriba filtraba
+por estado, prioridad y avisos; la barra de abajo repetía las tres en
+desplegables, escribiendo en las mismas variables. Dos sitios para poner
+el mismo filtro y dos aspectos distintos de "activo". La barra se quedó
+solo con las dimensiones que necesitan una lista para elegir
+(responsable, carpeta, proyecto, área), y lo que se pone desde la tira
+aparece abajo como ficha con su × — todo lo activo, junto y en un solo
+estilo.
+
+**Filtrar te sacaba de la vista.** Tocar un estado en la tira te llevaba
+al tablero aunque estuvieras a media revisión del cronograma. Ahora solo
+cambia de vista desde Equipo, la única que no muestra tareas.
+
+**Código muerto.** Cinco funciones que nadie llamaba (`bindPersonas`,
+`chipCarpeta`, `tarjetaCifra`, `franjaEquipo`, `hayFiltros`), la función
+vacía `wireSoltar` con sus dos llamadas, once reglas CSS sin un solo uso
+(`.rapida`, `.rapidas`, `.drop-activo`, `.zona-drop`, `.stencil`,
+`.tinte-8`, `.tinte-14`), el campo `nTareas` que nunca se leía y un
+atributo `data-` huérfano. Hoy el archivo no tiene ninguna función ni
+clase sin usar.
+
+**Accesibilidad.** Tres campos sin nombre para un lector de pantalla
+(`#search`, `#commentBox`, `#llBuscar`) ahora lo tienen. Ocho botones de
+icono de entre 20 y 30px crecen a 40px en pantalla táctil, sin cambiar
+nada en escritorio.
+
+**Listas que escondían tareas sin salida.** El bloque de tareas sueltas
+mostraba seis y decía "y 16 más en el cronograma": te informaba de que
+existían y te dejaba sin forma de verlas. Ahora todo recorte lleva un
+botón que despliega la lista completa y la vuelve a plegar. Esas dos
+listas además se saltaban los filtros y eran las únicas del tablero que
+seguían mostrando tareas completadas.
+
+**Consistencia visual.** 18 radios de esquina distintos se redujeron a
+una escala de 6 (4, 8, 12, 16, 20, redondo) y 20 tamaños de letra a 13,
+moviendo cada valor como mucho 1px para no romper ninguna caja.
+
+Todo esto queda fijado en `test/auditoria.js`: si algo de esto vuelve, la
+prueba falla.
 
 ## Escrituras simultáneas
 
